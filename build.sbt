@@ -1,10 +1,16 @@
+
 name := "delphi-webapp"
 
-version := "1.0-SNAPSHOT"
+version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.12.4"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
+                                      .enablePlugins(BuildInfoPlugin).
+                                        settings(
+                                          buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+                                          buildInfoPackage := "de.upb.cs.swt.delphi.webapp"
+                                        )
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
