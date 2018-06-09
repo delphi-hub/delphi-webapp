@@ -1,4 +1,4 @@
-@(message: String, style: String = "scala")
+@(results: String, style: String = "scala")
 
 <section id="top">
     <div class="jumbotron">
@@ -21,6 +21,9 @@
             </button>
         </span>
     </div>
+
+    @if(results != ""){ <div class="card"><div class="card-header text-center">Query Results</div><div class="card-block"><p>@results</p></div> </div>}
+
 
     <p style="text-align:left;">
         New to Delphi? Use our tutorial on query creation to get started.
@@ -47,4 +50,4 @@
     </article>
 
 </div>
-<script src="@routes.Assets.versioned("scripts/query.js")" integrity="sha384-/3toNRRwS4KV5v4aI5X7PjsbBzYBFBMUuO8AXtB41mXRJviuXqygDVeATxHFMOSX" crossorigin="anonymous"></script>
+<script src="@routes.Assets.versioned("scripts/query.js")" integrity="sha384-fAgQcXcssMdOBuV1sO+H8BiFkl0P6bPFts4pEd/Lpel/Ny8MUpYPe9YSEX6pRccT" crossorigin="anonymous"></script>
