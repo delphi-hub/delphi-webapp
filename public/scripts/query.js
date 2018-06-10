@@ -12,6 +12,6 @@ input.addEventListener("keyup", function(event) {
 function runQuery() {
   if(input.value && input.value !== "")
   {
-      window.location.href = 'search/?query='+input.value;
+      window.location = 'http://' + window.location.hostname + ':' +  window.location.port +'/search/?query=' + encodeURIComponent(input.value);
   }
 }

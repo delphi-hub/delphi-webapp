@@ -22,7 +22,7 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     * a path of `/`.
     */
   def index = Action {
-    Ok(views.html.index(""))
+    Ok(views.html.index("", "", false))
   }
 
   /**
@@ -35,8 +35,8 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       val server = configuration.underlying.getString("webapi.path")
       val getRequest = BlockingHttpClient.executeGet("search/"+query, server)
       getRequest match {
-        case Success(response) => Future.successful(Ok(views.html.index(response)))
-        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at "+server)))
+        case Success(response) => Future.successful(Ok(views.html.index(response, query, false)))
+        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at "+server, query, true)))
       }
     }
   }

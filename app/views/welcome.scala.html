@@ -1,4 +1,4 @@
-@(results: String, style: String = "scala")
+@(results: String, query: String, hasError: Boolean, style: String = "scala")
 
 <section id="top">
     <div class="jumbotron">
@@ -11,7 +11,7 @@
 
     <div class="input-group">
         <input id="queryInput" class="form-control"
-               placeholder="Enter your query here!">
+               placeholder="Enter your query here!" value="@query">
         <span class="input-group-append">
             <button id="runQuery" class="btn btn-outline-secondary border-left-0 border" type="button" title="Run query">
                 <img src=@routes.Assets.versioned("images/search_icon.png")/>
@@ -22,8 +22,8 @@
         </span>
     </div>
 
-    @if(results != ""){ <div class="card"><div class="card-header text-center">Query Results</div><div class="card-block"><p>@results</p></div> </div>}
-
+    @if(results != "" && !hasError){ <div class="card"><div class="card-header text-center">Query Results for "@query"</div><div class="card-block"><p>@results</p></div> </div>}
+    @if(hasError){<div class="alert alert-danger" role="alert"><h4 class="alert-heading">Error executing query</h4>@if(results!=""){@results}else{Unknown error during query execution!}</div>}
 
     <p style="text-align:left;">
         New to Delphi? Use our tutorial on query creation to get started.
@@ -50,4 +50,4 @@
     </article>
 
 </div>
-<script src="@routes.Assets.versioned("scripts/query.js")" integrity="sha384-fAgQcXcssMdOBuV1sO+H8BiFkl0P6bPFts4pEd/Lpel/Ny8MUpYPe9YSEX6pRccT" crossorigin="anonymous"></script>
+<script src="@routes.Assets.versioned("scripts/query.js")" integrity="sha384-KF/00Vm5dMkBrqdHF8+WYswVznI2EvKh5JtgCMKXqFQO9shhOnWZ2oFGxW7myyOm" crossorigin="anonymous"></script>
