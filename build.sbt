@@ -17,7 +17,7 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
-libraryDependencies += "com.h2database" % "h2" % "1.4.196"                              
+libraryDependencies += "com.h2database" % "h2" % "1.4.197"
 
 val conf = ConfigFactory.parseFile(new File("conf/application.conf")).resolve()
 val appPortWebapp    = conf.getString("app.portWebapp")
