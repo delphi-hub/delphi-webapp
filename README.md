@@ -54,4 +54,5 @@ The Delphi Web Application is open source and available under Apache 2 License.
 ## Credits
 
 [![](public/images/browserstack.jpg)](http://www.browserstack.com "BrowserStack")
+
 Special thanks to BrowserStack for sponsoring this project and giving it more substantial cross-browser capabilities.
