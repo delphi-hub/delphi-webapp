@@ -14,6 +14,8 @@ lazy val webapp = (project in file(".")).enablePlugins(PlayScala).
                                           buildInfoPackage := "de.upb.cs.swt.delphi.webapp"
                                         )
 
+scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
+
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += guice
@@ -27,11 +29,3 @@ PlayKeys.devSettings := Seq(
     "play.server.http.port" -> appPortWebapp
 )                                 
 
-lazy val scalastyleTask = taskKey[Unit]("scalastyleTask")
-scalastyleTask :={
-  scalastyle.in(Compile).toTask("").value
-  scalastyle.in(Test).toTask("").value
-}
-(scalastyleConfig in Compile):=file("project/scalastyle-config.xml")
-(scalastyleConfig in Test):=file("project/scalastyle-config.xml")
-(test in Test) := ((test in Test) dependsOn scalastyleTask).value
