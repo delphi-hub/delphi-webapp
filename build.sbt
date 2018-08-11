@@ -14,18 +14,23 @@ lazy val webapp = (project in file(".")).enablePlugins(PlayScala).
                                           buildInfoPackage := "de.upb.cs.swt.delphi.webapp"
                                         )
 
-scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
+scalastyleConfig := baseDirectory.value / "project" / "scalastyle_config.xml"
+
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
-libraryDependencies += "com.h2database" % "h2" % "1.4.196"                              
+
+// Pinning secure versions of insecure transitive libraryDependencies
+// Please update when updating dependencies above (including Play plugin)
+libraryDependencies ++= Seq(
+  "com.google.guava" % "guava" % "25.1-jre"
+)
 
 val conf = ConfigFactory.parseFile(new File("conf/application.conf")).resolve()
 val appPortWebapp    = conf.getString("app.portWebapp")
 
 PlayKeys.devSettings := Seq(
     "play.server.http.port" -> appPortWebapp
-)                                 
-
+)
