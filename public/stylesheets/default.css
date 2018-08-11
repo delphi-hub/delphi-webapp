@@ -60,3 +60,10 @@ main  {
 nav {
     background-color: #e9ecef;
 }
+
+.input-group{
+    margin-bottom: 40px;
+}
+.card{
+    margin-bottom: 40px;
+}
