@@ -14,7 +14,7 @@ lazy val webapp = (project in file(".")).enablePlugins(PlayScala).
                                           buildInfoPackage := "de.upb.cs.swt.delphi.webapp"
                                         )
 
-scalastyleConfig := baseDirectory.value / "project" / "scalastyle_config.xml"
+scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
 
 
 resolvers += Resolver.sonatypeRepo("snapshots")
