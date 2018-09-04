@@ -11,18 +11,7 @@ import scala.util.{Failure, Success}
 @Singleton
 class StartUpService{
 
-  checkInstanceRegistry()
   storeIpToInstanceRegistry()
-
-  //check instance registry exist
-  def checkInstanceRegistry() = {
-    val url = ConfigFactory.load().getString("instance-registry-path")
-    val result = BlockingHttpClient.doGet(url)
-    result match {
-      case Success(response) => println(response)
-      case Failure(_) => println("Failed to connect with instance registry")
-    }
-  }
 
   //store ip to registry db
   def storeIpToInstanceRegistry(): Unit =
@@ -31,8 +20,10 @@ class StartUpService{
     val result = BlockingHttpClient.doGet(instanceRegistryUrl)
     result match {
       case Success(response) => {
-        val postData = s"""{"ip":"$instanceRegistryUrl"}"""
-        val urlIpStore = "http://0.0.0.1"
+        val portNumber = ConfigFactory.load().getString("app.portWebapp")
+        val postData = s"""{"id":"0","IP":"string","portnumber":"${portNumber}","name":"string", "ComponentType"-> "Webapp"}"""
+
+        val urlIpStore = instanceRegistryUrl+"/register"
         val instanceSaveRes = BlockingHttpClient.doPost(urlIpStore, postData)
         result match {
           case Success(response) => println("Instance save successfully")
@@ -43,4 +34,3 @@ class StartUpService{
     }
   }
 }
-
