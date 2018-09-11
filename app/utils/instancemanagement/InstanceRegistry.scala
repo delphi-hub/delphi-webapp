@@ -15,13 +15,12 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 
-
 object InstanceRegistry extends JsonSupport with AppLogging
 {
 
-  implicit val system = ActorSystem("delphi-webapp")
+  implicit val system: ActorSystem = ActorSystem("delphi-webapp")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val ec  : ExecutionContext = system.dispatcher
-  implicit val materializer = ActorMaterializer()
 
   def register(configuration: Configuration) : Try[Long] = {
     val instance = createInstance(None,configuration.bindPort, configuration.instanceName)
@@ -60,8 +59,8 @@ object InstanceRegistry extends JsonSupport with AppLogging
         if(status == StatusCodes.OK) {
 
           Await.result(Unmarshal(response.entity).to[Instance] map {instance =>
-            val webApiIP = instance.iP
-            log.info(s"Instance Registry assigned WebApi instance at ${webApiIP.getOrElse("None")}")
+            val webApiIP = instance.host
+            log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
             Success(instance)
           } recover {case ex =>
             log.warning(s"Failed to read response from Instance Registry, exception: $ex")
@@ -86,7 +85,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
       if(configuration.webApiInstance.iD.isEmpty) {
         Failure(new RuntimeException("Cannot post matching result to Instance Registry, assigned WebAPI instance has no ID."))
       } else {
-        val IdToPost = configuration.webApiInstance.iD.get
+        val IdToPost = configuration.webApiInstance.iD.getOrElse(-1L)
         val request = HttpRequest(
           method = HttpMethods.POST,
           configuration.instanceRegistryUri + s"/matchingResult?Id=$IdToPost&MatchingSuccessful=$isWebApiReachable")
@@ -115,7 +114,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
     if(!configuration.usingInstanceRegistry){
       Failure(new RuntimeException("Cannot deregister from Instance Registry, no Instance Registry available."))
     } else {
-      val id : Long = configuration.assignedID.get
+      val id : Long = configuration.assignedID.getOrElse(-1L)
 
       val request = HttpRequest(method = HttpMethods.POST, configuration.instanceRegistryUri + s"/deregister?Id=$id")
 
@@ -145,5 +144,5 @@ object InstanceRegistry extends JsonSupport with AppLogging
 
 
   private def createInstance(id: Option[Long], controlPort : Int, name : String) : Instance =
-    Instance(id, Option(InetAddress.getLocalHost.getHostAddress), Option(controlPort), Option(name), Option(ComponentType.Crawler))
+    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp)
 }
