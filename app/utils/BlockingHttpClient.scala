@@ -3,13 +3,15 @@ package utils
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpEntity, MediaTypes, HttpMethods, HttpRequest, HttpResponse, Uri}
+import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpResponse, MediaTypes, Uri}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.util.ByteString
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
+import MediaTypes._
+
 
 /***
   * A blocking http client implemented using Akka HTTP
@@ -48,7 +50,7 @@ object BlockingHttpClient {
       val req: Future[HttpResponse] = Http(system).singleRequest(HttpRequest(
         method = HttpMethods.POST,
         uri = uri,
-        entity = bdata
+        entity = HttpEntity(`application/json`, bdata)
       ))
       Await.result(req, Duration.Inf)
 

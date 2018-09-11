@@ -1,6 +1,6 @@
-package com.gkatzioura.eager
+package app
 import com.google.inject.AbstractModule
-import app.StartUpService
+import services.StartUpService
 
 /**
   * Run functions during request
