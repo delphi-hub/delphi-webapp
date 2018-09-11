@@ -5,7 +5,7 @@ import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat}
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val componentTypeFormat = new JsonFormat[InstanceEnums.ComponentType] {
-    def write(compType : InstanceEnums.ComponentType) = JsString(compType.toString())
+    def write(compType : InstanceEnums.ComponentType) = JsString(compType.toString)
 
     def read(value: JsValue) = value match {
       case JsString(s) => s match {
@@ -24,11 +24,12 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
 final case class Instance (
                             iD: Option[Long],
-                            iP: Option[String],
-                            portnumber: Option[Long],
-                            name: Option[String],
+                            host: String,
+                            portnumber: Int,
+                            name: String,
                             /* Component Type */
-                            componentType: Option[InstanceEnums.ComponentType]
+                            componentType: InstanceEnums.ComponentType
+
                           )
 
 object InstanceEnums {
