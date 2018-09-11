@@ -145,5 +145,5 @@ object InstanceRegistry extends JsonSupport with AppLogging
 
 
   private def createInstance(id: Option[Long], controlPort : Int, name : String) : Instance =
-    Instance(id, Option(InetAddress.getLocalHost.getHostAddress), Option(controlPort), Option(name), Option(ComponentType.Crawler))
+    Instance(id, Option(InetAddress.getLocalHost.getHostAddress), Option(controlPort), Option(name), Option(ComponentType.WebApp))
 }
