@@ -66,8 +66,10 @@ object InstanceRegistry extends JsonSupport with AppLogging
             log.warning(s"Failed to read response from Instance Registry, exception: $ex")
             Failure(ex)
           }, Duration.Inf)
-        }
-        else{
+        } else if ( status == StatusCodes.NotFound) {
+          log.warning(s"No matching instance of type 'WebApi' is present at the instance registry.")
+          Failure(new RuntimeException(s"Instance Registry did not contain matching instance, server returned $status"))
+        } else {
           log.warning(s"Failed to read response from Instance Registry, server returned $status")
           Failure(new RuntimeException(s"Failed to read response from Instance Registry, server returned $status"))
         }
@@ -83,7 +85,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
       Failure(new RuntimeException("Cannot post matching result to Instance Registry, no Instance Registry available."))
     } else {
       if(configuration.webApiInstance.iD.isEmpty) {
-        Failure(new RuntimeException("Cannot post matching result to Instance Registry, assigned WebAPI instance has no ID."))
+        Failure(new RuntimeException("The WebApi instance was not assigned by the Instance Registry, so no matching result will be posted."))
       } else {
         val IdToPost = configuration.webApiInstance.iD.getOrElse(-1L)
         val request = HttpRequest(
@@ -110,33 +112,23 @@ object InstanceRegistry extends JsonSupport with AppLogging
 
   }
 
-  def getWebApiVersion(configuration: Configuration)  = {
-    if(!configuration.usingInstanceRegistry) {
-      Failure(new RuntimeException("Cannot post matching result to Instance Registry, no Instance Registry available."))
-    } else {
-      if(configuration.webApiInstance.iD.isEmpty) {
-        Failure(new RuntimeException("Cannot post matching result to Instance Registry, assigned WebAPI instance has no ID."))
-      } else {
-        val request = HttpRequest(
-          method = HttpMethods.GET,
-                   configuration.WebApiUri + "/version")
+  def getWebApiVersion(configuration: Configuration) : Try[ResponseEntity]  = {
+    val request = HttpRequest(method = HttpMethods.GET, configuration.WebApiUri + "/version")
 
-        Await.result(Http(system).singleRequest(request) map {response =>
-          if(response.status == StatusCodes.OK){
-            Success(response.entity)
-          }
-          else {
-            val statuscode = response.status
-            log.warning(s"Failed to get version of WebApi, server returned $statuscode")
-            Failure(new RuntimeException(s"Failed to get version of WebApi, server returned $statuscode"))
-          }
-
-        } recover {case ex =>
-          log.warning(s"Failed to get version of WebApi, server returned, exception: $ex")
-          Failure(new RuntimeException(s"Failed to get version of WebApi, server returned, exception: $ex"))
-        }, Duration.Inf)
+    Await.result(Http(system).singleRequest(request) map {response =>
+      if(response.status == StatusCodes.OK){
+        Success(response.entity)
       }
-    }
+      else {
+        val statuscode = response.status
+        log.warning(s"Failed to get version of WebApi, server returned $statuscode")
+        Failure(new RuntimeException(s"Failed to get version of WebApi, server returned $statuscode"))
+      }
+
+    } recover {case ex =>
+      log.warning(s"Failed to get version of WebApi, server returned, exception: $ex")
+      Failure(new RuntimeException(s"Failed to get version of WebApi, server returned, exception: $ex"))
+    }, Duration.Inf)
 
   }
 
