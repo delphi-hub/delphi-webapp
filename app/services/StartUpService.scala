@@ -6,6 +6,7 @@ import utils.Configuration
 import utils.instancemanagement.InstanceRegistry
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 /**
   * functions that will be run during request
@@ -15,7 +16,16 @@ class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
   private val configuration = new Configuration()
 
   def storeIpToInstanceReg(): Unit ={
-    InstanceRegistry.sendWebApiMatchingResult(true, configuration)
+    InstanceRegistry.getWebApiVersion(configuration) match {
+      case Success(_) => {
+        if(configuration.usingInstanceRegistry)
+          InstanceRegistry.sendWebApiMatchingResult(true, configuration)
+      }
+      case Failure(_) => {
+        if(configuration.usingInstanceRegistry)
+          InstanceRegistry.sendWebApiMatchingResult(false, configuration)
+      }
+    }
   }
   
   appLifecycle.addStopHook { () =>

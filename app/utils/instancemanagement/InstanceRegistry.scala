@@ -110,6 +110,36 @@ object InstanceRegistry extends JsonSupport with AppLogging
 
   }
 
+  def getWebApiVersion(configuration: Configuration)  = {
+    if(!configuration.usingInstanceRegistry) {
+      Failure(new RuntimeException("Cannot post matching result to Instance Registry, no Instance Registry available."))
+    } else {
+      if(configuration.webApiInstance.iD.isEmpty) {
+        Failure(new RuntimeException("Cannot post matching result to Instance Registry, assigned WebAPI instance has no ID."))
+      } else {
+        val request = HttpRequest(
+          method = HttpMethods.GET,
+                   configuration.WebApiUri + "/version")
+
+        Await.result(Http(system).singleRequest(request) map {response =>
+          if(response.status == StatusCodes.OK){
+            Success(response.entity)
+          }
+          else {
+            val statuscode = response.status
+            log.warning(s"Failed to get version of WebApi, server returned $statuscode")
+            Failure(new RuntimeException(s"Failed to get version of WebApi, server returned $statuscode"))
+          }
+
+        } recover {case ex =>
+          log.warning(s"Failed to get version of WebApi, server returned, exception: $ex")
+          Failure(new RuntimeException(s"Failed to get version of WebApi, server returned, exception: $ex"))
+        }, Duration.Inf)
+      }
+    }
+
+  }
+
   def deregister(configuration: Configuration) : Try[Unit] = {
     if(!configuration.usingInstanceRegistry){
       Failure(new RuntimeException("Cannot deregister from Instance Registry, no Instance Registry available."))
