@@ -84,10 +84,10 @@ object InstanceRegistry extends JsonSupport with AppLogging
     if(!configuration.usingInstanceRegistry) {
       Failure(new RuntimeException("Cannot post matching result to Instance Registry, no Instance Registry available."))
     } else {
-      if(configuration.webApiInstance.iD.isEmpty) {
+      if(configuration.webApiInstance.id.isEmpty) {
         Failure(new RuntimeException("The WebApi instance was not assigned by the Instance Registry, so no matching result will be posted."))
       } else {
-        val IdToPost = configuration.webApiInstance.iD.getOrElse(-1L)
+        val IdToPost = configuration.webApiInstance.id.getOrElse(-1L)
         val request = HttpRequest(
           method = HttpMethods.POST,
           configuration.instanceRegistryUri + s"/matchingResult?Id=$IdToPost&MatchingSuccessful=$isWebApiReachable")
