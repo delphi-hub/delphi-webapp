@@ -21,14 +21,12 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
-libraryDependencies += "org.parboiled" %% "parboiled" % "2.1.4"
-libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.11"
-libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.12"
-libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.1"
-libraryDependencies += "io.spray" %%  "spray-json" % "1.3.3"
-libraryDependencies += "org.parboiled" %% "parboiled" % "2.1.4"
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.4"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+
+// Akka dependencies
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-http-core" % "10.0.11",
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.5"
+)
 
 // Pinning secure versions of insecure transitive libraryDependencies
 // Please update when updating dependencies above (including Play plugin)
