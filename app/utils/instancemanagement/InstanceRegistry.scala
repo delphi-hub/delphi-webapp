@@ -87,10 +87,10 @@ object InstanceRegistry extends JsonSupport with AppLogging
       if(configuration.webApiInstance.id.isEmpty) {
         Failure(new RuntimeException("The WebApi instance was not assigned by the Instance Registry, so no matching result will be posted."))
       } else {
-        val IdToPost = configuration.webApiInstance.id.getOrElse(-1L)
+        val idToPost = configuration.webApiInstance.id.getOrElse(-1L)
         val request = HttpRequest(
           method = HttpMethods.POST,
-          configuration.instanceRegistryUri + s"/matchingResult?Id=$IdToPost&MatchingSuccessful=$isWebApiReachable")
+          configuration.instanceRegistryUri + s"/matchingResult?Id=$idToPost&MatchingSuccessful=$isWebApiReachable")
 
         Await.result(Http(system).singleRequest(request) map {response =>
           if(response.status == StatusCodes.OK){
@@ -113,7 +113,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
   }
 
   def getWebApiVersion(configuration: Configuration) : Try[ResponseEntity]  = {
-    val request = HttpRequest(method = HttpMethods.GET, configuration.WebApiUri + "/version")
+    val request = HttpRequest(method = HttpMethods.GET, configuration.webApiUri + "/version")
 
     Await.result(Http(system).singleRequest(request) map {response =>
       if(response.status == StatusCodes.OK){
