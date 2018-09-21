@@ -22,6 +22,12 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 
+// Akka dependencies
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-http-core" % "10.0.11",
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.5"
+)
+
 // Pinning secure versions of insecure transitive libraryDependencies
 // Please update when updating dependencies above (including Play plugin)
 libraryDependencies ++= Seq(
