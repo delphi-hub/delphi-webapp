@@ -18,30 +18,25 @@ package controllers
 import akka.actor.ActorSystem
 import de.upb.cs.swt.delphi.webapp.BuildInfo
 import javax.inject.Inject
-import play.api.Play
-import play.api.inject.ApplicationLifecycle
 import play.api.mvc.{BaseController, ControllerComponents}
-import utils.{AppLogging, Configuration}
-import utils.instancemanagement.InstanceRegistry
+import utils.AppLogging
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
-class SettingsController @Inject()(val controllerComponents: ControllerComponents, appLifecycle: ApplicationLifecycle) extends BaseController  with AppLogging{
+class SettingsController @Inject()(val controllerComponents: ControllerComponents) extends BaseController  with AppLogging{
   implicit val system: ActorSystem = ActorSystem()
-  private val configuration = new Configuration()
 
   def stop: Action[AnyContent] = Action { implicit request =>
-    log.info("Webapi Stopped")
+    sys.addShutdownHook(this.shutDownHook)
     sys.exit(1)
-    Ok("Webapi Stopped")
   }
 
 
   def version: Action[AnyContent] = Action { implicit request =>
-    val version: Result = Ok(BuildInfo.version)
+    val version = Ok(BuildInfo.version)
     version
   }
 
+  def shutDownHook: Unit = {
+    log.info("Webapp Stopped Successfully")
+  }
 }
