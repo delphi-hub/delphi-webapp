@@ -21,21 +21,30 @@ import javax.inject.Inject
 import play.api.mvc.{BaseController, ControllerComponents}
 import utils.AppLogging
 import play.api.mvc._
+import scala.concurrent.{ExecutionContext, Future}
 
 class SettingsController @Inject()(val controllerComponents: ControllerComponents) extends BaseController  with AppLogging{
   implicit val system: ActorSystem = ActorSystem()
+  implicit val ec  : ExecutionContext = system.dispatcher
+  private val threadSleepTime:Int = 3000 // 3 second
 
+  //stops the webapp service
   def stop: Action[AnyContent] = Action { implicit request =>
     sys.addShutdownHook(this.shutDownHook)
-    sys.exit(1)
+    val exitFuture : Future[Unit] = Future {
+      Thread.sleep(threadSleepTime)
+      sys.exit(1)
+    }
+     Ok("Webapp is shutting down")
   }
 
-
+  //show the version of webapp service
   def version: Action[AnyContent] = Action { implicit request =>
     val version = Ok(BuildInfo.version)
     version
   }
 
+  //shutdown hook for webapp shudown
   def shutDownHook: Unit = {
     log.info("Webapp Stopped Successfully")
   }
