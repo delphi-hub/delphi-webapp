@@ -18,9 +18,8 @@ package controllers
 import akka.actor.ActorSystem
 import de.upb.cs.swt.delphi.webapp.BuildInfo
 import javax.inject.Inject
-import play.api.mvc.{BaseController, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import utils.AppLogging
-import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 class SettingsController @Inject()(val controllerComponents: ControllerComponents) extends BaseController  with AppLogging{
