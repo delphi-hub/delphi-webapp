@@ -39,21 +39,47 @@ class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
     * /version endpoint. If successful, it will post the matching result true to the IR, otherwise false.
     */
   def doStartUpChecks(): Unit = {
-    InstanceRegistry.getWebApiVersion(configuration) match {
-      case Success(_) => {
-        InstanceRegistry.sendWebApiMatchingResult(true, configuration)
+    val instance_id = sys.env.getOrElse("INSTANCE_ID","")
+    instance_id match {
+      case "" => {
+        InstanceRegistry.getWebApiVersion(configuration) match {
+          case Success(_) => {
+            InstanceRegistry.sendWebApiMatchingResult(true, configuration)
+          }
+          case Failure(_) => {
+            InstanceRegistry.sendWebApiMatchingResult(false, configuration)
+            //Cannot connect to WebApi on startup, so stop execution
+            Await.ready(appLifecycle.stop(), Duration(5, TimeUnit.SECONDS))
+            System.exit(1)
+          }
+        }
       }
-      case Failure(_) => {
-        InstanceRegistry.sendWebApiMatchingResult(false, configuration)
-        //Cannot connect to WebApi on startup, so stop execution
-        Await.ready(appLifecycle.stop(), Duration(5, TimeUnit.SECONDS))
-        System.exit(1)
+      case _ => {
+        InstanceRegistry.reportStart(instance_id, configuration) match {
+          case Success(_) => {
+            print("Successfully done reportStart")
+          }
+          case Failure(_) => {
+            InstanceRegistry.reportFailure(instance_id, configuration)
+            Await.ready(appLifecycle.stop(), Duration(5, TimeUnit.SECONDS))
+            System.exit(1)
+          }
+        }
       }
     }
+
   }
-  
+
   appLifecycle.addStopHook { () =>
-    InstanceRegistry.deregister(configuration)
+    val instance_id = sys.env.getOrElse("INSTANCE_ID","")
+    instance_id match {
+      case "" => {
+        InstanceRegistry.deregister(configuration)
+      }
+      case _ => {
+        InstanceRegistry.reportStop(instance_id, configuration)
+      }
+    }
     Future.successful(())
   }
 

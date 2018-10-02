@@ -16,7 +16,7 @@
 package utils
 
 import com.typesafe.config.ConfigFactory
-import utils.instancemanagement.InstanceEnums.ComponentType
+import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
 import utils.instancemanagement.{Instance, InstanceRegistry}
 
 import scala.util.{Failure, Success, Try}
@@ -37,7 +37,10 @@ class Configuration(val bindPort: Int = ConfigFactory.load().getInt("app.portWeb
       fallbackWebApiHost,
       fallbackWebApiPort,
       "Default WebApi instance",
-      ComponentType.WebApi)
+      ComponentType.WebApi,
+      None,
+      InstanceState.Running
+    )
 
   }
 

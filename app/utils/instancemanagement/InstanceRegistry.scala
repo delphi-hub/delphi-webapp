@@ -23,7 +23,7 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import utils.instancemanagement.InstanceEnums.ComponentType
+import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
 import utils.{AppLogging, Configuration}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -38,7 +38,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
   implicit val ec  : ExecutionContext = system.dispatcher
 
   def register(configuration: Configuration) : Try[Long] = {
-    val instance = createInstance(None,configuration.bindPort, configuration.instanceName)
+    val instance = createInstance(None,configuration.bindPort, configuration.instanceName, None, InstanceState.Running)
 
     Await.result(postInstance(instance, configuration.instanceRegistryUri + "/register") map {response =>
       if(response.status == StatusCodes.OK){
@@ -60,6 +60,63 @@ object InstanceRegistry extends JsonSupport with AppLogging
     } recover {case ex =>
       log.warning(s"Failed to register at Instance Registry, exception: $ex")
       Failure(ex)
+    }, Duration.Inf)
+  }
+
+  def reportStart(id: String, configuration: Configuration):Try[ResponseEntity] ={
+    val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri + "/reportStart")
+
+    Await.result(Http(system).singleRequest(request) map {response =>
+      if(response.status == StatusCodes.OK){
+        Success(response.entity)
+      }
+      else {
+        val statuscode = response.status
+        log.warning(s"Failed to perform reportStart, server returned $statuscode")
+        Failure(new RuntimeException(s"Failed to perform reportStart, server returned $statuscode"))
+      }
+
+    } recover {case ex =>
+      log.warning(s"Failed to perform reportStart, exception: $ex")
+      Failure(new RuntimeException(s"Failed to perform reportStart, server returned, exception: $ex"))
+    }, Duration.Inf)
+  }
+
+  def reportFailure(id: String, configuration: Configuration):Try[ResponseEntity] = {
+    val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri + "/reportFailure")
+
+    Await.result(Http(system).singleRequest(request) map {response =>
+      if(response.status == StatusCodes.OK){
+        Success(response.entity)
+      }
+      else {
+        val statuscode = response.status
+        log.warning(s"Failed to perform reportFailure, server returned $statuscode")
+        Failure(new RuntimeException(s"Failed to perform reportFailure, server returned $statuscode"))
+      }
+
+    } recover {case ex =>
+      log.warning(s"Failed to perform reportFailure, server returned, exception: $ex")
+      Failure(new RuntimeException(s"Failed to perform reportFailure, server returned, exception: $ex"))
+    }, Duration.Inf)
+  }
+
+  def reportStop(id: String, configuration: Configuration):Try[ResponseEntity] = {
+    val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri + "/reportStop")
+
+    Await.result(Http(system).singleRequest(request) map {response =>
+      if(response.status == StatusCodes.OK){
+        Success(response.entity)
+      }
+      else {
+        val statuscode = response.status
+        log.warning(s"Failed to perform reportStop, server returned $statuscode")
+        Failure(new RuntimeException(s"Failed to perform reportStop, server returned $statuscode"))
+      }
+
+    } recover {case ex =>
+      log.warning(s"Failed to perform reportStop, server returned, exception: $ex")
+      Failure(new RuntimeException(s"Failed to perform reportStop, server returned, exception: $ex"))
     }, Duration.Inf)
   }
 
@@ -180,6 +237,6 @@ object InstanceRegistry extends JsonSupport with AppLogging
     }
 
 
-  private def createInstance(id: Option[Long], controlPort : Int, name : String) : Instance =
-    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp)
+  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], InstanceState: InstanceEnums.State) : Instance =
+    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, InstanceState)
 }
