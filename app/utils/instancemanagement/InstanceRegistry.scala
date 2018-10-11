@@ -23,12 +23,14 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
+import akka.util.ByteString
 import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
 import utils.{AppLogging, Configuration}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
+import spray.json._
 
 object InstanceRegistry extends JsonSupport with AppLogging
 {
@@ -127,23 +129,26 @@ object InstanceRegistry extends JsonSupport with AppLogging
       val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri + "/matchingInstance?ComponentType=WebApi")
 
       Await.result(Http(system).singleRequest(request) map {response =>
-        val status = response.status
-        if(status == StatusCodes.OK) {
-
-          Await.result(Unmarshal(response.entity).to[Instance] map {instance =>
-            val webApiIP = instance.host
-            log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
-            Success(instance)
-          } recover {case ex =>
-            log.warning(s"Failed to read response from Instance Registry, exception: $ex")
-            Failure(ex)
-          }, Duration.Inf)
-        } else if ( status == StatusCodes.NotFound) {
-          log.warning(s"No matching instance of type 'WebApi' is present at the instance registry.")
-          Failure(new RuntimeException(s"Instance Registry did not contain matching instance, server returned $status"))
-        } else {
-          log.warning(s"Failed to read response from Instance Registry, server returned $status")
-          Failure(new RuntimeException(s"Failed to read response from Instance Registry, server returned $status"))
+        response.status match {
+          case StatusCodes.OK =>
+            try {
+              val instanceString : String = Await.result(response.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String), 5 seconds)
+              val esInstance = instanceString.parseJson.convertTo[Instance](instanceFormat)
+              val webApiIP = esInstance.host
+              log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
+              Success(esInstance)
+            } catch {
+              case px: spray.json.JsonParser.ParsingException =>
+                log.warning(s"Failed to read response from Instance Registry, exception: $px")
+                Failure(px)
+            }
+          case StatusCodes.NotFound =>
+            log.warning(s"No matching instance of type 'WebApi' is present at the instance registry.")
+            Failure(new RuntimeException(s"Instance Registry did not contain matching instance, server returned ${StatusCodes.NotFound}"))
+          case _ =>
+            val status = response.status
+            log.warning(s"Failed to read matching instance from Instance Registry, server returned $status")
+            Failure(new RuntimeException(s"Failed to read matching instance from Instance Registry, server returned $status"))
         }
       } recover { case ex =>
         log.warning(s"Failed to request WebApi instance from Instance Registry, exception: $ex ")
@@ -230,11 +235,16 @@ object InstanceRegistry extends JsonSupport with AppLogging
     }
   }
 
-  def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] =
-    Marshal(instance).to[RequestEntity] flatMap { entity =>
-      val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = entity)
+  def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] = {
+    try {
+      val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
       Http(system).singleRequest(request)
+    } catch {
+      case dx: DeserializationException =>
+        log.warning(s"Failed to deregister to Instance Registry, exception: $dx")
+        Future.failed(dx)
     }
+  }
 
 
   private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], InstanceState: InstanceEnums.State) : Instance =
