@@ -265,8 +265,8 @@ object InstanceRegistry extends JsonSupport with AppLogging
   }
 
 
-  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], InstanceState: InstanceEnums.State) : Instance =
-    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, InstanceState)
+  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], instanceState: InstanceEnums.State) : Instance =
+    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, instanceState)
 
 
   object ReportOperationType extends Enumeration {
