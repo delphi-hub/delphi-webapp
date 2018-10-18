@@ -24,14 +24,14 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
-import utils.{AppLogging, Configuration}
+import utils.{AppLogging, CommonHelper, Configuration}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 import spray.json._
 
-object InstanceRegistry extends JsonSupport with AppLogging
+object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
 {
 
   implicit val system: ActorSystem = ActorSystem("delphi-webapp")
@@ -47,11 +47,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
           case Success(_) => Some(id)
           case Failure(_) => None
         }
-      case None =>
-        register(configuration) match {
-          case Success(id) => Some(id)
-          case Failure(_) => None
-        }
+      case None => None
     }
   }
 
@@ -208,7 +204,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
   }
 
   def getWebApiVersion(configuration: Configuration) : Try[ResponseEntity]  = {
-    val request = HttpRequest(method = HttpMethods.GET, configuration.webApiUri + "/version")
+    val request = HttpRequest(method = HttpMethods.GET, addHttpProtocolIfNotExist(configuration.webApiUri) + "/version")
 
     Await.result(Http(system).singleRequest(request) map {response =>
       if(response.status == StatusCodes.OK){
