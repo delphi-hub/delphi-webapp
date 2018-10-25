@@ -48,10 +48,7 @@ class Configuration(val bindPort: Int = ConfigFactory.load().getInt("app.portWeb
     case Some(_) => true
     case None => false
   }
-  lazy val assignedID : Option[Long] = InstanceRegistry.register(this) match {
-    case Success(id) => Some(id)
-    case Failure(_) => None
-  }
+  lazy val assignedID : Option[Long] = InstanceRegistry.handleInstanceStart(this)
 
   lazy val fallbackWebApiPort : Int = sys.env.get("DELPHI_WEBAPI_URI") match {
     case Some(hostString) => if(hostString.count(c => c == ':') == 2){

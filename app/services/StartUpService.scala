@@ -39,7 +39,7 @@ class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
     * /version endpoint. If successful, it will post the matching result true to the IR, otherwise false.
     */
   def doStartUpChecks(): Unit = {
-    InstanceRegistry.handleInstanceStart(configuration)
+
 
     InstanceRegistry.getWebApiVersion(configuration) match {
       case Success(_) => {
