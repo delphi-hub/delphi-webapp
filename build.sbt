@@ -25,8 +25,14 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2
 // Akka dependencies
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core" % "10.0.11",
-  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.5"
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.5",
+
+  /*"net.codingwell" %% "scala-guice" % "4.1.0",
+  "org.scalatest" % "scalatest_2.12" % "3.0.3",
+  "org.mockito" % "mockito-core" % "2.7.22",*/
 )
+
+libraryDependencies += specs2 % Test
 
 // Pinning secure versions of insecure transitive libraryDependencies
 // Please update when updating dependencies above (including Play plugin)
