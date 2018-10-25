@@ -47,7 +47,10 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
           case Success(_) => Some(id)
           case Failure(_) => None
         }
-      case None => None
+      case None => register(configuration) match {
+        case Success(id) => Some(id)
+        case Failure(_) => None
+      }
     }
   }
 
