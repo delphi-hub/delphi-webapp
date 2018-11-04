@@ -22,7 +22,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpRespo
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.util.ByteString
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 import MediaTypes._
@@ -34,8 +34,8 @@ import MediaTypes._
 object BlockingHttpClient {
 
   def doGet(uri : Uri) : Try[String] = {
-    implicit val system = ActorSystem()
-    implicit val executionContext = system.dispatcher
+    implicit val system: ActorSystem = ActorSystem()
+    implicit val executionContext: ExecutionContext = system.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
 
     try {
@@ -56,9 +56,9 @@ object BlockingHttpClient {
   }
 
   // data parameter will be """{"name":"Hello"}"""
-  def doPost(uri: Uri, data: String) = {
-    implicit val system = ActorSystem()
-    implicit val executionContext = system.dispatcher
+  def doPost(uri: Uri, data: String) : Try[String] = {
+    implicit val system: ActorSystem = ActorSystem()
+    implicit val executionContext: ExecutionContext = system.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
     val bdata = ByteString(data)
     try {

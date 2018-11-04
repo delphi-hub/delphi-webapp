@@ -42,16 +42,14 @@ class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
 
 
     InstanceRegistry.getWebApiVersion(configuration) match {
-      case Success(_) => {
+      case Success(_) =>
         InstanceRegistry.sendWebApiMatchingResult(true, configuration)
-      }
-      case Failure(_) => {
+      case Failure(_) =>
         InstanceRegistry.sendWebApiMatchingResult(false, configuration)
         InstanceRegistry.handleInstanceFailure(configuration)
         //Cannot connect to WebApi on startup, so stop execution
         Await.ready(appLifecycle.stop(), Duration(5, TimeUnit.SECONDS))
         System.exit(1)
-      }
     }
   }
 

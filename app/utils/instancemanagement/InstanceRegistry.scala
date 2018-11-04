@@ -252,13 +252,11 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
   }
 
   def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] = {
-    try {
-      val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
-      Http(system).singleRequest(request)
-    } catch {
-      case dx: DeserializationException =>
-        log.warning(s"Failed to deregister to Instance Registry, exception: $dx")
-        Future.failed(dx)
+    val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
+    Try(Http(system).singleRequest(request)) match {
+      case Failure(ex) =>
+        log.warning(s"Failed to deregister to Instance Registry, exception: $ex")
+        Future.failed(ex)
     }
   }
 

@@ -21,7 +21,7 @@ import services.StartUpService
   * Run functions during request
   */
 class EagerLoaderModule extends AbstractModule {
-  override def configure() = {
+  override def configure() : Unit = {
     //startupservice will run during request
     bind(classOf[StartUpService]).asEagerSingleton
   }
