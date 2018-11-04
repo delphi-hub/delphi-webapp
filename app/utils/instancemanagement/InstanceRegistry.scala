@@ -148,16 +148,15 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
       Await.result(Http(system).singleRequest(request) map {response =>
         response.status match {
           case StatusCodes.OK =>
-            try {
-              val instanceString : String = Await.result(response.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String), 5 seconds)
-              val esInstance = instanceString.parseJson.convertTo[Instance](instanceFormat)
-              val webApiIP = esInstance.host
-              log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
-              Success(esInstance)
-            } catch {
-              case px: spray.json.JsonParser.ParsingException =>
-                log.warning(s"Failed to read response from Instance Registry, exception: $px")
-                Failure(px)
+            val instanceString : String = Await.result(response.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String), 5 seconds)
+            Try(instanceString.parseJson.convertTo[Instance](instanceFormat)) match {
+              case Success(esInstance) =>
+                val webApiIP = esInstance.host
+                log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
+                Success(esInstance)
+              case Failure(ex) =>
+                log.warning(s"Failed to read response from Instance Registry, exception: $ex")
+                Failure(ex)
             }
           case StatusCodes.NotFound =>
             log.warning(s"No matching instance of type 'WebApi' is present at the instance registry.")
