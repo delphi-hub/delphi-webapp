@@ -39,7 +39,8 @@ class Configuration(val bindPort: Int = ConfigFactory.load().getInt("app.portWeb
       "Default WebApi instance",
       ComponentType.WebApi,
       None,
-      InstanceState.Running
+      InstanceState.Running,
+      List.empty[String]
     )
 
   }

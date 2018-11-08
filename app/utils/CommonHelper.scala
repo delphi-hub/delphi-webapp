@@ -15,7 +15,10 @@
 // limitations under the License.
 package utils
 
-trait CommonHelper {
+object CommonHelper {
+
+  val configuration: Configuration = new Configuration()
+
     def addHttpProtocolIfNotExist(url: String): String = {
       val exist = url.contains("http://") || url.contains("https://")
       if(! exist) {

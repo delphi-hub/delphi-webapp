@@ -19,6 +19,7 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import utils.BlockingHttpClient
+import utils.CommonHelper
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
@@ -47,8 +48,8 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     */
   def query(query : String) : Action[AnyContent] = Action.async {
     implicit request => {
-      val server = configuration.underlying.getString("webapi.path")
-      val getRequest = BlockingHttpClient.executeGet("search/" + query, server)
+      val server = CommonHelper.addHttpProtocolIfNotExist(CommonHelper.configuration.webApiUri)
+      val getRequest = BlockingHttpClient.executeGet("/search/" + query, server)
       getRequest match {
         case Success(response) => Future.successful(Ok(views.html.index(response, query, false)))
         case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + server, query, true)))

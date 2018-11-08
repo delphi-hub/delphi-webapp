@@ -31,7 +31,7 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 import spray.json._
 
-object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
+object InstanceRegistry extends JsonSupport with AppLogging
 {
 
   implicit val system: ActorSystem = ActorSystem("delphi-webapp")
@@ -143,7 +143,8 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
     if(!configuration.usingInstanceRegistry) {
       Failure(new RuntimeException("Cannot get WebApi instance from Instance Registry, no Instance Registry available."))
     } else {
-      val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri + "/matchingInstance?ComponentType=WebApi")
+      val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri +
+        s"/matchingInstance?Id=${configuration.assignedID.getOrElse(-1)}&ComponentType=WebApi")
 
       Await.result(Http(system).singleRequest(request) map {response =>
         response.status match {
@@ -183,7 +184,8 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
         val idToPost = configuration.webApiInstance.id.getOrElse(-1L)
         val request = HttpRequest(
           method = HttpMethods.POST,
-          configuration.instanceRegistryUri + s"/matchingResult?Id=$idToPost&MatchingSuccessful=$isWebApiReachable")
+          configuration.instanceRegistryUri +
+            s"/matchingResult?CallerId=${configuration.assignedID.getOrElse(-1)}&MatchedInstanceId=$idToPost&MatchingSuccessful=$isWebApiReachable")
 
         Await.result(Http(system).singleRequest(request) map {response =>
           if(response.status == StatusCodes.OK){
@@ -206,7 +208,7 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
   }
 
   def getWebApiVersion(configuration: Configuration) : Try[ResponseEntity]  = {
-    val request = HttpRequest(method = HttpMethods.GET, addHttpProtocolIfNotExist(configuration.webApiUri) + "/version")
+    val request = HttpRequest(method = HttpMethods.GET, CommonHelper.addHttpProtocolIfNotExist(CommonHelper.configuration.webApiUri) + "/version")
 
     Await.result(Http(system).singleRequest(request) map {response =>
       if(response.status == StatusCodes.OK){
@@ -254,6 +256,8 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
   def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] = {
     val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
     Try(Http(system).singleRequest(request)) match {
+      case Success(res) =>
+        res
       case Failure(ex) =>
         log.warning(s"Failed to deregister to Instance Registry, exception: $ex")
         Future.failed(ex)
@@ -262,7 +266,7 @@ object InstanceRegistry extends JsonSupport with AppLogging with CommonHelper
 
 
   private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], instanceState: InstanceEnums.State) : Instance =
-    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, instanceState)
+    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, instanceState, List.empty[String])
 
 
   object ReportOperationType extends Enumeration {

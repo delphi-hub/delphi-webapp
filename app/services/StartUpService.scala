@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 import javax.inject.{Singleton, _}
 import play.api.inject.ApplicationLifecycle
-import utils.Configuration
+import utils.{CommonHelper, Configuration}
 import utils.instancemanagement.InstanceRegistry
 
 import scala.concurrent.duration.Duration
@@ -32,7 +32,6 @@ import scala.util.{Failure, Success}
 @Singleton
 class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
 
-  private val configuration = new Configuration()
 
   /**
     * Will register at the Instance Registry, get an matching WebApi instance and try to connect to it using the
@@ -40,6 +39,7 @@ class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
     */
   def doStartUpChecks(): Unit = {
 
+    val configuration = CommonHelper.configuration
 
     InstanceRegistry.getWebApiVersion(configuration) match {
       case Success(_) =>
@@ -47,14 +47,12 @@ class StartUpService @Inject()(appLifecycle: ApplicationLifecycle){
       case Failure(_) =>
         InstanceRegistry.sendWebApiMatchingResult(false, configuration)
         InstanceRegistry.handleInstanceFailure(configuration)
-        //Cannot connect to WebApi on startup, so stop execution
-        Await.ready(appLifecycle.stop(), Duration(5, TimeUnit.SECONDS))
-        System.exit(1)
+        //Keep instance running, but webapi won't be reachable
     }
   }
 
   appLifecycle.addStopHook { () =>
-    InstanceRegistry.handleInstanceStop(configuration)
+    InstanceRegistry.handleInstanceStop(CommonHelper.configuration)
     Future.successful(())
   }
 
