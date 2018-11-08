@@ -16,10 +16,12 @@
 package utils
 
 trait CommonHelper {
-    def addHttpProtocolIfNotExist(url: String): String ={
-      var tempUrl:String = url
-      val exist = url.contains("http://")
-      if(! exist) tempUrl = "http://" + url
-      tempUrl
+    def addHttpProtocolIfNotExist(url: String): String = {
+      val exist = url.contains("http://") || url.contains("https://")
+      if(! exist) {
+        "http://" + url //Default protocol is http
+      } else {
+        url
+      }
     }
 }
