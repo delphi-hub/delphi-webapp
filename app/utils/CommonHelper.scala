@@ -20,8 +20,8 @@ object CommonHelper {
   val configuration: Configuration = new Configuration()
 
     def addHttpProtocolIfNotExist(url: String): String = {
-      val exist = url.contains("http://") || url.contains("https://")
-      if(! exist) {
+      val hasProtocol = url.startsWith("http://") || url.startsWith("https://")
+      if(! hasProtocol) {
         "http://" + url //Default protocol is http
       } else {
         url
