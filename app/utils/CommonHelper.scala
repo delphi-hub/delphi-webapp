@@ -15,10 +15,16 @@
 // limitations under the License.
 package utils
 
-import akka.actor.{ActorSystem, ExtendedActorSystem}
-import akka.event.{BusLogging, LoggingAdapter}
+object CommonHelper {
 
-trait AppLogging {
-  def log(implicit system: ActorSystem): LoggingAdapter =
-    new BusLogging(system.eventStream, this.getClass.getName, this.getClass, system.asInstanceOf[ExtendedActorSystem].logFilter)
+  val configuration: Configuration = new Configuration()
+
+    def addHttpProtocolIfNotExist(url: String): String = {
+      val hasProtocol = url.startsWith("http://") || url.startsWith("https://")
+      if(! hasProtocol) {
+        "http://" + url //Default protocol is http
+      } else {
+        url
+      }
+    }
 }

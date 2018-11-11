@@ -1,3 +1,18 @@
+// Copyright (C) 2018 The Delphi Team.
+// See the LICENCE file distributed with this work for additional
+// information regarding copyright ownership.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package utils
 
 
@@ -7,7 +22,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpRespo
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.util.ByteString
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 import MediaTypes._
@@ -19,8 +34,8 @@ import MediaTypes._
 object BlockingHttpClient {
 
   def doGet(uri : Uri) : Try[String] = {
-    implicit val system = ActorSystem()
-    implicit val executionContext = system.dispatcher
+    implicit val system: ActorSystem = ActorSystem()
+    implicit val executionContext: ExecutionContext = system.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
 
     try {
@@ -41,9 +56,9 @@ object BlockingHttpClient {
   }
 
   // data parameter will be """{"name":"Hello"}"""
-  def doPost(uri: Uri, data: String) = {
-    implicit val system = ActorSystem()
-    implicit val executionContext = system.dispatcher
+  def doPost(uri: Uri, data: String) : Try[String] = {
+    implicit val system: ActorSystem = ActorSystem()
+    implicit val executionContext: ExecutionContext = system.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
     val bdata = ByteString(data)
     try {

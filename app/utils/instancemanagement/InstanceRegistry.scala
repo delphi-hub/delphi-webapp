@@ -1,19 +1,35 @@
+// Copyright (C) 2018 The Delphi Team.
+// See the LICENCE file distributed with this work for additional
+// information regarding copyright ownership.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package utils.instancemanagement
 
 import java.net.InetAddress
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import utils.instancemanagement.InstanceEnums.ComponentType
-import utils.{AppLogging, Configuration}
+import akka.util.ByteString
+import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
+import utils.{AppLogging, CommonHelper, Configuration}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
+import spray.json._
 
 object InstanceRegistry extends JsonSupport with AppLogging
 {
@@ -22,8 +38,83 @@ object InstanceRegistry extends JsonSupport with AppLogging
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val ec  : ExecutionContext = system.dispatcher
 
+  lazy val instanceIdFromEnv : Option[Long] = Try[Long](sys.env("INSTANCE_ID").toLong).toOption
+
+  def handleInstanceStart(configuration: Configuration) : Option[Long] = {
+    instanceIdFromEnv match {
+      case Some(id) =>
+        reportStart(configuration) match {
+          case Success(_) => Some(id)
+          case Failure(_) => None
+        }
+      case None => register(configuration) match {
+        case Success(id) => Some(id)
+        case Failure(_) => None
+      }
+    }
+  }
+
+  def handleInstanceStop(configuration: Configuration): Try[Any] = {
+    if(instanceIdFromEnv.isDefined) {
+      reportStop(configuration)
+    } else {
+      deregister(configuration)
+    }
+  }
+
+  def handleInstanceFailure(configuration: Configuration): Any = {
+    if(instanceIdFromEnv.isDefined) {
+      reportFailure(configuration)
+    }
+  }
+
+  def reportStart(configuration: Configuration) : Try[Unit] = executeReportOperation(configuration, ReportOperationType.Start)
+
+  def reportStop(configuration: Configuration) : Try[Unit] = {
+    if(configuration.usingInstanceRegistry) {
+      executeReportOperation(configuration, ReportOperationType.Stop)
+    } else {
+      Failure(new RuntimeException("Cannot report stop, no instance registry available."))
+    }
+  }
+
+  def reportFailure(configuration: Configuration) : Try[Unit] = {
+    if(configuration.usingInstanceRegistry){
+      executeReportOperation(configuration, ReportOperationType.Failure)
+    } else {
+      Failure(new RuntimeException("Cannot report failure, no instance registry available."))
+    }
+  }
+
+  private def executeReportOperation(configuration: Configuration, operationType: ReportOperationType.Value) : Try[Unit] = {
+    instanceIdFromEnv match {
+      case Some(id) =>
+        val request = HttpRequest(
+          method = HttpMethods.POST,
+          configuration.instanceRegistryUri + ReportOperationType.toOperationUriString(operationType, id))
+
+        Await.result(Http(system).singleRequest(request) map {response =>
+          if(response.status == StatusCodes.OK){
+            log.info(s"Successfully reported ${operationType.toString} to Instance Registry.")
+            Success()
+          }
+          else {
+            log.warning(s"Failed to report ${operationType.toString} to Instance Registry, server returned ${response.status}")
+            Failure(new RuntimeException(s"Failed to report ${operationType.toString} to Instance Registry, server returned ${response.status}"))
+          }
+
+        } recover {case ex =>
+          log.warning(s"Failed to report ${operationType.toString} to Instance Registry, exception: $ex")
+          Failure(new RuntimeException(s"Failed to report ${operationType.toString} to Instance Registry, exception: $ex"))
+        }, Duration.Inf)
+      case None =>
+        log.warning(s"Cannot report ${operationType.toString} to Instance Registry, no instance id is present in env var 'INSTANCE_ID'.")
+        Failure(new RuntimeException(s"Cannot report ${operationType.toString} to Instance Registry, no instance id is present in env var 'INSTANCE_ID'."))
+    }
+  }
+
   def register(configuration: Configuration) : Try[Long] = {
-    val instance = createInstance(None,configuration.bindPort, configuration.instanceName)
+    val instance = createInstance(None,configuration.bindPort, configuration.instanceName, None, InstanceState.Running)
 
     Await.result(postInstance(instance, configuration.instanceRegistryUri + "/register") map {response =>
       if(response.status == StatusCodes.OK){
@@ -52,26 +143,29 @@ object InstanceRegistry extends JsonSupport with AppLogging
     if(!configuration.usingInstanceRegistry) {
       Failure(new RuntimeException("Cannot get WebApi instance from Instance Registry, no Instance Registry available."))
     } else {
-      val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri + "/matchingInstance?ComponentType=WebApi")
+      val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri +
+        s"/matchingInstance?Id=${configuration.assignedID.getOrElse(-1)}&ComponentType=WebApi")
 
       Await.result(Http(system).singleRequest(request) map {response =>
-        val status = response.status
-        if(status == StatusCodes.OK) {
-
-          Await.result(Unmarshal(response.entity).to[Instance] map {instance =>
-            val webApiIP = instance.host
-            log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
-            Success(instance)
-          } recover {case ex =>
-            log.warning(s"Failed to read response from Instance Registry, exception: $ex")
-            Failure(ex)
-          }, Duration.Inf)
-        } else if ( status == StatusCodes.NotFound) {
-          log.warning(s"No matching instance of type 'WebApi' is present at the instance registry.")
-          Failure(new RuntimeException(s"Instance Registry did not contain matching instance, server returned $status"))
-        } else {
-          log.warning(s"Failed to read response from Instance Registry, server returned $status")
-          Failure(new RuntimeException(s"Failed to read response from Instance Registry, server returned $status"))
+        response.status match {
+          case StatusCodes.OK =>
+            val instanceString : String = Await.result(response.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String), 5 seconds)
+            Try(instanceString.parseJson.convertTo[Instance](instanceFormat)) match {
+              case Success(esInstance) =>
+                val webApiIP = esInstance.host
+                log.info(s"Instance Registry assigned WebApi instance at $webApiIP")
+                Success(esInstance)
+              case Failure(ex) =>
+                log.warning(s"Failed to read response from Instance Registry, exception: $ex")
+                Failure(ex)
+            }
+          case StatusCodes.NotFound =>
+            log.warning(s"No matching instance of type 'WebApi' is present at the instance registry.")
+            Failure(new RuntimeException(s"Instance Registry did not contain matching instance, server returned ${StatusCodes.NotFound}"))
+          case _ =>
+            val status = response.status
+            log.warning(s"Failed to read matching instance from Instance Registry, server returned $status")
+            Failure(new RuntimeException(s"Failed to read matching instance from Instance Registry, server returned $status"))
         }
       } recover { case ex =>
         log.warning(s"Failed to request WebApi instance from Instance Registry, exception: $ex ")
@@ -90,7 +184,8 @@ object InstanceRegistry extends JsonSupport with AppLogging
         val idToPost = configuration.webApiInstance.id.getOrElse(-1L)
         val request = HttpRequest(
           method = HttpMethods.POST,
-          configuration.instanceRegistryUri + s"/matchingResult?Id=$idToPost&MatchingSuccessful=$isWebApiReachable")
+          configuration.instanceRegistryUri +
+            s"/matchingResult?CallerId=${configuration.assignedID.getOrElse(-1)}&MatchedInstanceId=$idToPost&MatchingSuccessful=$isWebApiReachable")
 
         Await.result(Http(system).singleRequest(request) map {response =>
           if(response.status == StatusCodes.OK){
@@ -113,7 +208,7 @@ object InstanceRegistry extends JsonSupport with AppLogging
   }
 
   def getWebApiVersion(configuration: Configuration) : Try[ResponseEntity]  = {
-    val request = HttpRequest(method = HttpMethods.GET, configuration.webApiUri + "/version")
+    val request = HttpRequest(method = HttpMethods.GET, CommonHelper.addHttpProtocolIfNotExist(CommonHelper.configuration.webApiUri) + "/version")
 
     Await.result(Http(system).singleRequest(request) map {response =>
       if(response.status == StatusCodes.OK){
@@ -158,13 +253,36 @@ object InstanceRegistry extends JsonSupport with AppLogging
     }
   }
 
-  def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] =
-    Marshal(instance).to[RequestEntity] flatMap { entity =>
-      val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = entity)
-      Http(system).singleRequest(request)
+  def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] = {
+    val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
+    Try(Http(system).singleRequest(request)) match {
+      case Success(res) =>
+        res
+      case Failure(ex) =>
+        log.warning(s"Failed to deregister to Instance Registry, exception: $ex")
+        Future.failed(ex)
     }
+  }
 
 
-  private def createInstance(id: Option[Long], controlPort : Int, name : String) : Instance =
-    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp)
+  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], instanceState: InstanceEnums.State) : Instance =
+    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, instanceState, List.empty[String])
+
+
+  object ReportOperationType extends Enumeration {
+    val Start : Value = Value("Start")
+    val Stop : Value = Value("Stop")
+    val Failure : Value = Value("Failure")
+
+    def toOperationUriString(operation: ReportOperationType.Value, id: Long) : String = {
+      operation match {
+        case Start =>
+          s"/reportStart?Id=$id"
+        case Stop =>
+          s"/reportStop?Id=$id"
+        case _ =>
+          s"/reportFailure?Id=$id"
+      }
+    }
+  }
 }
