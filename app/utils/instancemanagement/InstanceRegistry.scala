@@ -265,7 +265,8 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
   }
 
 
-  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], instanceState: InstanceEnums.InstanceState) : Instance =
+  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String],
+                             instanceState: InstanceEnums.InstanceState) : Instance =
     Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId,
       instanceState, List.empty[String], List.empty[InstanceLink], List.empty[InstanceLink])
 
