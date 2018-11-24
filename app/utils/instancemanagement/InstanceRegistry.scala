@@ -31,7 +31,7 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 import spray.json._
 
-object InstanceRegistry extends JsonSupport with AppLogging
+object InstanceRegistry extends InstanceJsonSupport with AppLogging
 {
 
   implicit val system: ActorSystem = ActorSystem("delphi-webapp")
@@ -265,8 +265,10 @@ object InstanceRegistry extends JsonSupport with AppLogging
   }
 
 
-  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String], instanceState: InstanceEnums.State) : Instance =
-    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId, instanceState, List.empty[String])
+  private def createInstance(id: Option[Long], controlPort : Int, name : String, dockerId : Option[String],
+                             instanceState: InstanceEnums.InstanceState) : Instance =
+    Instance(id, InetAddress.getLocalHost.getHostAddress, controlPort, name, ComponentType.WebApp, dockerId,
+      instanceState, List.empty[String], List.empty[InstanceLink], List.empty[InstanceLink])
 
 
   object ReportOperationType extends Enumeration {

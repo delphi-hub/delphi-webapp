@@ -17,7 +17,7 @@ package utils
 
 import com.typesafe.config.ConfigFactory
 import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
-import utils.instancemanagement.{Instance, InstanceRegistry}
+import utils.instancemanagement.{Instance, InstanceLink, InstanceRegistry}
 
 import scala.util.{Failure, Success, Try}
 
@@ -40,7 +40,9 @@ class Configuration(val bindPort: Int = ConfigFactory.load().getInt("app.portWeb
       ComponentType.WebApi,
       None,
       InstanceState.Running,
-      List.empty[String]
+      List.empty[String],
+      List.empty[InstanceLink],
+      List.empty[InstanceLink]
     )
 
   }
