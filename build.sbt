@@ -22,6 +22,8 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 
+libraryDependencies += "com.pauldijou" %% "jwt-core" % "1.0.0"
+
 // Akka dependencies
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core" % "10.0.11",
