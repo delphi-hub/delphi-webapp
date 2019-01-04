@@ -20,9 +20,11 @@ import java.net.InetAddress
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
+import authorization.AuthProvider
 import utils.instancemanagement.InstanceEnums.{ComponentType, InstanceState}
 import utils.{AppLogging, CommonHelper, Configuration}
 
@@ -93,7 +95,10 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
           method = HttpMethods.POST,
           configuration.instanceRegistryUri + ReportOperationType.toOperationUriString(operationType, id))
 
-        Await.result(Http(system).singleRequest(request) map {response =>
+        val useGenericNameForToken = operationType == ReportOperationType.Start //Must use generic name for startup, no id known at that point
+
+        Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",
+          s"Bearer ${AuthProvider.generateJwt(useGenericName = useGenericNameForToken)}"))) map { response =>
           if(response.status == StatusCodes.OK){
             log.info(s"Successfully reported ${operationType.toString} to Instance Registry.")
             Success()
@@ -146,7 +151,7 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
       val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri +
         s"/matchingInstance?Id=${configuration.assignedID.getOrElse(-1)}&ComponentType=WebApi")
 
-      Await.result(Http(system).singleRequest(request) map {response =>
+      Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))) map {response =>
         response.status match {
           case StatusCodes.OK =>
             val instanceString : String = Await.result(response.entity.dataBytes.runFold(ByteString(""))(_ ++ _).map(_.utf8String), 5 seconds)
@@ -187,7 +192,7 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
           configuration.instanceRegistryUri +
             s"/matchingResult?CallerId=${configuration.assignedID.getOrElse(-1)}&MatchedInstanceId=$idToPost&MatchingSuccessful=$isWebApiReachable")
 
-        Await.result(Http(system).singleRequest(request) map {response =>
+        Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))) map {response =>
           if(response.status == StatusCodes.OK){
             log.info("Successfully posted matching result to Instance Registry.")
             Success()
@@ -235,7 +240,7 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
 
       val request = HttpRequest(method = HttpMethods.POST, configuration.instanceRegistryUri + s"/deregister?Id=$id")
 
-      Await.result(Http(system).singleRequest(request) map {response =>
+      Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))) map {response =>
         if(response.status == StatusCodes.OK){
           log.info("Successfully deregistered from Instance Registry.")
           Success()
@@ -255,7 +260,8 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
 
   def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] = {
     val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
-    Try(Http(system).singleRequest(request)) match {
+    //use generic name for startup, no id present at this point
+    Try(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt(useGenericName = true)}")))) match {
       case Success(res) =>
         res
       case Failure(ex) =>

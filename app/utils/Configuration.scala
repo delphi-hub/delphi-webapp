@@ -65,6 +65,8 @@ class Configuration(val bindPort: Int = ConfigFactory.load().getInt("app.portWeb
     case None => defaultWebApiPort
   }
 
+  val jwtSecretKey: String  = sys.env.getOrElse("DELPHI_JWT_SECRET","changeme")
+
   lazy val fallbackWebApiHost : String = sys.env.get("DELPHI_WEBAPI_URI") match {
     case Some(hostString) =>
       if(hostString.count(c => c == ':') == 2){
