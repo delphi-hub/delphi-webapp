@@ -25,8 +25,8 @@ object AuthProvider {
       .issuedNow
       .expiresIn(validFor * 60)
       .startsNow
-      .+("user_id", if (useGenericName) CommonHelper.configuration.instanceName else s"${CommonHelper.configuration.assignedID.get}")
-      .+("user_type", "Component")
+      . + ("user_id", if (useGenericName) CommonHelper.configuration.instanceName else s"${CommonHelper.configuration.assignedID.get}")
+      . + ("user_type", "Component")
 
 
     Jwt.encode(claim, CommonHelper.configuration.jwtSecretKey, JwtAlgorithm.HS256)
