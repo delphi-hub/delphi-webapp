@@ -121,7 +121,7 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
   def register(configuration: Configuration) : Try[Long] = {
     val instance = createInstance(None,configuration.bindPort, configuration.instanceName, None, InstanceState.Running)
 
-    Await.result(postInstance(instance, configuration.instanceRegistryUri + "/register") map {response =>
+    Await.result(postInstance(instance, configuration.instanceRegistryUri + "/instances/register") map {response =>
       if(response.status == StatusCodes.OK){
         Await.result(Unmarshal(response.entity).to[String] map { assignedID =>
           val id = assignedID.toLong
@@ -149,7 +149,7 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
       Failure(new RuntimeException("Cannot get WebApi instance from Instance Registry, no Instance Registry available."))
     } else {
       val request = HttpRequest(method = HttpMethods.GET, configuration.instanceRegistryUri +
-        s"/matchingInstance?Id=${configuration.assignedID.getOrElse(-1)}&ComponentType=WebApi")
+        s"/instances/${configuration.assignedID.getOrElse(-1)}/matchingInstance?ComponentType=WebApi")
 
       Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))) map {response =>
         response.status match {
@@ -187,12 +187,18 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
         Failure(new RuntimeException("The WebApi instance was not assigned by the Instance Registry, so no matching result will be posted."))
       } else {
         val idToPost = configuration.webApiInstance.id.getOrElse(-1L)
+
+        val MatchingData = JsObject("MatchingSuccessful" -> JsBoolean(isWebApiReachable),
+          "SenderId" -> JsNumber(configuration.assignedID.getOrElse(-1L)))
+
         val request = HttpRequest(
           method = HttpMethods.POST,
-          configuration.instanceRegistryUri +
-            s"/matchingResult?CallerId=${configuration.assignedID.getOrElse(-1)}&MatchedInstanceId=$idToPost&MatchingSuccessful=$isWebApiReachable")
+          configuration.instanceRegistryUri + s"/instances/$idToPost/matchingResult")
 
-        Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))) map {response =>
+        Await.result(Http(system).singleRequest(request
+          .withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))
+          .withEntity(ContentTypes.`application/json`, ByteString(MatchingData.toJson.toString))) map {response =>
+
           if(response.status == StatusCodes.OK){
             log.info("Successfully posted matching result to Instance Registry.")
             Success()
@@ -238,7 +244,7 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
     } else {
       val id : Long = configuration.assignedID.getOrElse(-1L)
 
-      val request = HttpRequest(method = HttpMethods.POST, configuration.instanceRegistryUri + s"/deregister?Id=$id")
+      val request = HttpRequest(method = HttpMethods.POST, configuration.instanceRegistryUri + s"/instances/$id/deregister")
 
       Await.result(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt()}"))) map {response =>
         if(response.status == StatusCodes.OK){
@@ -259,9 +265,11 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
   }
 
   def postInstance(instance : Instance, uri: String) () : Future[HttpResponse] = {
-    val request = HttpRequest(method = HttpMethods.POST, uri = uri, entity = instance.toJson(instanceFormat).toString())
+    val request = HttpRequest(method = HttpMethods.POST, uri = uri)
     //use generic name for startup, no id present at this point
-    Try(Http(system).singleRequest(request.withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt(useGenericName = true)}")))) match {
+    Try(Http(system).singleRequest(request
+      .withHeaders(RawHeader("Authorization",s"Bearer ${AuthProvider.generateJwt(useGenericName = true)}"))
+        .withEntity(ContentTypes.`application/json`, ByteString(instance.toJson(instanceFormat).toString)))) match {
       case Success(res) =>
         res
       case Failure(ex) =>
@@ -285,11 +293,11 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
     def toOperationUriString(operation: ReportOperationType.Value, id: Long) : String = {
       operation match {
         case Start =>
-          s"/reportStart?Id=$id"
+          s"/instances/$id/reportStart"
         case Stop =>
-          s"/reportStop?Id=$id"
+          s"/instances/$id/reportStop"
         case _ =>
-          s"/reportFailure?Id=$id"
+          s"/instances/$id/reportFailure"
       }
     }
   }
