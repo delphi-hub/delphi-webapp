@@ -33,13 +33,13 @@ import MediaTypes._
   */
 object BlockingHttpClient {
 
-  def doGet(uri : Uri) : Try[String] = {
+  def executeRequest(request: HttpRequest): Try[String] = {
     implicit val system: ActorSystem = ActorSystem()
     implicit val executionContext: ExecutionContext = system.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer(ActorMaterializerSettings(system))
 
     try {
-      val req: Future[HttpResponse] = Http(system).singleRequest(HttpRequest(method = HttpMethods.GET, uri = uri))
+      val req: Future[HttpResponse] = Http(system).singleRequest(request)
       Await.result(req, Duration.Inf)
 
       val f = req.value.get.get.entity.dataBytes.runFold(ByteString(""))(_ ++ _)
@@ -52,8 +52,9 @@ object BlockingHttpClient {
       system.terminate()
       Await.result(system.whenTerminated, Duration.Inf)
     }
-
   }
+
+  def doGet(uri : Uri) : Try[String] = executeRequest(HttpRequest(method = HttpMethods.GET, uri = uri))
 
   // data parameter will be """{"name":"Hello"}"""
   def doPost(uri: Uri, data: String) : Try[String] = {

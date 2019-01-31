@@ -213,7 +213,8 @@ object InstanceRegistry extends InstanceJsonSupport with AppLogging
   }
 
   def getWebApiVersion(configuration: Configuration) : Try[ResponseEntity]  = {
-    val request = HttpRequest(method = HttpMethods.GET, CommonHelper.addHttpProtocolIfNotExist(CommonHelper.configuration.webApiUri) + "/version")
+
+    val request = CommonHelper.createWebApiRequest("/version", HttpMethods.GET)
 
     Await.result(Http(system).singleRequest(request) map {response =>
       if(response.status == StatusCodes.OK){
