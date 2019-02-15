@@ -15,6 +15,11 @@
 // limitations under the License.
 package utils
 
+import akka.http.scaladsl.model.headers.{Host, RawHeader}
+import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
+
+import scala.collection.immutable.Seq
+
 object CommonHelper {
 
   val configuration: Configuration = new Configuration()
@@ -27,4 +32,20 @@ object CommonHelper {
         url
       }
     }
+
+    def createWebApiRequest(path: String, method: HttpMethod): HttpRequest = {
+      val insideContainer = sys.env.get("INSTANCE_ID").isDefined
+      val apiInDocker = configuration.webApiInstance.traefikConfiguration.isDefined
+
+      if(apiInDocker && !insideContainer) {
+        val traefikHost = configuration.webApiInstance.traefikConfiguration.get.proxyUri
+        val apiHostName = configuration.webApiInstance.traefikConfiguration.get.hostName
+        //We are outside docker and target is inside -> Need to call traefik
+        HttpRequest(method, addHttpProtocolIfNotExist(traefikHost) + path, Seq(Host(apiHostName)))
+      } else {
+        HttpRequest(method, addHttpProtocolIfNotExist(configuration.webApiUri) + path)
+      }
+
+    }
+
 }

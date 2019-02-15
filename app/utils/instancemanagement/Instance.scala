@@ -83,8 +83,11 @@ trait InstanceJsonSupport extends SprayJsonSupport with DefaultJsonProtocol with
     }
   }
 
+  //JSON format for traefik config information
+  implicit val traefikConfigFormat : JsonFormat[TraefikConfiguration] = jsonFormat2(TraefikConfiguration)
+
   //JSON format for Instances
-  implicit val instanceFormat : JsonFormat[Instance] = jsonFormat10(Instance)
+  implicit val instanceFormat : JsonFormat[Instance] = jsonFormat11(Instance)
 }
 
 /**
@@ -107,8 +110,17 @@ final case class Instance (
                             instanceState: InstanceState,
                             labels: List[String],
                             linksTo: List[InstanceLink],
-                            linksFrom: List[InstanceLink]
+                            linksFrom: List[InstanceLink],
+                            traefikConfiguration: Option[TraefikConfiguration] = None
                           )
+
+
+/**
+* The connection information regarding the Traefik reverse-proxy setup
+* @param hostName DNS host name that has been assigned to this instance
+* @param proxyUri URI that the Traefik reverse-proxy is running at
+*/
+final case class TraefikConfiguration (hostName: String, proxyUri: String)
 
 /**
   * Enumerations concerning instances

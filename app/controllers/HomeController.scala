@@ -15,6 +15,7 @@
 // limitations under the License.
 package controllers
 
+import akka.http.scaladsl.model.HttpMethods
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
@@ -48,11 +49,11 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     */
   def query(query : String) : Action[AnyContent] = Action.async {
     implicit request => {
-      val server = CommonHelper.addHttpProtocolIfNotExist(CommonHelper.configuration.webApiUri)
-      val getRequest = BlockingHttpClient.executeGet("/search/" + query, server)
-      getRequest match {
+      val request = CommonHelper.createWebApiRequest("/search/" + query, HttpMethods.GET)
+      val result = BlockingHttpClient.executeRequest(request)
+      result match {
         case Success(response) => Future.successful(Ok(views.html.index(response, query, false)))
-        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + server, query, true)))
+        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, query, true)))
       }
     }
   }
