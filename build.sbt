@@ -26,7 +26,7 @@ libraryDependencies += "com.pauldijou" %% "jwt-core" % "1.0.0"
 
 // Akka dependencies
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-http-core" % "10.0.11",
+  "com.typesafe.akka" %% "akka-http-core" % "10.0.14",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.5"
 )
 
