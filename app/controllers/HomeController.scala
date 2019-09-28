@@ -19,9 +19,9 @@ import akka.http.scaladsl.model.HttpMethods
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
-import utils.BlockingHttpClient
-import utils.CommonHelper
-
+import models.QueryFormat
+import play.api.libs.json.Json._
+import utils.{BlockingHttpClient, CommonHelper}
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
@@ -47,13 +47,20 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     * @param query query to execute
     * @return
     */
-  def query(query : String) : Action[AnyContent] = Action.async {
+  def query() : Action[AnyContent] = Action.async {
     implicit request => {
-      val request = CommonHelper.createWebApiRequest("/search/" + query, HttpMethods.GET)
+      val abc= "[using KeyStore]=25"
+      val query= toJson(QueryFormat(abc))
+      println(query.toString())
+
+      val request = CommonHelper.createPostRequest("https://delphi.cs.uni-paderborn.de/api/search?pretty",
+                                                        HttpMethods.POST, query.toString() )
+
+      //val request = CommonHelper.createWebApiRequest("/search/" + query, HttpMethods.GET)
       val result = BlockingHttpClient.executeRequest(request)
       result match {
-        case Success(response) => Future.successful(Ok(views.html.index(response, query, false)))
-        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, query, true)))
+        case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
       }
     }
   }

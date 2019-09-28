@@ -4,7 +4,7 @@
 
 # An example controller showing a sample home page
   GET     /                           controllers.HomeController.index
-  GET     /search/                    controllers.HomeController.query(query)
+  GET     /search                    controllers.HomeController.query
   GET     /version                    controllers.SettingsController.version
 
 # Map static resources from the /public folder to the /assets URL path

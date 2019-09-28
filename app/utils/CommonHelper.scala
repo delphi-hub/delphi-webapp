@@ -16,7 +16,7 @@
 package utils
 
 import akka.http.scaladsl.model.headers.{Host, RawHeader}
-import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
+import akka.http.scaladsl.model.{HttpMethod, HttpRequest, HttpEntity, MediaTypes}
 
 import scala.collection.immutable.Seq
 
@@ -46,6 +46,12 @@ object CommonHelper {
         HttpRequest(method, addHttpProtocolIfNotExist(configuration.webApiUri) + path)
       }
 
+    }
+
+    def createPostRequest(path: String, method: HttpMethod, query: String): HttpRequest = {
+    HttpRequest(method,
+      uri = path,
+      entity = HttpEntity(MediaTypes.`application/json`, query))
     }
 
 }
