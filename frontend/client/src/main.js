@@ -8,6 +8,9 @@ Vue.component('search-part', SearchPart);
 Vue.component('result-part', ResultPart);
 new Vue({
   el: '#app',
+  data: {
+    selected: ''
+  },
   render: h => h(App)  
 })
 

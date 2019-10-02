@@ -3,13 +3,13 @@
         <div class="card">					
             <div class="card-body">
                 <h6 class="card-title">Step 2</h6>
-                <input class="form-control" id="valueInput" type="text" placeholder="Input Value">
                 <select id="inputState" class="form-control">
                     <option selected>Choose Operator</option>
                     <option>=</option>
                     <option><=</option>
                     <option>>=</option>
                 </select>
+                <input class="form-control" id="valueInput" type="text" placeholder="Input Value">
             </div>
         </div>
     </div>
