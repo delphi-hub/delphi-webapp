@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <search-part></search-part>
-    <result-part></result-part>
+    <router-view></router-view>
 	</div>
 </template>
 
