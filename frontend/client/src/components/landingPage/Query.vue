@@ -2,15 +2,31 @@
     <div class="col-6" id="queryCol">
         <div id="queryInputGrid">
 		    <p>Query</p>					
-		    <input class="form-control form-control-lg" id="queryInput" type="text" placeholder="Example: Metric 4 Operator Value OR NOT(Metric 2 Operator Value)"></input>
+            <input class="form-control form-control-lg" id="queryInput" type="text" v-model="queryToSearch.metric 
+            + queryToSearch.operator
+            + queryToSearch.value"></input>
 		</div>
 		<button id="startSearchButton" class="btn btn-success">Start the Search</button>
 	</div>
 </template>
 
-<scritp>
-
-</scritp>
+<script>
+    export default {
+        props: {
+            queryToSearch: {
+                type: Object
+            }
+        },
+        data () {
+            return {
+                
+            }
+        },
+        methods: {
+          
+        }
+    }
+</script>
 
 
 <style>

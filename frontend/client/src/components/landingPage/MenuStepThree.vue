@@ -4,24 +4,24 @@
             <div class="card-body">
                 <h6 class="card-title">Step 3</h6>
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="addnot">
+                    <input type="checkbox" class="form-check-input" id="addnot" value="Add logical NOT" v-model="checkedNOT" @change="sendLogicalNOT">
                     <label class="form-check-label" for="addnot">Add logical NOT</label>
                 </div>
                 <hr>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" value="option1" checked>
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="No logical operator">
                     <label class="form-check-label" for="logical1">No logical operator</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" value="option2">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="AND">
                     <label class="form-check-label" for="logical2">AND</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical3" value="option3">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical3" v-model="radioPicked" @change="sendLogicalOperator" value="OR">
                     <label class="form-check-label" for="logical3">OR</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical4" value="option4">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical4" v-model="radioPicked" @change="sendLogicalOperator" value="XOR">
                     <label class="form-check-label" for="logical4">XOR</label>
                 </div>
             </div>
@@ -30,7 +30,22 @@
 </template>
 
 <script>
-
+    export default {
+        data () {
+            return {
+                checkedNOT: '',
+                radioPicked: 'No logical operator'
+            }
+        },
+        methods: {
+            sendLogicalNOT(event){
+                this.$emit('logicalNotSent', this.checkedNOT);               
+            },
+            sendLogicalOperator(event){
+                this.$emit('logicalOperatorSent', this.radioPicked);
+            }
+        }
+    }
 </script>
 
 

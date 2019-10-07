@@ -4,15 +4,17 @@
             <div class="row">
 	            <div class="col-6">
 	            	<h5>Type in your query...</h5>
-		        </div>
+				</div>
 		        <div class="col-6">
 		        	<h5>...or use these steps to build a query.</h5>
 	        	</div>
         	</div>
             <div class="row">					
-				<query></query>
-				<queryMenu></queryMenu>
+				<query :queryToSearch="savedQuery"></query>
+				<queryMenu @addQuerySent="saveQuery"></queryMenu>				
 			</div>	
+			<div>
+			</div>		
         </div>
     </div>
 </template>
@@ -25,7 +27,17 @@
 		components: {
 			'query': Query,
 			'queryMenu': QueryMenu
-		}
+		},
+		methods: {
+			saveQuery(querySent) {
+				this.savedQuery=querySent;
+			}
+		},
+		data () {
+            return {
+                savedQuery: {}
+            }
+        }
 	}
 </script>
 
