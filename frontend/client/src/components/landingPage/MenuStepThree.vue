@@ -13,11 +13,11 @@
                     <label class="form-check-label" for="logical1">No logical operator</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="AND">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="&&">
                     <label class="form-check-label" for="logical2">AND</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical3" v-model="radioPicked" @change="sendLogicalOperator" value="OR">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical3" v-model="radioPicked" @change="sendLogicalOperator" value="||">
                     <label class="form-check-label" for="logical3">OR</label>
                 </div>
                 <div class="form-check">
@@ -33,7 +33,7 @@
     export default {
         data () {
             return {
-                checkedNOT: '',
+                checkedNOT: null,
                 radioPicked: 'No logical operator'
             }
         },

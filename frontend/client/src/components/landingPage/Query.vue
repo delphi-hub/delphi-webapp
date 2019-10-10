@@ -4,7 +4,7 @@
 		    <p>Query</p>					
             <input class="form-control form-control-lg" id="queryInput" type="text" v-model="queryToSearch.metric 
             + queryToSearch.operator
-            + queryToSearch.value"></input>
+            + queryToSearch.value + queryToSearch.logicalOperator"></input>
 		</div>
 		<button id="startSearchButton" class="btn btn-success">Start the Search</button>
 	</div>

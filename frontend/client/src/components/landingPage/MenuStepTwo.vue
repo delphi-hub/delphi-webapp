@@ -18,8 +18,8 @@
     export default {
         data () {
             return {
-                selectedOperator: '',
-                selectedValue: ''
+                selectedOperator: null,
+                selectedValue: null
             }
         },
         methods: {

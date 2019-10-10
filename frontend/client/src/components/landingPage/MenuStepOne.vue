@@ -3,7 +3,7 @@
         <div class="card">					
             <div class="card-body">
                 <h6 class="card-title">Step 1</h6>
-                <input type="text" id="filter" name="metric_suggest" onkeyup="filter1()" size="15" v-model="selectedMetric">
+                <input type="text" id="filter" name="metric_suggest" onkeyup="filter1()" size="15" v-model="selectedMetric"> 
 		      	<div>	
 				    <select id="select" size="10" style="width: 165px;height: 120px;" v-model="selectedMetric" @change="sendMetric"></select>
                     
@@ -17,7 +17,7 @@
 export default {
   data () {
     return {
-        selectedMetric: ''
+        selectedMetric: null
     }
   },
   methods: {
