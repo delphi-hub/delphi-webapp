@@ -20,6 +20,7 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import models.QueryFormat
+import play.api.libs.json._
 import play.api.libs.json.Json._
 import utils.{BlockingHttpClient, CommonHelper}
 import scala.concurrent.Future
@@ -54,10 +55,14 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       println(query.toString())
 
       val request = CommonHelper.createPostRequest("https://delphi.cs.uni-paderborn.de/api/search?pretty",
-                                                        HttpMethods.POST, query.toString() )
+        HttpMethods.POST, query.toString() )
 
-      //val request = CommonHelper.createWebApiRequest("/search/" + query, HttpMethods.GET)
       val result = BlockingHttpClient.executeRequest(request)
+      val idString = Json.parse(result.toString().replace("Success([", "").replace("])", ""))
+      val idStringManipulated = idString.toString().split("/:")(1)
+
+      println("This is the damn URL: " + idStringManipulated)
+
       result match {
         case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
         case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
