@@ -30,12 +30,12 @@
 		},
 		methods: {
 			saveQuery(querySent) {
-				this.savedQuery=querySent;
+				this.savedQuery = querySent;
 			}
 		},
 		data () {
             return {
-                savedQuery: {}
+                savedQuery: ''
             }
         }
 	}

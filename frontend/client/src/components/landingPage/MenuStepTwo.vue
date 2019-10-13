@@ -16,10 +16,25 @@
 
 <script>
     export default {
+        props: {
+            operatorAndValueShouldBeReseted: {
+                type: Boolean,
+                default: false
+            }
+        },
         data () {
             return {
                 selectedOperator: null,
                 selectedValue: null
+            }
+        },
+        watch: {
+            operatorAndValueShouldBeReseted: function (newVal, oldVal) {
+                if(newVal){
+                    this.selectedOperator = null;
+                    this.selectedValue = null;
+                    this.operatorAndValueIsReseted(newVal);
+                }
             }
         },
         methods: {
@@ -28,6 +43,9 @@
             },
             sendValue(event){
                 this.$emit('valueSent', this.selectedValue);
+            },
+            operatorAndValueIsReseted(event){
+                this.$emit('confirmOperatorAndValueReset', false);
             }
         }
     }

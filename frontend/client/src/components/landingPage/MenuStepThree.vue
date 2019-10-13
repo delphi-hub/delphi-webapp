@@ -9,7 +9,7 @@
                 </div>
                 <hr>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="No logical operator">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="">
                     <label class="form-check-label" for="logical1">No logical operator</label>
                 </div>
                 <div class="form-check">
@@ -31,10 +31,25 @@
 
 <script>
     export default {
+        props: {
+            lNOTAndLOperatorShouldBeReseted: {
+                type: Boolean,
+                default: false
+            }
+        },
         data () {
             return {
                 checkedNOT: null,
-                radioPicked: 'No logical operator'
+                radioPicked: ''
+            }
+        },
+        watch: {
+            lNOTAndLOperatorShouldBeReseted: function (newVal, oldVal) {
+                if(newVal){
+                    this.checkedNOT = null;
+                    this.radioPicked = '';
+                    this.lNOTAndLOperatorIsReseted(newVal);
+                }
             }
         },
         methods: {
@@ -43,6 +58,9 @@
             },
             sendLogicalOperator(event){
                 this.$emit('logicalOperatorSent', this.radioPicked);
+            },
+            lNOTAndLOperatorIsReseted(event){
+                this.$emit('confirmLNotAndLOperatorReset', false);
             }
         }
     }

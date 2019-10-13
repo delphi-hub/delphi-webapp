@@ -1,10 +1,9 @@
 <template>
     <div class="col-6" id="queryCol">
         <div id="queryInputGrid">
-		    <p>Query</p>					
-            <input class="form-control form-control-lg" id="queryInput" type="text" v-model="queryToSearch.metric 
-            + queryToSearch.operator
-            + queryToSearch.value + queryToSearch.logicalOperator"></input>
+            <p>Query</p>					
+            <!-- for now disabled, because 'type in' functionallity is not supported right now -->
+            <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="queryToSearch" disabled></textarea>
 		</div>
 		<button id="startSearchButton" class="btn btn-success">Start the Search</button>
 	</div>
@@ -14,12 +13,12 @@
     export default {
         props: {
             queryToSearch: {
-                type: Object
+                type: String
             }
         },
         data () {
             return {
-                
+             
             }
         },
         methods: {
