@@ -58,7 +58,17 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
         HttpMethods.POST, query.toString() )
 
       val result = BlockingHttpClient.executeRequest(request)
-      val idString = Json.parse(result.toString().replace("Success([", "").replace("])", ""))
+
+      // Todo: How to get data out of an success object.
+      val jsonString = result.toString().replace("Success([", "").replace("])", "")
+
+      // Parse the string in json format into a json object
+      val jsonObject = Json.parse(jsonString)
+
+      // Get the id element of the json Object
+      val idString = jsonObject("id")
+
+      // Parse the relevant part out of the id string.
       val idStringManipulated = idString.toString().split("/:")(1)
 
       println("This is the damn URL: " + idStringManipulated)
@@ -69,5 +79,4 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       }
     }
   }
-
 }
