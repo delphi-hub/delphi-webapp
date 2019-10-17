@@ -19,12 +19,9 @@ import akka.http.scaladsl.model.HttpMethods
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
-<<<<<<< HEAD
 import models.{QueryFormat, ResultToJson}
-=======
 import models.QueryFormat
 import play.api.libs.json._
->>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
 import play.api.libs.json.Json._
 import spray.json.JsArray
 import utils.{BlockingHttpClient, CommonHelper}
@@ -47,7 +44,7 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     * a path of `/`.
     */
   def index: Action[AnyContent] = Action {
-    Ok(views.html.index("This is New Delphi page......Its coming soon.....","",false))
+    Ok(views.html.index("This is New Delphi page......Its coming soon.....", "", false))
   }
 
   /**
@@ -58,29 +55,25 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     */
   def query(): Action[AnyContent] = Action.async {
     implicit request => {
-      val abc = "![using KeyStore]<10"
+      val abc = "[using KeyStore]<10"
       //val abc="[using KeyStore]>10 && [using KeyStore]<25"
       val query = toJson(QueryFormat(abc))
       println(query.getClass)
       println(query.toString())
 
-<<<<<<< HEAD
+
       val request = CommonHelper.createPostRequest(config.server,
         HttpMethods.POST, query.toString())
-=======
-      val request = CommonHelper.createPostRequest("https://delphi.cs.uni-paderborn.de/api/search?pretty",
-        HttpMethods.POST, query.toString() )
->>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
 
       val result = BlockingHttpClient.executeRequest(request)
 
-<<<<<<< HEAD
-     // println("Before Split "+result.toString.getClass)
 
-      val beforesplit=result.toString()
+      // println("Before Split "+result.toString.getClass)
+
+      val beforesplit = result.toString()
       //println("After Split "+beforesplit.split("Success")(1))
 
-      val simple=beforesplit.split("Success")(1)
+      val simple = beforesplit.split("Success")(1)
 
       //val test: String= """{"name":"ChinmayKashikar"}"""
 
@@ -96,45 +89,46 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       //println(resulttojson.getClass)
 
 
-
       //result match {
-       // case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
-       // case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
+      // case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+      // case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
 
       //}
-      val r:Future[Result]=Future.successful(Ok(result.toString))
+      val r: Future[Result] = Future.successful(Ok(result.toString))
       r
-=======
+
       // Todo: How to get data out of an success object.
-      val jsonString = result.toString().replace("Success([", "").replace("])", "")
+      // val jsonString = result.toString().replace("Success([", "").replace("])", "")
 
       // Parse the string in json format into a json object
-      val jsonObject = Json.parse(jsonString)
+      //val jsonObject = Json.parse(jsonString)
 
       // Get the id element of the json Object
-      val idString = jsonObject("id")
+      //val idString = jsonObject("id")
 
       // Parse the relevant part out of the id string.
-      val idStringManipulated = idString.toString().split("/:")(1)
+      //val idStringManipulated = idString.toString().split("/:")(1)
 
-      println("This is the damn URL: " + idStringManipulated)
+      //println("This is the damn URL: " + idStringManipulated)
 
-      result match {
-        case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
-        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
-      }
->>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
+      // result match {
+      //  case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+      //  case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
+      // }
+      // }
+
+      //}
     }
-
   }
-<<<<<<< HEAD
 
-  def BtoF():Action[AnyContent] = Action {
+
+  def BtoF(): Action[AnyContent] = Action {
     implicit request => {
       val version = Ok("Hi we are from backend.......You must be frontend")
       version
     }
   }
-=======
->>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
 }
+
+
+
