@@ -68,15 +68,25 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
           // Get the id element of the json Object
           val idString = jsonObject("id")
 
+          val a = jsonObject("metadata")("discovered")
+          println(a)
+
           // Parse the relevant part out of the id string.
           val idStringManipulated = idString.toString().split("/:")(1)
 
-          println("This is the damn URL: " + idStringManipulated)
+          //println("This is the damn URL: " + idStringManipulated)
 
           Future.successful(Ok(views.html.index(response, abc, false)))
         }
         case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
       }
+    }
+  }
+
+  def BtoF():Action[AnyContent] = Action {
+    implicit request => {
+      val version = Ok("Hi we are from backend.......You must be frontend")
+      version
     }
   }
 }
