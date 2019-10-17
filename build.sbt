@@ -15,6 +15,17 @@ lazy val webapp = (project in file(".")).enablePlugins(PlayScala).
                                         )
 
 scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
+libraryDependencies ++= Seq(guice)
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.9"
+libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.3"
+libraryDependencies += "com.google.code.gson" % "gson" % "2.3.1"
+libraryDependencies += "org.scalaj" % "scalaj-http_2.11" % "2.3.0"
+libraryDependencies += ws
+libraryDependencies += ehcache
+libraryDependencies += "org.apache.httpcomponents" % "httpmime" % "4.5.10"
+libraryDependencies += "org.apache.commons" % "commons-io" % "1.3.2"
+
+
 
 
 resolvers += Resolver.sonatypeRepo("snapshots")
@@ -23,6 +34,7 @@ libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 
 libraryDependencies += "com.pauldijou" %% "jwt-core" % "1.0.0"
+
 
 // Akka dependencies
 libraryDependencies ++= Seq(

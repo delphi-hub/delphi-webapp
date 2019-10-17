@@ -19,12 +19,16 @@ import akka.http.scaladsl.model.HttpMethods
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
+import models.{QueryFormat, ResultToJson}
 import models.QueryFormat
 import play.api.libs.json._
 import play.api.libs.json.Json._
+import spray.json.JsArray
 import utils.{BlockingHttpClient, CommonHelper}
+
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
+import spray.json._
 
 
 /**
@@ -39,26 +43,31 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     * will be called when the application receives a `GET` request with
     * a path of `/`.
     */
-  def index : Action[AnyContent] = Action {
-    Ok(views.html.index("", "", false))
+  def index: Action[AnyContent] = Action {
+    Ok(views.html.index("This is New Delphi page......Its coming soon.....", "", false))
   }
 
   /**
     * Executes a given query and shows a result page
+    *
     * @param query query to execute
     * @return
     */
-  def query() : Action[AnyContent] = Action.async {
+  def query(): Action[AnyContent] = Action.async {
     implicit request => {
-      val abc= "[using KeyStore]=25"
-      val query= toJson(QueryFormat(abc))
+      val abc = "[using KeyStore]<10"
+      //val abc="[using KeyStore]>10 && [using KeyStore]<25"
+      val query = toJson(QueryFormat(abc))
+      println(query.getClass)
       println(query.toString())
 
-      val request = CommonHelper.createPostRequest("https://delphi.cs.uni-paderborn.de/api/search?pretty",
-        HttpMethods.POST, query.toString() )
+
+      val request = CommonHelper.createPostRequest(config.server,
+        HttpMethods.POST, query.toString())
 
       val result = BlockingHttpClient.executeRequest(request)
 
+<<<<<<< HEAD
       result match {
         case Success(response) => {
 
@@ -77,6 +86,70 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
         }
         case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
       }
+=======
+
+      // println("Before Split "+result.toString.getClass)
+
+      val beforesplit = result.toString()
+      //println("After Split "+beforesplit.split("Success")(1))
+
+      val simple = beforesplit.split("Success")(1)
+
+      //val test: String= """{"name":"ChinmayKashikar"}"""
+
+      //val jsonArr = test.parseJson.asInstanceOf[JsArray].elements
+      //val retrieveResults = jsonArr.map(r => r.convertTo[SearchResult]).toList
+
+      //println("JIJIJIJIJIJIJIJ"+result)
+      //println(jsonArr.getClass)
+
+
+      //val uinfo=JSON.parse(result)
+      //val resulttojson=toJson(ResultToJson(result.toString))
+      //println(resulttojson.getClass)
+
+
+      //result match {
+      // case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+      // case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
+
+      //}
+      val r: Future[Result] = Future.successful(Ok(result.toString))
+      r
+
+      // Todo: How to get data out of an success object.
+      // val jsonString = result.toString().replace("Success([", "").replace("])", "")
+
+      // Parse the string in json format into a json object
+      //val jsonObject = Json.parse(jsonString)
+
+      // Get the id element of the json Object
+      //val idString = jsonObject("id")
+
+      // Parse the relevant part out of the id string.
+      //val idStringManipulated = idString.toString().split("/:")(1)
+
+      //println("This is the damn URL: " + idStringManipulated)
+
+      // result match {
+      //  case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+      //  case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
+      // }
+      // }
+
+      //}
+    }
+  }
+
+
+  def BtoF(): Action[AnyContent] = Action {
+    implicit request => {
+      val version = Ok("Hi we are from backend.......You must be frontend")
+      version
+>>>>>>> e7bf14e7bfff4712cf3157fb4a31ae2c24a6637b
     }
   }
 }
+
+
+

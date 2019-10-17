@@ -22,7 +22,7 @@
         </span>
     </div>
 
-    @if(results != "" && !hasError){ <div class="card"><div class="card-header text-center">Query Results for "@query"</div><div class="card-block"><p>@results</p></div> </div>}
+    @if(results != "" && !hasError){ <div class="card"><div class="card-header text-center">Query Results for "@query"</div><div class="card-block"><h1><p>@results</p></h1></div> </div>}
     @if(hasError){<div class="alert alert-danger" role="alert"><h4 class="alert-heading">Error executing query</h4>@if(results!=""){@results}else{Unknown error during query execution!}</div>}
 
     <p style="text-align:left;">
