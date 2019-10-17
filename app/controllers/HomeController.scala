@@ -62,19 +62,14 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       result match {
         case Success(response) => {
 
+          println(response)
           // Kick out the ][ chars out of the string and parse it into a json object
           val jsonObject = Json.parse(response.toString().replace("[{","{").replace("}]","}"))
 
-          // Get the id element of the json Object
-          val idString = jsonObject("id")
-
-          val a = jsonObject("metadata")("discovered")
-          println(a)
-
-          // Parse the relevant part out of the id string.
-          val idStringManipulated = idString.toString().split("/:")(1)
-
-          //println("This is the damn URL: " + idStringManipulated)
+          // Get the data out of the jsonObject. They still have the <"> chars around. So maybe you want to replace them.
+          println(jsonObject("id"))
+          println(jsonObject("metadata")("discovered").toString().replace("\"", ""))
+          println(jsonObject("id").toString().replace("\"", "").split("/:")(1))
 
           Future.successful(Ok(views.html.index(response, abc, false)))
         }
