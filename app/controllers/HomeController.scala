@@ -59,22 +59,22 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
 
       val result = BlockingHttpClient.executeRequest(request)
 
-      // Todo: How to get data out of an success object.
-      val jsonString = result.toString().replace("Success([", "").replace("])", "")
-
-      // Parse the string in json format into a json object
-      val jsonObject = Json.parse(jsonString)
-
-      // Get the id element of the json Object
-      val idString = jsonObject("id")
-
-      // Parse the relevant part out of the id string.
-      val idStringManipulated = idString.toString().split("/:")(1)
-
-      println("This is the damn URL: " + idStringManipulated)
-
       result match {
-        case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+        case Success(response) => {
+
+          // Kick out the ][ chars out of the string and parse it into a json object
+          val jsonObject = Json.parse(response.toString().replace("[{","{").replace("}]","}"))
+
+          // Get the id element of the json Object
+          val idString = jsonObject("id")
+
+          // Parse the relevant part out of the id string.
+          val idStringManipulated = idString.toString().split("/:")(1)
+
+          println("This is the damn URL: " + idStringManipulated)
+
+          Future.successful(Ok(views.html.index(response, abc, false)))
+        }
         case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
       }
     }
