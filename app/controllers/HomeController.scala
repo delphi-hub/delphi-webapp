@@ -19,7 +19,12 @@ import akka.http.scaladsl.model.HttpMethods
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
+<<<<<<< HEAD
 import models.{QueryFormat, ResultToJson}
+=======
+import models.QueryFormat
+import play.api.libs.json._
+>>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
 import play.api.libs.json.Json._
 import spray.json.JsArray
 import utils.{BlockingHttpClient, CommonHelper}
@@ -59,12 +64,17 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       println(query.getClass)
       println(query.toString())
 
+<<<<<<< HEAD
       val request = CommonHelper.createPostRequest(config.server,
         HttpMethods.POST, query.toString())
+=======
+      val request = CommonHelper.createPostRequest("https://delphi.cs.uni-paderborn.de/api/search?pretty",
+        HttpMethods.POST, query.toString() )
+>>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
 
-      //val request = CommonHelper.createWebApiRequest("/search/" + query, HttpMethods.GET)
       val result = BlockingHttpClient.executeRequest(request)
 
+<<<<<<< HEAD
      // println("Before Split "+result.toString.getClass)
 
       val beforesplit=result.toString()
@@ -94,9 +104,30 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       //}
       val r:Future[Result]=Future.successful(Ok(result.toString))
       r
+=======
+      // Todo: How to get data out of an success object.
+      val jsonString = result.toString().replace("Success([", "").replace("])", "")
+
+      // Parse the string in json format into a json object
+      val jsonObject = Json.parse(jsonString)
+
+      // Get the id element of the json Object
+      val idString = jsonObject("id")
+
+      // Parse the relevant part out of the id string.
+      val idStringManipulated = idString.toString().split("/:")(1)
+
+      println("This is the damn URL: " + idStringManipulated)
+
+      result match {
+        case Success(response) => Future.successful(Ok(views.html.index(response, abc, false)))
+        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, abc, true)))
+      }
+>>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
     }
 
   }
+<<<<<<< HEAD
 
   def BtoF():Action[AnyContent] = Action {
     implicit request => {
@@ -104,4 +135,6 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
       version
     }
   }
+=======
+>>>>>>> f66a77c4975395dce02b092a0cfec19958e1eff2
 }
