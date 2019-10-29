@@ -45,8 +45,10 @@
 	.container-fluid {
 		margin-top: 10px;
 	}
+
 	#searchPart {
 		margin: 40px; 
 		padding: 10px;
+		
 	}
 </style>

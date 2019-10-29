@@ -1,11 +1,10 @@
 <template>
     <div class="col-6" id="queryCol">
-        <div id="queryInputGrid">
-            <p>Query</p>					
+        <div id="queryInputGrid">			
             <!-- for now disabled, because 'type in' functionallity is not supported right now -->
             <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="queryToSearch" disabled></textarea>
 		</div>
-		<button id="startSearchButton" class="btn btn-success">Start the Search</button>
+		<button id="startSearchButton" class="btn btn-success"><p id="searchButtonText">Start the Search</p></button>
 	</div>
 </template>
 
@@ -29,35 +28,42 @@
 
 
 <style>
-    p {
+    .queryHeading {
         text-align: center;
-        background-color:#d9d9d9;
+        color: white;
+        background-color: grey;
         margin-bottom: 3px; 
-        border-radius: 10px;
+        border-radius: 3px;
     }
 
     #queryCol {
-        background-color:gray;
-        border-radius: 10px
+        background-color:rgb(235, 235, 235);
+        border-radius: 10px;
     }
 
     #queryInputGrid {
         margin: 10px 0px 10px 0px;
+        
     }
 
     #queryInput {
-        height:200px;
+        margin-top: 15px;
+        margin-bottom: 17px;
+        height:220px;
+        width: 680px;
+        background-color: white;
     }
 
     #startSearchButton {
-        width: 100%; 
-        height: 40px;
+        width: 97%; 
+        height: 37px;
         background-color:rgb(199, 5, 5);
+        margin-left: 10px;
     }
 
     #startSearchButton:hover{
     background-color: rgb(199, 5, 5);
-    box-shadow: 1px 1px 5px 3px #ffffff;
+    box-shadow: 1px 1px 5px 3px grey;
     border-radius: 3px;
     }
 

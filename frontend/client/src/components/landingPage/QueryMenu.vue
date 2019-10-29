@@ -118,7 +118,7 @@
 
 <style>
     #menuCol {
-		background-color:gray; 
+		background-color:rgb(235, 235, 235); 
 		padding-top: 10px; 
 		border-radius: 10px;
 	}
@@ -130,7 +130,7 @@
 
 	#addQueryButton:hover{
     background-color: rgb(199, 5, 5);
-    box-shadow: 1px 1px 5px 3px #ffffff;
+    box-shadow: 1px 1px 5px 3px grey;
     border-radius: 3px;
 }
 
