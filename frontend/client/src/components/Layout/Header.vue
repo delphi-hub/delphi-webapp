@@ -11,7 +11,7 @@
                     <nav class="navbar navbar-expand-sm navbar-dark justify-content-end">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
-                                <a class="nav-link" href="..\frontend\client\src\components\landingPage\LandingPage.vue"><h5 class="nav-text">Home</h5></a>
+                                <a class="nav-link" v-bind:href="Home"><h5 class="nav-text">Home</h5></a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#"><h5 class="nav-text">Statistics</h5></a>
@@ -30,15 +30,13 @@
             </div>
         </div>
     </div>
-    <!-- This part should be used in every page - End -->
-    <br>
-    <br>
-    <!-- This part should be used in every page - Start -->
     </div>
 </template>
 <script>
 export default {
-    
+    data: {
+        Home: '..\frontend\client\src\components\landingPage\LandingPage.vue'
+    }
 }
 </script>
 <style scoped>

@@ -125,5 +125,14 @@
 	#addQueryButton {
 		width: 100%; 
 		margin: 10px 0 10px 0;
+		background-color: rgb(199, 5, 5);
 	}
+
+	#addQueryButton:hover{
+    background-color: rgb(199, 5, 5);
+    box-shadow: 1px 1px 5px 3px #ffffff;
+    border-radius: 3px;
+}
+
+
 </style>

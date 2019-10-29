@@ -52,5 +52,13 @@
     #startSearchButton {
         width: 100%; 
         height: 40px;
+        background-color:rgb(199, 5, 5);
     }
+
+    #startSearchButton:hover{
+    background-color: rgb(199, 5, 5);
+    box-shadow: 1px 1px 5px 3px #ffffff;
+    border-radius: 3px;
+    }
+
 </style>
