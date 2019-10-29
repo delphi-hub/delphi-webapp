@@ -1,6 +1,5 @@
 <template>
     <div class="component">
-        <!-- This part should be used in every page - Start -->
     <div class="container-fluid sticky-top shadow">
         <div class="row align-items-center navigation">
             <div class="col-sm-2"> 
@@ -35,13 +34,6 @@
     <br>
     <br>
     <!-- This part should be used in every page - Start -->
-    <footer class="fixed-bottom shadow foot">
-        Delphi is maintained by the
-        <a href="https://www.hni.uni-paderborn.de/en/software-engineering/" class="footerLinks">Secure Software Engineering group</a>
-        at
-        <a href="https://www.uni-paderborn.de/" class="footerLinks">Paderborn University</a>
-    </footer>
-    <!-- This part should be used in every page - End -->
     </div>
 </template>
 <script>
@@ -73,31 +65,4 @@ export default {
 .navigation{
     background-image: linear-gradient(to right, rgb(235, 235, 235) 12.5%, #c20202 12.5%);
 }    
-
-.foot {
-    background-color: #c20202;
-    text-align: center;
-    color: whitesmoke;
-    font-size: 11px;
-}
-
-.footerLinks {
-    color: whitesmoke;
-    text-decoration: underline;
-    font-size: 12px;
-}
-
-.footerLinks:hover{
-    color: rgb(0, 0, 0);
-}
-
-.content {
-    font-family: 'Roboto', sans-serif;
-}
-
-.about {
-    background-color: rgb(87, 87, 87);
-    color: whitesmoke;
-}
-
 </style>
