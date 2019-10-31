@@ -1,5 +1,8 @@
 <template>
-    <div class="card" id="searchPart">		
+
+<Div>
+	<b-card></b-card>
+<div class="card" id="searchPart">		
 		<div class="container-fluid">
             <div class="row">
 	            <div class="col-6">
@@ -17,6 +20,8 @@
 			</div>		
         </div>
     </div>
+</Div>
+    
 </template>
 
 <script>
@@ -49,6 +54,7 @@
 	#searchPart {
 		margin: 40px; 
 		padding: 10px;
-		
+		height: 380px;
+		box-shadow: 1px 1px 5px 3px grey;
 	}
 </style>

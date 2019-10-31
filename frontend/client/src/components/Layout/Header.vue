@@ -35,14 +35,12 @@
 <script>
 export default {
     data: {
-        Home: '..\frontend\client\src\components\landingPage\LandingPage.vue'
+        Home: '..\src\components\landingPage\LandingPage.vue'
     }
 }
 </script>
 <style scoped>
-    .background-color{
-    background-color:white;
-}
+    
 
 .nav-text{
     font-variant: small-caps;

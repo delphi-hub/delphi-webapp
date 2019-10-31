@@ -55,10 +55,10 @@
     }
 
     #startSearchButton {
-        width: 97%; 
+        width: 100%; 
         height: 37px;
         background-color:rgb(199, 5, 5);
-        margin-left: 10px;
+        
     }
 
     #startSearchButton:hover{

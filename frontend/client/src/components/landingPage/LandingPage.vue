@@ -25,3 +25,8 @@ export default {
   methods: {}
 };
 </script>
+<style scoped>
+  div {
+    background-color: whitesmoke;
+  }
+</style>
