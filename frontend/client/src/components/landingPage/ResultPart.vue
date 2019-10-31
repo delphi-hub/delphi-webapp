@@ -233,6 +233,7 @@
 <style>
 	thead, tbody, tr, td, th { 
 		display: block;
+		
 		}
 			
 	tr:after {
@@ -255,6 +256,8 @@
 	#ResultPart{
 		margin: 40px;
 		padding:10px;
+		background-color: white;
+		box-shadow: 1px 1px 5px 3px grey;
 	} 
 
 	.nav-item{
