@@ -130,7 +130,6 @@
 	}
 
 	#addQueryButtonText {
-		font-family: "Comic Sans MS";
 		font-variant: small-caps;
 	}
 

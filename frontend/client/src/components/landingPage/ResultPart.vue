@@ -1,16 +1,14 @@
 <template>
     <div id="ResultPart" class="card">
-		<div class="resultHeading"><h3 class="resultHeadingText">Results</h3></div>
-		<hr>
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
-				<a class="nav-link active" id="metricone-tab" data-toggle="tab" href="#metricone" role="tab" aria-controls="metricone" aria-selected="true" data-placement="top" title="Metric 4 Input Operator OR NOT(Metric 2 Input Operator)">Query 1</a><button type="button" class="btn btn-outline-danger">X</button>
+				<a class="nav-link active" id="metricone-tab" data-toggle="tab" href="#metricone" role="tab" aria-controls="metricone" aria-selected="true" data-placement="top" title="Metric 4 Input Operator OR NOT(Metric 2 Input Operator)">Result 1</a><button type="button" class="btn btn-outline-danger">X</button>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" id="metrictwo-tab" data-toggle="tab" href="#metrictwo" role="tab" aria-controls="metrictwo" aria-selected="false" data-placement="top" title="Metric 4 Input Operator">Query 2</a><button type="button" class="btn btn-outline-danger">X</button>
+				<a class="nav-link" id="metrictwo-tab" data-toggle="tab" href="#metrictwo" role="tab" aria-controls="metrictwo" aria-selected="false" data-placement="top" title="Metric 4 Input Operator">Result 2</a><button type="button" class="btn btn-outline-danger">X</button>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" id="metricthree-tab" data-toggle="tab" href="#metricthree" role="tab" aria-controls="metricthree" aria-selected="false" data-placement="top" title="Metric 4 Input Operator AND Metric 2 Input Operator">Query 3</a><button type="button" class="btn btn-outline-danger">X</button>
+				<a class="nav-link" id="metricthree-tab" data-toggle="tab" href="#metricthree" role="tab" aria-controls="metricthree" aria-selected="false" data-placement="top" title="Metric 4 Input Operator AND Metric 2 Input Operator">Result 3</a><button type="button" class="btn btn-outline-danger">X</button>
 			</li>
 		</ul>
 		<div class="tab-content" id="myTabContent">

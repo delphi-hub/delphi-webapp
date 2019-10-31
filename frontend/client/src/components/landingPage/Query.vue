@@ -58,7 +58,6 @@
         width: 100%; 
         height: 45px;
         background-color:rgb(199, 5, 5);
-        font-family: "Comic Sans MS";
         font-variant: small-caps;
     }
 
