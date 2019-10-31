@@ -1,6 +1,7 @@
 <template>
     <div id="ResultPart" class="card">
-		<h5 class="resultHeading">Results</h5>
+		<div class="resultHeading"><h3 class="resultHeadingText">Results</h3></div>
+		<hr>
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
 				<a class="nav-link active" id="metricone-tab" data-toggle="tab" href="#metricone" role="tab" aria-controls="metricone" aria-selected="true" data-placement="top" title="Metric 4 Input Operator OR NOT(Metric 2 Input Operator)">Query 1</a><button type="button" class="btn btn-outline-danger">X</button>
@@ -266,6 +267,13 @@
 
 	.resultHeading{
 		font-variant: small-caps;
+		background-color: rgb(238, 238, 238);
+		
+	}
+
+	.resultHeadingText {
+		margin-left: 25px;
+		margin-bottom: 5px;
 	}
 
 </style>
