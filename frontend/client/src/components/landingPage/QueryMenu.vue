@@ -5,7 +5,7 @@
             <menuStepTwo @operatorSent="operator = $event" @valueSent="value = $event" @confirmOperatorAndValueReset="operatorAndValueToReset = $event" :operatorAndValueShouldBeReseted="operatorAndValueToReset"></menuStepTwo>
             <menuStepThree @logicalNotSent="logicalNOT = $event" @logicalOperatorSent="logicalOperator = $event" @confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" :lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset"></menuStepThree>       
 		</div>
-		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery">Add to Query</button>
+		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery"><h5 id="addQueryButtonText">Add to Query</h5></button>
 		<p v-if="errors.length" style="background-color: red; color:antiquewhite" v-for="error in errors">
 			{{ error }}
 		</p>
@@ -126,6 +126,12 @@
 		width: 100%; 
 		margin: 10px 0 10px 0;
 		background-color: rgb(199, 5, 5);
+		
+	}
+
+	#addQueryButtonText {
+		font-family: "Comic Sans MS";
+		font-variant: small-caps;
 	}
 
 	#addQueryButton:hover{

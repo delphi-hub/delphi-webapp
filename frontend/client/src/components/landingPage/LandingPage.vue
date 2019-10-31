@@ -27,6 +27,6 @@ export default {
 </script>
 <style scoped>
   div {
-    background-color: whitesmoke;
+    background-color: rgb(235, 235, 235);
   }
 </style>

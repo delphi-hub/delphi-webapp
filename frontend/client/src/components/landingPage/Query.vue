@@ -4,7 +4,7 @@
             <!-- for now disabled, because 'type in' functionallity is not supported right now -->
             <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="queryToSearch" disabled></textarea>
 		</div>
-		<button id="startSearchButton" class="btn btn-success"><p id="searchButtonText">Start the Search</p></button>
+		<button id="startSearchButton" class="btn btn-success"><h5 id="searchButtonText">Start the Search</h5></button>
 	</div>
 </template>
 
@@ -56,9 +56,10 @@
 
     #startSearchButton {
         width: 100%; 
-        height: 37px;
+        height: 45px;
         background-color:rgb(199, 5, 5);
-        
+        font-family: "Comic Sans MS";
+        font-variant: small-caps;
     }
 
     #startSearchButton:hover{

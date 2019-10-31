@@ -6,10 +6,10 @@
 		<div class="container-fluid">
             <div class="row">
 	            <div class="col-6">
-	            	<h5>Type in your query...</h5>
+	            	<h5 class="queryHelpText">Type in your query...</h5>
 				</div>
 		        <div class="col-6">
-		        	<h5>...or use these steps to build a query.</h5>
+		        	<h5 class="queryHelpText">...or use these steps to build a query.</h5>
 	        	</div>
         	</div>
             <div class="row">					
@@ -56,5 +56,9 @@
 		padding: 10px;
 		height: 380px;
 		box-shadow: 1px 1px 5px 3px grey;
+	}
+
+	.queryHelpText{
+		font-variant: small-caps;
 	}
 </style>
