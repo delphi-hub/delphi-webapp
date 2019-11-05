@@ -2,7 +2,7 @@
     <div class="col-6" id="queryCol">
         <div id="queryInputGrid">			
             <!-- for now disabled, because 'type in' functionallity is not supported right now -->
-            <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="queryToSearch" disabled></textarea>
+            <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="message" @input="addToMessage"></textarea>
 		</div>
 		<button id="startSearchButton" class="btn btn-success"><h5 id="searchButtonText">Start the Search</h5></button>
 	</div>
@@ -17,11 +17,20 @@
         },
         data () {
             return {
-             
+                message: ''            
+            }
+        },
+        watch: {
+            queryToSearch: function (newVal, oldVal) {
+                if(newVal){
+                    this.message += newVal;
+                }
             }
         },
         methods: {
-          
+            addToMessage(event){
+                this.message = event.target.value;
+            }
         }
     }
 </script>
@@ -52,6 +61,7 @@
         height:220px;
         width: 680px;
         background-color: white;
+        resize: none;
     }
 
     #startSearchButton {

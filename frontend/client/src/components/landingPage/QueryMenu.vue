@@ -31,7 +31,7 @@
 				logicalNOT: null,
 				logicalOperator: null,
 				errors: [],
-				queries: [],
+				//queries: [],
 				metricToReset: false,
 				operatorAndValueToReset: false,
 				lNotAndLOperatorToReset: false
@@ -51,22 +51,19 @@
 						logicalNOT: this.logicalNOT,
 						logicalOperator: this.logicalOperator
 					}
-					this.queries.push(queryCurrent);
+					//this.queries.push(queryCurrent);
 
-					var out = '';
-
-					var i;
-					for (i = 0; i < this.queries.length; i++) {
-						if(this.queries[i].logicalNOT) {																																					
-							out += 'NOT ' + '(' + this.queries[i].metric + ' ' + this.queries[i].operator + ' ' + this.queries[i].value + ')'; // + '\r\n'
-						}
-						else {
-							out += '(' + this.queries[i].metric + ' ' + this.queries[i].operator + ' ' + this.queries[i].value + ')';
-						}
-						if(this.queries[i].logicalOperator){
-							out += ' ' + this.queries[i].logicalOperator + ' ';
-						}
+					var out = '';		
+					if(this.logicalNOT) {																																					
+						out += 'NOT ' + '(' + this.metric + ' ' + this.logicalOperator + ' ' + this.value + ')'; // + '\r\n'
 					}
+					else {
+						out += '(' + this.metric + ' ' + this.operator + ' ' + this.value + ')';
+					}
+					if(this.logicalOperator){
+						out += ' ' + this.logicalOperator + ' ';
+					}
+					
 
 					this.$emit('addQuerySent', out);
 					this.metric = null;
