@@ -53,7 +53,7 @@
 	#searchPart {
 		margin: 40px; 
 		padding: 10px;
-		height: 485px;
+		height: 480px;
 		box-shadow: 1px 1px 5px 3px grey;
 		background-color: rgb(250,250,250);
 	}

@@ -56,9 +56,9 @@
     }
 
     #queryInput {
-        margin-top: 15px;
+        margin-top: 10px;
         margin-bottom: 17px;
-        height:305px;
+        height:306px;
         width: 680px;
         background-color: white;
         resize: none;
