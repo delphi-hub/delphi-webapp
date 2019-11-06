@@ -255,7 +255,7 @@
 	#ResultPart{
 		margin: 40px;
 		padding:10px;
-		background-color: white;
+		background-color: rgb(250,250,250);
 		box-shadow: 1px 1px 5px 3px grey;
 	} 
 
