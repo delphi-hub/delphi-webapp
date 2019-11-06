@@ -55,6 +55,7 @@
 		padding: 10px;
 		height: 485px;
 		box-shadow: 1px 1px 5px 3px grey;
+		background-color: rgb(250,250,250);
 	}
 
 	.queryHelpText{
@@ -65,12 +66,12 @@
         width: 30%; 
         height: 45px;
 		margin-left: 15px;
-        background-color:rgb(199, 5, 5);
+        background-color:#c20202;
         font-variant: small-caps;
     }
 
     #startSearchButton:hover{
-    background-color: rgb(199, 5, 5);
+    background-color: #c30303;
     box-shadow: 1px 1px 5px 3px grey;
     border-radius: 3px;
     }

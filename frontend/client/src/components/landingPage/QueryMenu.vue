@@ -119,7 +119,7 @@
     #menuCol {
 		background-color:rgb(235, 235, 235); 
 		padding-top: 10px; 
-		border-radius: 10px;
+		border-radius: 0 10px 10px 0;
 		
 	}
 	#addQueryButton {
@@ -146,7 +146,7 @@
 		margin-bottom: 15px;
 		background-color: rgb(97, 97, 97);
 		float:left;
-		margin-left: 20px;
+		margin-left: 15px;
 		height: 40px;
 	}
 

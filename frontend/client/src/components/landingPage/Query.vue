@@ -47,7 +47,7 @@
 
     #queryCol {
         background-color:rgb(235, 235, 235);
-        border-radius: 10px;
+        border-radius: 10px 0 0 10px;
     }
 
     #queryInputGrid {
