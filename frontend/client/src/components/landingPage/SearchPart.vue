@@ -1,7 +1,6 @@
 <template>
 
 <Div>
-	<b-card></b-card>
 <div class="card" id="searchPart">		
 		<div class="container-fluid">
             <div class="row">
@@ -14,11 +13,11 @@
         	</div>
             <div class="row">					
 				<query :queryToSearch="savedQuery"></query>
-				<queryMenu @addQuerySent="saveQuery"></queryMenu>				
-			</div>	
-			<div>
-			</div>		
+				<queryMenu @addQuerySent="saveQuery"></queryMenu>			
+			</div>			
         </div>
+		<hr>
+		<button id="startSearchButton" class="btn btn-dark"><h5 id="searchButtonText">Start Search</h5></button>
     </div>
 </Div>
     
@@ -54,11 +53,26 @@
 	#searchPart {
 		margin: 40px; 
 		padding: 10px;
-		height: 380px;
+		height: 485px;
 		box-shadow: 1px 1px 5px 3px grey;
 	}
 
 	.queryHelpText{
 		font-variant: small-caps;
 	}
+
+	#startSearchButton {
+        width: 30%; 
+        height: 45px;
+		margin-left: 15px;
+        background-color:rgb(199, 5, 5);
+        font-variant: small-caps;
+    }
+
+    #startSearchButton:hover{
+    background-color: rgb(199, 5, 5);
+    box-shadow: 1px 1px 5px 3px grey;
+    border-radius: 3px;
+    }
+
 </style>

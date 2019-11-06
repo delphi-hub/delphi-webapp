@@ -5,10 +5,12 @@
             <menuStepTwo @operatorSent="operator = $event" @valueSent="value = $event" @confirmOperatorAndValueReset="operatorAndValueToReset = $event" :operatorAndValueShouldBeReseted="operatorAndValueToReset"></menuStepTwo>
             <menuStepThree @logicalNotSent="logicalNOT = $event" @logicalOperatorSent="logicalOperator = $event" @confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" :lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset"></menuStepThree>       
 		</div>
+		<hr>
 		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery"><h5 id="addQueryButtonText">Add to Query</h5></button>
 		<p v-if="errors.length" style="background-color: red; color:antiquewhite" v-for="error in errors">
 			{{ error }}
 		</p>
+		<button class="btn btn-dark" id="resetButton" @click="onAddQuery"><h5 id="resetButtonText">Reset</h5></button>
     </div>
 </template>
 
@@ -118,12 +120,15 @@
 		background-color:rgb(235, 235, 235); 
 		padding-top: 10px; 
 		border-radius: 10px;
+		
 	}
 	#addQueryButton {
-		width: 100%; 
-		margin: 10px 0 10px 0;
-		background-color: rgb(199, 5, 5);
-		
+		width: 25%; 
+		background-color: rgb(97, 97, 97);
+		float:right;
+		margin-bottom: 15px;
+		margin-right: 20px;
+		height: 40px;
 	}
 
 	#addQueryButtonText {
@@ -131,10 +136,28 @@
 	}
 
 	#addQueryButton:hover{
-    background-color: rgb(199, 5, 5);
+    background-color: rgb(97, 97, 97);
     box-shadow: 1px 1px 5px 3px grey;
     border-radius: 3px;
 }
 
+#resetButton {
+		width: 25%; 
+		margin-bottom: 15px;
+		background-color: rgb(97, 97, 97);
+		float:left;
+		margin-left: 20px;
+		height: 40px;
+	}
+
+	#resetButtonText {
+		font-variant: small-caps;
+	}
+
+	#resetButton:hover{
+    background-color: rgb(97, 97, 97);
+    box-shadow: 1px 1px 5px 3px grey;
+    border-radius: 3px;
+}
 
 </style>

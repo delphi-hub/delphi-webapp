@@ -4,7 +4,7 @@
             <!-- for now disabled, because 'type in' functionallity is not supported right now -->
             <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="message" @input="addToMessage"></textarea>
 		</div>
-		<button id="startSearchButton" class="btn btn-success"><h5 id="searchButtonText">Start the Search</h5></button>
+		
 	</div>
 </template>
 
@@ -58,23 +58,12 @@
     #queryInput {
         margin-top: 15px;
         margin-bottom: 17px;
-        height:220px;
+        height:305px;
         width: 680px;
         background-color: white;
         resize: none;
     }
 
-    #startSearchButton {
-        width: 100%; 
-        height: 45px;
-        background-color:rgb(199, 5, 5);
-        font-variant: small-caps;
-    }
-
-    #startSearchButton:hover{
-    background-color: rgb(199, 5, 5);
-    box-shadow: 1px 1px 5px 3px grey;
-    border-radius: 3px;
-    }
+    
 
 </style>

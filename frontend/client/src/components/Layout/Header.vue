@@ -54,7 +54,6 @@ export default {
 }
 
 .nav-item:hover .nav-text{
-    font-size : 22px;
     color: #ffffff;
 }
 
