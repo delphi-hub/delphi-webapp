@@ -125,9 +125,8 @@
 	#addQueryButton {
 		width: 25%; 
 		background-color: rgb(97, 97, 97);
-		float:right;
+		float:left;
 		margin-bottom: 15px;
-		margin-right: 20px;
 		height: 40px;
 	}
 
