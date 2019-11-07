@@ -10,7 +10,7 @@
 		<p v-if="errors.length" style="background-color: red; color:antiquewhite" v-for="error in errors">
 			{{ error }}
 		</p>
-		<button class="btn btn-dark" id="resetButton" @click="onAddQuery"><h5 id="resetButtonText">Reset</h5></button>
+		
     </div>
 </template>
 

@@ -5,6 +5,7 @@ import { routes } from './routes';
 import LandingPage from './components/landingPage/LandingPage';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { ImagePlugin } from 'bootstrap-vue'
 
 
