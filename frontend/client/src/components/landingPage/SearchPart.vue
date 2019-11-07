@@ -18,6 +18,7 @@
         </div>
 		<hr>
 		<button id="startSearchButton" class="btn btn-dark"><h5 id="searchButtonText">Start Search</h5></button>
+		
     </div>
 </Div>
     

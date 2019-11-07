@@ -3,7 +3,7 @@
     <div class="container-fluid sticky-top shadow">
         <div class="row align-items-center navigation">
             <div class="col-sm-2"> 
-                <img src="D:\Delphi project\delphi-webapp\frontend\client\src\assets\Logo light gray text outline@4x.png" class="float-left" width="160px" >
+                <b-img :src="require('../../assets/Logo.png')" fluid alt="Delphi Logo" style="height:55px; width:150px"></b-img>
             </div>
             <div class="col-sm-6">
             </div>
@@ -34,9 +34,7 @@
 </template>
 <script>
 export default {
-    data: {
-        Home: '..\src\components\landingPage\LandingPage.vue'
-    }
+    
 }
 </script>
 <style scoped>
