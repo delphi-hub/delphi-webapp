@@ -6,11 +6,7 @@
             <menuStepThree @logicalNotSent="logicalNOT = $event" @logicalOperatorSent="logicalOperator = $event" @confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" :lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset"></menuStepThree>       
 		</div>
 		<hr>
-		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery"><h5 id="addQueryButtonText">Add to Query</h5></button>
-		<p v-if="errors.length" style="background-color: red; color:antiquewhite" v-for="error in errors">
-			{{ error }}
-		</p>
-		
+		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery" :style= "[(operator && metric && value) ? {'background-color': 'green'} : {'background-color':null}]"><h5 id="addQueryButtonText">Add to Query</h5></button>		
     </div>
 </template>
 
@@ -57,10 +53,10 @@
 
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + this.metric + ' ' + this.logicalOperator + ' ' + this.value + ')'; // + '\r\n'
+						out += 'NOT ' + '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value + ')'; // + '\r\n'
 					}
 					else {
-						out += '(' + this.metric + ' ' + this.operator + ' ' + this.value + ')';
+						out += '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value + ')';
 					}
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';

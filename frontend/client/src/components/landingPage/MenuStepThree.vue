@@ -1,8 +1,8 @@
 <template>
     <div class="col-4" id="stepthreeCol">
         <div class="card">					
-            <div class="card-body">
-                <h6 class="card-title">Step 3</h6>
+            <div class="card-body" style="box-shadow: 1px 1px 5px 3px green">
+                <h6 class="card-title">3. Logical Operator</h6>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="addnot" value="Add logical NOT" v-model="checkedNOT" @change="sendLogicalNOT">
                     <label class="form-check-label" for="addnot">Add logical NOT</label>
