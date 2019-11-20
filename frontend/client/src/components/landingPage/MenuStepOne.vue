@@ -13,6 +13,9 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 export default {
     props: {
         metricShouldBeReseted: {
@@ -49,7 +52,12 @@ export default {
         metricIsReseted(event){
             this.$emit('confirmMetricReset', false);
         }
-    }
+    },
+  mounted () {
+    axios
+      .get('https://delphi.cs.uni-paderborn.de/api/features')
+      .then(response => (this.info = response))
+  }
 }
 </script>
 
