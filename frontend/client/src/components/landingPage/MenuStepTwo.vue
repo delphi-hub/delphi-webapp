@@ -4,9 +4,11 @@
             <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
                 <h6 class="card-title">2. Operator and Value</h6>
                 <select id="inputState" class="form-control" v-model="selectedOperator" @change="sendOperator">
-                    <option>=</option>
+                    <option><</option>
                     <option><=</option>
+                    <option>></option>
                     <option>>=</option>
+                    <option>=</option>
                 </select>
                 <input class="form-control" id="valueInput" type="text" placeholder="Input Value" v-model="selectedValue" @input="sendValue">             
             </div>

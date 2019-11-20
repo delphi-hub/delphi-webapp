@@ -1,7 +1,7 @@
 <template>
     <div class="col-4" id="stepthreeCol">
         <div class="card">					
-            <div class="card-body" style="box-shadow: 1px 1px 5px 3px green">
+            <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
                 <h6 class="card-title">3. Logical Operator</h6>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="addnot" value="Add logical NOT" v-model="checkedNOT" @change="sendLogicalNOT">
@@ -40,15 +40,24 @@
         data () {
             return {
                 checkedNOT: null,
-                radioPicked: ''
+                radioPicked: null,
+                borderColor: null
             }
         },
         watch: {
             lNOTAndLOperatorShouldBeReseted: function (newVal, oldVal) {
                 if(newVal){
                     this.checkedNOT = null;
-                    this.radioPicked = '';
+                    this.radioPicked = null;
                     this.lNOTAndLOperatorIsReseted(newVal);
+                }
+            },
+            radioPicked: function (newVal, oldVal) {
+                if(newVal !== null){
+                  this.borderColor = '1px 1px 5px 3px green';
+                }
+                else {
+                    this.borderColor = null;
                 }
             }
         },

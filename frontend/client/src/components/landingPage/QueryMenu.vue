@@ -38,7 +38,7 @@
         },
 		methods: {
 			onAddQuery() {
-				if(this.metric && this.operator && this.value){
+				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
 					if(this.errors.length){
 						this.errors = [];
 					}
