@@ -1,20 +1,14 @@
-@*
-* This template takes a single argument, a String containing a
-* message to display.
-*@
-@(results: String, query: String, hasError: Boolean)
+@(port: Int, jsBundle: String, cssBundle: String)
 
-@*
-* Call the `main` template with two arguments. The first
-* argument is a `String` with the title of the page, the second
-* argument is an `Html` object containing the body of the page.
-*@
-@main("Delphi Code Search") {
-
-@*
-* Get an `Html` object by calling the built-in Play welcome
-* template and passing a `String` message.
-*@
-@welcome(results, query, hasError, style = "scala")
-
-}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Frontend</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        @* <script src="http://localhost:@port"></script>*@
+        <script src="@routes.Assets.versioned("js/build.js")"  crossorigin="anonymous"></script>
+    </body>
+</html>
