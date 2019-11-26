@@ -4,8 +4,12 @@
             <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
                 <h6 class="card-title"><span v-if="selectedMetric">1. Metric: [{{ selectedMetric }}]</span><span v-else>1. Metric</span></h6>
                 <input type="text" id="filter" name="metric_suggest" onkeyup="filter1()" size="15" :value="selectedMetric"> 
-		      	<div>	
-				    <select id="select" size="10" style="width: 165px;height: 120px;" v-model="selectedMetric" @change="sendMetric"></select>      
+		      	<div>	 
+                    <select id="select" size="10" style="width: 165px;height: 120px;" v-model="selectedMetric" @change="sendMetric">
+                        <option v-for="data in info.data"  v-bind:key="data" >
+                        {{data}}
+                        </option>
+                    </select>      
 				</div>
             </div>
         </div>
@@ -26,7 +30,9 @@ export default {
     data () {
         return {
             selectedMetric: null,
-            borderColor: null
+            borderColor: null,
+            info: null,
+            data: null
         }
     },
     watch: {
