@@ -11,7 +11,7 @@
                     </div>
                 </div>    
                 <div v-show="!selectedMetric">
-                    <input type="text" id="filter" name="metric_suggest" onkeyup="filter1()" size="15" :value="selectedMetric"> 
+                    <input type="text" id="filter" name="metric_suggest" v-on:keyup="filter1" size="15" :value="selectedMetric"> 
 		        	<div>	 
                         <select id="select" size="10" v-model="selectedMetric" @change="sendMetric">
                             <option v-for="data in info.data"  v-bind:key="data">{{data}}</option>
@@ -68,6 +68,19 @@ export default {
         removeMetric(){
             this.selectedMetric = null;
             this.$emit('metricSent', this.selectedMetric);
+        },
+        filter1() {
+            var keyword = document.getElementById("filter").value;
+            var select = document.getElementById("select");
+            for (var i = 0; i < select.length; i++) {
+                var txt = select.options[i].text;
+		        var txt2 = keyword.toLowerCase();
+            if (txt.toLowerCase().includes(txt2)) {
+			    select.options[i].style.display = 'list-item';           
+            } else {
+                select.options[i].style.display = 'none';
+                     }
+            }
         }
     },
   mounted () {
