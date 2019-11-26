@@ -2,7 +2,7 @@
     <div class="col-6" id="queryCol">
         <div id="queryInputGrid">			
             <!-- for now disabled, because 'type in' functionallity is not supported right now -->
-            <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="message" @input="addToMessage"></textarea>
+            <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="finalQuery" @input="addToFinalQuery"></textarea>
 		</div>
 		
 	</div>
@@ -11,25 +11,25 @@
 <script>
     export default {
         props: {
-            queryToSearch: {
+            partQuery: {
                 type: String
             }
         },
         data () {
             return {
-                message: ''            
+                finalQuery: ''            
             }
         },
         watch: {
-            queryToSearch: function (newVal, oldVal) {
+            partQuery: function (newVal, oldVal) {
                 if(newVal){
-                    this.message += newVal;
+                    this.finalQuery += newVal;
                 }
             }
         },
         methods: {
-            addToMessage(event){
-                this.message = event.target.value;
+            addToFinalQuery(event){
+                this.finalQuery = event.target.value;
             }
         }
     }

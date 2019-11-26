@@ -6,7 +6,7 @@
             <menuStepThree @logicalNotSent="logicalNOT = $event" @logicalOperatorSent="logicalOperator = $event" @confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" :lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset"></menuStepThree>       
 		</div>
 		<hr>
-		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery" :style= "[(operator && metric && value) ? {'background-color': 'green'} : {'background-color':null}]"><h5 id="addQueryButtonText">Add to Query</h5></button>		
+		<button class="btn btn-dark" id="addQueryButton" @click="onAddQuery" :style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]"><h5 id="addQueryButtonText">Add to Query</h5></button>		
     </div>
 </template>
 
@@ -53,10 +53,10 @@
 
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value + ')'; // + '\r\n'
+						out += 'NOT ' + '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value.replace(/[\s\/]/g, '') + ')'; // + '\r\n'
 					}
 					else {
-						out += '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value + ')';
+						out += '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value.replace(/[\s\/]/g, '') + ')';
 					}
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';

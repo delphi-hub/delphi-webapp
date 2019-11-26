@@ -10,7 +10,8 @@
                     <option>>=</option>
                     <option>=</option>
                 </select>
-                <input class="form-control" id="valueInput" type="text" placeholder="Input Value" v-model="selectedValue" @input="sendValue">             
+                <input class="form-control" id="valueInput" type="text" placeholder="Input Value" v-model="selectedValue" @input="sendValue">  
+                <h6 v-show="notANumber" style="color:red; text-align: center;">Value should be numerical</h6>           
             </div>
         </div>
     </div>
@@ -28,7 +29,8 @@
             return {
                 selectedOperator: null,
                 selectedValue: null,
-                borderColor: null
+                borderColor: null,
+                notANumber: false
             }
         },
         watch: {
@@ -40,16 +42,22 @@
                 }
             },
             selectedOperator: function (newVal, oldVal) {
-                if(newVal && this.selectedValue){
+                if(newVal && this.selectedValue && !this.notANumber){
                   this.borderColor = '1px 1px 5px 3px green';
+                }
+                else if(this.notANumber){
+                    this.borderColor = '1px 1px 5px 3px red';
                 }
                 else {
                     this.borderColor = null;
                 }
             },
             selectedValue: function (newVal, oldVal) {
-                if(newVal && this.selectedOperator){
+                if(newVal && this.selectedOperator && !this.notANumber){
                   this.borderColor = '1px 1px 5px 3px green';
+                }
+                else if(this.notANumber){
+                    this.borderColor = '1px 1px 5px 3px red';
                 }
                 else {
                     this.borderColor = null;
@@ -61,10 +69,21 @@
                 this.$emit('operatorSent', this.selectedOperator);               
             },
             sendValue(event){
-                this.$emit('valueSent', this.selectedValue);
+                if(this.isNumeric(this.selectedValue) || (this.selectedValue === '')){
+                    this.$emit('valueSent', this.selectedValue);
+                    this.notANumber = false;
+                }
+                else {
+                    this.notANumber = true;
+                    this.$emit('valueSent', null);
+                }
+                
             },
             operatorAndValueIsReseted(event){
                 this.$emit('confirmOperatorAndValueReset', false);
+            },
+            isNumeric: function (n) {
+                return !isNaN(parseInt(n)) && isFinite(n);  //is .5 or 5. or +5 or -5 allowed? Are real numbers allowed?
             }
         }
     }

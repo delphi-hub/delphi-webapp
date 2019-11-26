@@ -12,7 +12,7 @@
 	        	</div>
         	</div>
             <div class="row">					
-				<query :queryToSearch="savedQuery"></query>
+				<query :partQuery="savedQuery"></query>
 				<queryMenu @addQuerySent="saveQuery"></queryMenu>			
 			</div>			
         </div>
