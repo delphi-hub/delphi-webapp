@@ -11,12 +11,3 @@ function filter1() {
         }
     }
 }
-function populateSelect() {
-    var array = ['AWT','Augmented Type','Box','Canopy','Outline','Overrider','Pool','Process','Pseudo Class','Record','SWT','Sampler','Self-recursive Data Structure','Sink']
-	var ele = document.getElementById("select");
-	for (var i = 0; i < array.length; i++) {
-		var option = document.createElement("option");
-				option.text = array[i];
-				ele.add(option);
-        }
-}
