@@ -14,7 +14,7 @@
                     <input type="text" id="filter" name="metric_suggest" v-on:keyup="filter1" size="15" :value="selectedMetric"></input> 
 		        	<div>	 
                         <select id="select" size="10" v-model="selectedMetric" @change="sendMetric">
-                            <option v-for="data in info.data" v-bind:key="data">{{data}}</option>
+                            <option id="optionSelect" v-for="data in info.data" v-bind:key="data">{{data}}</option>
                         </select>      
 			    	</div>
                 </div>                
@@ -122,8 +122,16 @@ export default {
         color:red;
         border-radius: 3px;
     }
-    #select {
-        width: 165px;
-        height: 120px;
+    #filter {
+        width: 250px;
     }
+    #select {
+        width: 250px;
+        height: 120px;
+        overflow: auto;
+    }
+    #optionSelect:hover {
+        background-color:rgba(176, 240, 176, 0.753);
+    }
+    
 </style>
