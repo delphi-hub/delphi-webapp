@@ -13,23 +13,38 @@
         props: {
             partQuery: {
                 type: String
+            },
+            finalQueryShouldBeReseted: {
+                type: Boolean,
+                default: false
             }
         },
         data () {
             return {
-                finalQuery: ''            
+                finalQuery: ''            //todo: send to search part
             }
         },
         watch: {
             partQuery: function (newVal, oldVal) {
                 if(newVal){
                     this.finalQuery += newVal;
+                    this.$emit('finalQuerySend', this.finalQuery);
+                }
+            },
+            finalQueryShouldBeReseted: function (newVal, oldVal) {
+                if(newVal){
+                    this.finalQuery = '';
+                    this.finalMetricIsReseted(newVal);
                 }
             }
         },
         methods: {
             addToFinalQuery(event){
                 this.finalQuery = event.target.value;
+                this.$emit('finalQuerySend', this.finalQuery);
+            },
+            finalMetricIsReseted(event){
+                this.$emit('confirmFinalQueryReset', false);
             }
         }
     }
