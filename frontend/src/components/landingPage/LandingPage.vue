@@ -29,6 +29,6 @@
 
 <style scoped>
 	div {
-		background-color: rgb(235, 235, 235);
+		background-color: rgb(250, 250, 250);
 	}
 </style>

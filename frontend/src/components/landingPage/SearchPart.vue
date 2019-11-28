@@ -31,9 +31,8 @@
 			</button>
 		</div>
 		<div>
-			<br/> <br/> <br/>
 			<v-app>
-				<div>
+				<div id="resultTableDiv">
 					<v-data-table v-bind:headers="headers" :items="items" class="elevation-1"></v-data-table>
 				</div>
 			</v-app>
@@ -217,5 +216,9 @@
 		/*	background-color: #c30303; */
 		box-shadow: 1px 1px 5px 3px grey;
 		border-radius: 3px;
+	}
+	#resultTableDiv {
+		margin: 40px;
+		box-shadow: 1px 1px 5px 3px grey;
 	}
 </style>
