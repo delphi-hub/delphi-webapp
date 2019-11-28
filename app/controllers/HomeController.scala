@@ -59,13 +59,6 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
   def query(query : String): Action[AnyContent] = Action.async {
     implicit request => {
 
-      /* val query = toJson(QueryFormat(query1))
-       println("This is the Query after toJson: " + query.toString())
-       val request = CommonHelper.createPostRequest(config.serverOld, HttpMethods.POST, query.toString())
-       val result = BlockingHttpClient.executeRequest(request)*/
-
-
-
       implicit val system = ActorSystem()
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
