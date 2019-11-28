@@ -123,10 +123,10 @@ export default {
         border-radius: 3px;
     }
     #filter {
-        width: 250px;
+        width:100%;
     }
     #select {
-        width: 250px;
+        width: 100%;
         height: 120px;
         overflow: auto;
     }
