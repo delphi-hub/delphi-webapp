@@ -6,3 +6,5 @@ project/target
 target
 frontend/node_modules
 frontend/client/node_modules
+frontend/.DS_Store
+frontend/public/.DS_Store
