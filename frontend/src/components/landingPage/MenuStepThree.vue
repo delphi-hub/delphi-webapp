@@ -45,14 +45,14 @@
             }
         },
         watch: {
-            lNOTAndLOperatorShouldBeReseted: function (newVal, oldVal) {
+            lNOTAndLOperatorShouldBeReseted: function (newVal) {
                 if(newVal){
                     this.checkedNOT = null;
                     this.radioPicked = null;
                     this.lNOTAndLOperatorIsReseted(newVal);
                 }
             },
-            radioPicked: function (newVal, oldVal) {
+            radioPicked: function (newVal) {
                 if(newVal !== null){
                   this.borderColor = '1px 1px 5px 3px green';
                 }
@@ -62,13 +62,13 @@
             }
         },
         methods: {
-            sendLogicalNOT(event){
+            sendLogicalNOT(){
                 this.$emit('logicalNotSent', this.checkedNOT);               
             },
-            sendLogicalOperator(event){
+            sendLogicalOperator(){
                 this.$emit('logicalOperatorSent', this.radioPicked);
             },
-            lNOTAndLOperatorIsReseted(event){
+            lNOTAndLOperatorIsReseted(){
                 this.$emit('confirmLNotAndLOperatorReset', false);
             }
         }

@@ -25,13 +25,13 @@
             }
         },
         watch: {
-            partQuery: function (newVal, oldVal) {
+            partQuery: function (newVal) {
                 if(newVal){
                     this.finalQuery += newVal;
                     this.$emit('finalQuerySend', this.finalQuery);
                 }
             },
-            finalQueryShouldBeReseted: function (newVal, oldVal) {
+            finalQueryShouldBeReseted: function (newVal) {
                 if(newVal){
                     this.finalQuery = '';
                     this.finalMetricIsReseted(newVal);
@@ -43,7 +43,7 @@
                 this.finalQuery = event.target.value;
                 this.$emit('finalQuerySend', this.finalQuery);
             },
-            finalMetricIsReseted(event){
+            finalMetricIsReseted(){
                 this.$emit('confirmFinalQueryReset', false);
             }
         }
@@ -74,7 +74,7 @@
         margin-top: 10px;
         margin-bottom: 17px;
         height:306px;
-        width: 680px;
+        width: 90%;
         background-color: white;
         resize: none;
     }

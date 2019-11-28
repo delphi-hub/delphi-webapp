@@ -1,5 +1,5 @@
 <template>
-    <div id="ResultPart" class="card">
+	<div id="ResultPart" class="card">
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
 				<a class="nav-link active" id="metricone-tab" data-toggle="tab" href="#metricone" role="tab" aria-controls="metricone" aria-selected="true" data-placement="top" title="Metric 4 Input Operator OR NOT(Metric 2 Input Operator)">Result 1</a><button type="button" class="btn btn-outline-danger">X</button>

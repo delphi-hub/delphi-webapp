@@ -1,6 +1,6 @@
 <template>
-    <div class="col-6" id="menuCol">
-        <div class="row">
+	<div class="col-6" id="menuCol">
+		<div class="row">
 			<menuStepOne 
 				@metricSent="metric = $event" 
 				@confirmMetricReset="metricToReset = $event" 
@@ -25,24 +25,24 @@
 			:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
 			<h5 id="addQueryButtonText">Add to Query</h5>
 		</button>		
-    </div>
+	</div>
 </template>
 
 <script>
 	import MenuStepOne from './MenuStepOne.vue';
 	import MenuStepTwo from './MenuStepTwo.vue';
-    import MenuStepThree from './MenuStepThree.vue';
+	import MenuStepThree from './MenuStepThree.vue';
 
 	export default {
 		components: {
 			'menuStepOne': MenuStepOne,
 			'menuStepTwo': MenuStepTwo,
-            'menuStepThree': MenuStepThree
+			'menuStepThree': MenuStepThree
 		},
 		data () {
-            return {
-                metric: null,
-                operator: null,
+			return {
+				metric: null,
+				operator: null,
 				value: null,
 				logicalNOT: null,
 				logicalOperator: null,
@@ -50,8 +50,8 @@
 				metricToReset: false,
 				operatorAndValueToReset: false,
 				lNotAndLOperatorToReset: false
-            }
-        },
+			}
+		},
 		methods: {
 			onAddQuery() {
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
@@ -61,10 +61,10 @@
 
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value.replace(/[\s\/]/g, '') + ')'; // + '\r\n'
+						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')'; // + '\r\n'
 					}
 					else {
-						out += '(' + '[' + this.metric + ']' + this.operator + this.value.replace(/[\s\/]/g, '') + ')';
+						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
 					}
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';
@@ -108,17 +108,17 @@
 				}			
 			},
 			removeElement(array, elem) {
-   				var index = array.indexOf(elem);
-    			if (index > -1) {
-        			array.splice(index, 1);
-    			}
+				var index = array.indexOf(elem);
+				if (index > -1) {
+					array.splice(index, 1);
+				}
 			}
 		}
 	}
 </script>
 
 <style>
-    #menuCol {
+	#menuCol {
 		background-color:rgb(235, 235, 235); 
 		padding-top: 10px; 
 		border-radius: 0 10px 10px 0;
@@ -137,9 +137,9 @@
 	}
 
 	#addQueryButton:hover{
-    	background-color: rgb(97, 97, 97);
-    	box-shadow: 1px 1px 5px 3px grey;
-    	border-radius: 3px;
+		background-color: rgb(97, 97, 97);
+		box-shadow: 1px 1px 5px 3px grey;
+		border-radius: 3px;
 }
 
 #resetButton {
@@ -156,9 +156,9 @@
 	}
 
 	#resetButton:hover{
-    	background-color: rgb(97, 97, 97);
-    	box-shadow: 1px 1px 5px 3px grey;
-    	border-radius: 3px;
+		background-color: rgb(97, 97, 97);
+		box-shadow: 1px 1px 5px 3px grey;
+		border-radius: 3px;
 }
 
 </style>
