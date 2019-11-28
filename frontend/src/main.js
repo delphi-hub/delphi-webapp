@@ -6,16 +6,16 @@ import LandingPage from "./components/landingPage/LandingPage";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import vuetify from "./plugins/vuetify";
-import VueResource from "vue-resource"
-import { ImagePlugin } from "bootstrap-vue"
+import VueResource from "vue-resource";
+import { ImagePlugin } from "bootstrap-vue";
 
 Vue.use(VueResource);
 
 Vue.http.options.root = "http://localhost:9000/";
 Vue.http.interceptors.push((request, next) => {
-  next(response => {
+  next((response) => {
     response.json = () => {
-      return {messages: response.body}
+      return {messages: response.body};
     }
   });
 })
@@ -31,8 +31,8 @@ const router = new VueRouter({
 
 new Vue({
   el: "#app",
-  router: router,
+  router,
   vuetify,
-  render: h => h(App) 
-})
+  render: (h) => h(App) 
+});
 
