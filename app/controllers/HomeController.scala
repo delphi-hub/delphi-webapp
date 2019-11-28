@@ -48,10 +48,6 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     * will be called when the application receives a `GET` request with
     * a path of `/`.
     */
-  def index: Action[AnyContent] = Action {
-    Ok(views.html.index(3, "", "THIS IS PAGE"))
-  }
-
 
   /**
     * Executes a given query and shows a result page
