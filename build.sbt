@@ -32,7 +32,7 @@ libraryDependencies += "com.pauldijou" %% "jwt-core" % "1.0.0"
 // Akka dependencies
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core" % "10.0.14",
-  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.5"
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.6"
 )
 
 // Pinning secure versions of insecure transitive libraryDependencies
@@ -40,9 +40,12 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "25.1-jre"
 )
+//Latest play sbt plugin in location project/plugins.sbt uses different jackson version that has security vulnerability as reported by snyk
+//This dependency override can be removed once play updates its jackson version
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.10.1"
 
 val conf = ConfigFactory.parseFile(new File("conf/application.conf")).resolve()
-val appPortWebapp    = conf.getString("app.portWebapp")
+val appPortWebapp = conf.getString("app.portWebapp")
 
 PlayKeys.devSettings := Seq(
   "play.server.http.port" -> appPortWebapp
