@@ -61,10 +61,10 @@
 
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value.replace(/[\s\/]/g, '') + ')'; // + '\r\n'
+						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value.replace(/[\s\/]/g, '') + ')'; // + '\r\n'
 					}
 					else {
-						out += '(' + '[' + this.metric + '] ' + this.operator + ' ' + this.value.replace(/[\s\/]/g, '') + ')';
+						out += '(' + '[' + this.metric + ']' + this.operator + this.value.replace(/[\s\/]/g, '') + ')';
 					}
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';

@@ -2,7 +2,7 @@
 	<div>
     	<app-header></app-header>
     	<app-search></app-search>
-    	<app-result></app-result>
+    	<!-- <app-result></app-result> -->
     	<app-footer></app-footer>  
 	</div>
 </template>
