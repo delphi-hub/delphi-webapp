@@ -4,7 +4,7 @@
 
 # An example controller showing a sample home page
   GET     /                           controllers.HomeController.index
-  GET     /search/:query                     controllers.HomeController.query(query)
+  GET     /search/:query              controllers.HomeController.query(query)
   GET     /version                    controllers.SettingsController.version
 
 

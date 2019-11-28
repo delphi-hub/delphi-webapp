@@ -15,27 +15,32 @@
 // limitations under the License.
 package controllers
 
-import akka.http.scaladsl.model.HttpMethods
+
+import akka.actor.{ActorSystem}
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.stream.ActorMaterializer
+import akka.util.ByteString
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
-import models.{QueryFormat, ResultToJson}
-import models.QueryFormat
-import play.api.libs.json._
-import play.api.libs.json.Json._
-import spray.json.JsArray
-import utils.{BlockingHttpClient, CommonHelper}
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
-import spray.json._
-import controllers.Assets.Asset
 
+import scala.concurrent.{Await, Future}
+import de.upb.cs.swt.delphi.client.SearchResult
+import de.upb.cs.swt.delphi.client.SearchResultJson._
+import spray.json.DefaultJsonProtocol
+
+import scala.concurrent.duration._
 
 /**
   * Created by benhermann on 02.01.18.
   */
 @Singleton
-class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
+  with SprayJsonSupport with DefaultJsonProtocol {
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -54,29 +59,50 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     * @param query query to execute
     * @return
     */
-  def query(query1 : String): Action[AnyContent] = Action.async {
+
+  def query(query : String): Action[AnyContent] = Action.async {
     implicit request => {
-      //val abc = "[using KeyStore]=25"
-      val abc=query1
-      //val abc="[using KeyStore]>10 && [using KeyStore]<25"
-      val query = toJson(QueryFormat(abc))
-      println(query.getClass)
-      println(query.toString())
+
+      /* val query = toJson(QueryFormat(query1))
+       println("This is the Query after toJson: " + query.toString())
+       val request = CommonHelper.createPostRequest(config.serverOld, HttpMethods.POST, query.toString())
+       val result = BlockingHttpClient.executeRequest(request)*/
 
 
-      val request = CommonHelper.createPostRequest(config.server,
-        HttpMethods.POST, query.toString())
 
-      val result = BlockingHttpClient.executeRequest(request)
+      implicit val system = ActorSystem()
+      implicit val ec = system.dispatcher
+      implicit val materializer = ActorMaterializer()
+      implicit val queryFormat = jsonFormat2(Query)
 
-      val r: Future[Result] = Future.successful(Ok(result.toString))
-      println(r.toString)
-      r
+      val baseUri = Uri(config.server)
+      val prettyParam = Map("pretty" -> "")
+      val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
+      val responseFuture = Marshal(Query(query, config.limit)).to[RequestEntity] flatMap { entity =>
+        Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
+      }
 
 
+      val response = Await.result(responseFuture, 10 seconds)
+      val resultFuture: Future[String] = response match {
+        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+          entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+            body.utf8String
+          }
+        case resp@HttpResponse(code, _, _, _) => {
+          resp.discardEntityBytes()
+          Future("")
+        }
+      }
+
+      val result = Await.result(resultFuture, Duration.Inf)
+      val unmarshalledFuture = Unmarshal(result).to[List[SearchResult]]
+      val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
+      queryResponse
     }
   }
 
+  case class Query(query: String, limit: Option[Int] = None)
 }
 
 
