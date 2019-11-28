@@ -32,7 +32,7 @@
 		</div>
 		<div>
 			<v-app>
-				<div id="resultTableDiv">
+				<div id="resultTableDiv" class="card">
 					<v-data-table v-bind:headers="headers" :items="items" class="elevation-1"></v-data-table>
 				</div>
 			</v-app>
@@ -56,10 +56,10 @@
 				readyToSearchQuery: "",
 				finalQueryToReset: false,
 				headers: [
-					{ text: "artifactId", align: "left", value: "metadata.artifactId" },
-					{ text: "groupId", value: "metadata.groupId" },
-					{ text: "source", value: "metadata.source" },
-					{ text: "version", value: "metadata.version" }
+					{ text: "ArtifactId", align: "left", value: "metadata.artifactId" },
+					{ text: "GroupId", value: "metadata.groupId" },
+					{ text: "Source", value: "metadata.source" },
+					{ text: "Version", value: "metadata.version" }
 				],
 				items: [
 					{
