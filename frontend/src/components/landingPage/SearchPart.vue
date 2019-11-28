@@ -30,6 +30,7 @@
       <h5 id="searchButtonText">Start Search</h5>
     </button>
     <div>
+      <br/> <br/> <br/>
       <v-app>
         <div>
           <v-data-table v-bind:headers="headers" :items="items" class="elevation-1"></v-data-table>
