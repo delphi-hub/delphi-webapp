@@ -123,11 +123,14 @@ export default {
 	}
 	#filter {
 		width:100%;
+		border-style: solid;
+		border-width: 0.01em 0.01em 0 0.01em;
 	}
 	#select {
 		width: 100%;
 		height: 120px;
 		overflow: auto;
+		border-style: solid;
 	}
 	#optionSelect:hover {
 		background-color:rgba(176, 240, 176, 0.753);
