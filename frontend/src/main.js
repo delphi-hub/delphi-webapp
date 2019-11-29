@@ -18,7 +18,7 @@ Vue.http.interceptors.push((request, next) => {
       return {messages: response.body};
     };
   });
-})
+});
 
 Vue.component("app-landing", LandingPage);
 
@@ -35,5 +35,5 @@ var vm = new Vue({
   render: (h) => h(App) 
 });
 
-vm.$mount('#app');
+vm.$mount("#app");
 
