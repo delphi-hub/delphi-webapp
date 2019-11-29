@@ -80,9 +80,7 @@ export default {
             return response.json();
           })
           .then(data => {
-            vm.items = JSON.parse(
-              data.messages.substring(8, data.messages.length - 1)
-            );
+            vm.items = data.messages;
             this.readyToSearchQuery = "";
             this.finalQueryToReset = true;
           }),
