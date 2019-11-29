@@ -16,7 +16,7 @@ Vue.http.interceptors.push((request, next) => {
   next((response) => {
     response.json = () => {
       return {messages: response.body};
-    }
+    };
   });
 })
 
@@ -27,9 +27,9 @@ Vue.use(ImagePlugin);
 const router = new VueRouter({
   routes,
   mode: "history"
-})
+});
 
-new Vue({
+Vue.create({
   el: "#app",
   router,
   vuetify,
