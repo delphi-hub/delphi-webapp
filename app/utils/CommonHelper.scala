@@ -48,10 +48,4 @@ object CommonHelper {
 
     }
 
-    def createPostRequest(path: String, method: HttpMethod, query: String): HttpRequest = {
-    HttpRequest(method,
-      uri = path,
-      entity = HttpEntity(MediaTypes.`application/json`, query))
-    }
-
 }

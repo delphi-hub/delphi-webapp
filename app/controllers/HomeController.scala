@@ -64,10 +64,10 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val materializer = ActorMaterializer()
       implicit val queryFormat = jsonFormat2(Query)
 
-      val baseUri = Uri(config.server)
+      val baseUri = Uri(Config.server)
       val prettyParam = Map("pretty" -> "")
       val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
-      val responseFuture = Marshal(Query(query, config.limit)).to[RequestEntity] flatMap { entity =>
+      val responseFuture = Marshal(Query(query, Config.limit)).to[RequestEntity] flatMap { entity =>
         Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
       }
 
@@ -85,7 +85,6 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       }
 
       val result = Await.result(resultFuture, Duration.Inf)
-      val unmarshalledFuture = Unmarshal(result).to[List[SearchResult]]
       val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
       queryResponse
     }
