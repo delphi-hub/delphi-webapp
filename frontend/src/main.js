@@ -29,10 +29,11 @@ const router = new VueRouter({
   mode: "history"
 });
 
-Vue.create({
-  el: "#app",
+var vm = new Vue({
   router,
   vuetify,
   render: (h) => h(App) 
 });
+
+vm.$mount('#app');
 
