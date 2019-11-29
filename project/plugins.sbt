@@ -1,6 +1,5 @@
 // The Play plugin
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.24")
-//addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.7.3") this version not supporting webpack functionality
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.7.3")
 
 // build management and packaging
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.7.0")
