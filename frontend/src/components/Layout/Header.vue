@@ -3,7 +3,7 @@
     <div class="container-fluid sticky-top shadow">
         <div class="row align-items-center navigation">
             <div class="col-sm-2"> 
-                <b-img :src="require('../../assets/Logo.png')" fluid alt="Delphi Logo" style="height:55px; width:150px"></b-img>
+                <b-img :src="require('../../assets/Logo.png')" fluid alt="Delphi Logo" id="logoDelphi"></b-img>
             </div>
             <div class="col-sm-6">
             </div>
@@ -54,7 +54,10 @@ export default {
 .nav-item:hover .nav-text{
     color: #ffffff;
 }
-
+#logoDelphi {
+    height:55px;
+    width:150px;
+}
 .navigation{
     background-image: linear-gradient(to right, rgb(235, 235, 235) 12.5%, #c20202 12.5%);
 }    

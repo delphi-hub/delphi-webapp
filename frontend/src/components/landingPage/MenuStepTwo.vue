@@ -11,7 +11,7 @@
 					<option>=</option>
 				</select>
 				<input class="form-control" id="valueInput" type="text" placeholder="Input Value" v-model="selectedValue" @input="sendValue">  
-				<h6 v-show="notANumber" style="color:red; text-align: center;">Value should be numerical</h6>           
+				<h6 id="nanInformation" v-show="notANumber">Value should be numerical</h6>           
 			</div>
 		</div>
 	</div>
@@ -100,5 +100,9 @@
 	}
 	#valueInput {
 		margin: 30px auto;
+	}
+	#nanInformation {
+		color:red;
+		text-align: center;
 	}
 </style>
