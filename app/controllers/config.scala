@@ -15,7 +15,7 @@
 // limitations under the License.
 package controllers
 
-object config {
+object Config {
 
   val server="https://delphi.cs.uni-paderborn.de/api/search?pretty"
   val limit : Option[Int] = None
