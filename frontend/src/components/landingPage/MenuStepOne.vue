@@ -14,7 +14,9 @@
 					<input type="text" id="filter" name="metric_suggest" v-on:keyup="filter1" size="15" :value="selectedMetric"> 
 					<div>	 
 						<select id="select" size="10" v-model="selectedMetric" @change="sendMetric">
-							<option id="optionSelect" v-for="data in info.data" v-bind:key="data">{{data}}</option>
+							<template v-if="info">
+								<option id="optionSelect" v-for="data in info.data" v-bind:key="data">{{data}}</option>
+							</template>
 						</select>      
 					</div>
 				</div>                
