@@ -56,7 +56,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     * @return
     */
 
-  def query(query : String): Action[AnyContent] = Action.async {
+  def query(query: Option[String]): Action[AnyContent] = Action.async {
     implicit request => {
 
       implicit val system = ActorSystem()
@@ -67,7 +67,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       val baseUri = Uri(Config.server)
       val prettyParam = Map("pretty" -> "")
       val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
-      val responseFuture = Marshal(Query(query, Config.limit)).to[RequestEntity] flatMap { entity =>
+      val responseFuture = Marshal(Query(query.get, Config.limit)).to[RequestEntity] flatMap { entity =>
         Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
       }
 
