@@ -33,7 +33,7 @@ class FrontController @Inject()(assets: Assets, errorHandler: HttpErrorHandler, 
 
   def startPoint: Action[AnyContent] = assets.at("index.html")
 
-  def frontEndFile(resource: Option[String]): Action[AnyContent] =
-    if (resource.contains(".")) assets.at(resource.get) else startPoint
+  def frontEndFile(resource: String): Action[AnyContent] =
+    if (resource.contains(".")) assets.at(resource) else startPoint
 
 }
