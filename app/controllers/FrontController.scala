@@ -29,9 +29,8 @@ class FrontController @Inject()(assets: Assets,configuration: Configuration, cc:
 
 
   def startPoint: Action[AnyContent] = assets.at("index.html")
-
   def frontEndFile(resource: String): Action[AnyContent] =
-    if (resource.contains(".")) assets.at(resource) else startPoint
+    if (resource.contains("index.html")) assets.at(resource) else startPoint
 
 
 }
