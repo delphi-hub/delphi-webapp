@@ -1,17 +1,17 @@
 <template>
-	<div class="col-4" id="steptwoCol">
+	<div class="col-3" id="steptwoCol">
 		<div class="card">					
 			<div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
-				<h6 class="card-title">2. Operator and Value</h6>
+				<h6 class="card-title"><u>2. Operator and Value</u></h6>
 				<select id="inputState" class="form-control" v-model="selectedOperator" @change="sendOperator">
 					<option>&lt;</option>
-					<option>&#8804;</option>
+					<option value="&lt;=">&#8804;</option>
 					<option>&gt;</option>
-					<option>&#8805;</option>
+					<option value="&gt;=">&#8805;</option>
 					<option>=</option>
 				</select>
 				<input class="form-control" id="valueInput" type="text" placeholder="Input Value" v-model="selectedValue" @input="sendValue">  
-				<h6 id="nanInformation" v-show="notANumber">Value should be numerical</h6>           
+				<h6 id="nanInformation" v-show="notANumber">Number Please</h6>           
 			</div>
 		</div>
 	</div>
@@ -93,13 +93,15 @@
 <style>
 	#steptwoCol {
 		padding:0 5px 0 5px;
+		width:100px !important;
 	}
 	.card-body {
-		height: 230px;
-		overflow:hidden;
+		height: 200px;
+		overflow-y:auto;
+        padding:5px !important;
 	}
 	#valueInput {
-		margin: 30px auto;
+		margin: 20px auto 5px auto;
 	}
 	#nanInformation {
 		color:red;

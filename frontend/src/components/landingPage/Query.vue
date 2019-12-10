@@ -1,10 +1,14 @@
 <template>
-    <div class="col-6" id="queryCol">
-        <div id="queryInputGrid">			
-            <!-- for now disabled, because 'type in' functionallity is not supported right now -->
-            <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="finalQuery" @input="addToFinalQuery"></textarea>
-		</div>
-		
+    <div class="col-5" id="queryCol">
+        <textarea class="form-control form-control-lg" id="queryInput" type="text" :value="finalQuery" @input="addToFinalQuery"></textarea>
+        <button
+            id="startSearchButton"
+            class="btn btn-dark"
+            @click="onStartSearch"
+            :style="[(finalQuery) ? {'background-color': '#c20202'} : {'background-color':null}]">
+            <!-- TODO: The condition has to be changed -->
+            <h5 id="searchButtonText">Start Search</h5>
+        </button>
 	</div>
 </template>
 
@@ -15,33 +19,33 @@
                 type: String
             },
             finalQueryShouldBeReseted: {
-                type: Boolean,
-                default: false
+                type: Boolean
             }
         },
         data () {
             return {
-                finalQuery: ''            //todo: send to search part
+                finalQuery: ''
             }
         },
         watch: {
             partQuery: function (newVal) {
                 if(newVal){
                     this.finalQuery += newVal;
-                    this.$emit('finalQuerySend', this.finalQuery);
                 }
             },
-            finalQueryShouldBeReseted: function (newVal) {
-                if(newVal){
-                    this.finalQuery = '';
-                    this.finalMetricIsReseted(newVal);
-                }
+            finalQueryShouldBeReseted: function () {
+                this.finalQuery = '';
+                this.finalMetricIsReseted();
             }
         },
         methods: {
             addToFinalQuery(event){
                 this.finalQuery = event.target.value;
-                this.$emit('finalQuerySend', this.finalQuery);
+            },
+            onStartSearch() {
+                if(this.finalQuery) {
+                    this.$emit('finalQuerySend', this.finalQuery);
+                }
             },
             finalMetricIsReseted(){
                 this.$emit('confirmFinalQueryReset', false);
@@ -63,22 +67,25 @@
     #queryCol {
         background-color:rgb(235, 235, 235);
         border-radius: 10px 0 0 10px;
-    }
-
-    #queryInputGrid {
-        margin: 10px 0px 10px 0px;
-        
+        padding-right: 0px !important;
+        text-align:center;
     }
 
     #queryInput {
-        margin-top: 10px;
-        margin-bottom: 17px;
-        height:306px;
-        width: 90%;
+        height:160px;
+        width: 100%;
         background-color: white;
         resize: none;
     }
+    #startSearchButton {
+        width: 90%;
+        height: 50px;
+        margin-top: 10px;
+        font-variant: small-caps;
+    }
 
-    
-
+    #startSearchButton:hover {
+        box-shadow: 1px 1px 5px 3px grey;
+        border-radius: 3px;
+    }
 </style>
