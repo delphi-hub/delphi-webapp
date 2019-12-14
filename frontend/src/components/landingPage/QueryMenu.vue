@@ -2,9 +2,9 @@
 	<div class="col-7" id="menuCol">
 		<div class="row">
 			<div class="col-2" id="addQueryCol">
-				<button id="addQueryButton" 
+				<button id="addQueryButton"
 					class="btn btn-dark"
-					@click="onAddQuery" 
+					@click="onAddQuery"
 					:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
 					<h5 id="addQueryButtonText">Add to Query<br>&larr;&larr;&larr;</h5>
 				</button>	
@@ -127,6 +127,7 @@
 	#menuCol {
 		background-color:rgb(235, 235, 235); 
 		border-radius: 0 10px 10px 0;
+		padding: 12px;
 	}
 
 	#stepsGrid {
@@ -145,19 +146,16 @@
 	}
 
 	#addQueryButton {
-		background-color: rgb(97, 97, 97);
-		height: 140px;
+		height: 60px;
 		width:100%;
-		margin-top: 10px;
+		margin-top: 30px;
 	}
 
 	#addQueryButtonText {
 		font-variant: small-caps;
 	}
 	#addQueryButton:hover{
-		background-color: rgb(97, 97, 97);
 		box-shadow: 1px 1px 5px 3px grey;
-		border-radius: 3px;
 	}
 
 	#resetButton {

@@ -67,7 +67,7 @@
     #queryCol {
         background-color:rgb(235, 235, 235);
         border-radius: 10px 0 0 10px;
-        padding-right: 0px !important;
+        padding: 12px 0 12px 12px;
         text-align:center;
     }
 

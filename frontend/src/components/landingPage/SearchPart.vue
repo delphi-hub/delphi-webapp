@@ -79,8 +79,8 @@
 					})
 				.then(data => {
 					vm.items = data.messages;
-					this.readyToSearchQuery = "";
-					this.finalQueryToReset = true;
+				//	this.readyToSearchQuery = "";
+				//	this.finalQueryToReset = true;
 				}),
 				error => {
 					alert("Invalid query!", error.messages)
