@@ -13,6 +13,7 @@
 </template>
 
 <script>
+    import axios from 'axios'
     export default {
         props: {
             partQuery: {
@@ -24,7 +25,8 @@
         },
         data () {
             return {
-                finalQuery: ''
+                finalQuery: '',
+                suggestLib: ['>','<','=','&&','!','||','≤','≥']
             }
         },
         watch: {
@@ -49,7 +51,17 @@
             },
             finalMetricIsReseted(){
                 this.$emit('confirmFinalQueryReset', false);
+            },
+            buildCorpus(){
+                axios
+                .get('https://delphi.cs.uni-paderborn.de/api/features')
+                .then(response => (this.suggestLib = this.suggestLib.concat(response.data)))
+                
             }
+        },
+        mounted(){
+            this.buildCorpus();
+
         }
     }
 </script>
