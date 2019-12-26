@@ -24,15 +24,18 @@
 			</div>
 		</div>
 		<div>
+      <div id="itemsTest"> {{ items[1] }} </div>
 			<v-app>
 				<div id="resultTableDiv" class="card">
-					<v-data-table v-bind:headers="headers" :items="items" class="elevation-1"></v-data-table>
+					<v-data-table v-bind:headers="headers" :items="items" class="elevation-1">
+            <template v-slot:item.moreInfo="{ item }">
+            <a href="#">More Information</a>
+            </template></v-data-table>         
 				</div>
 			</v-app>
-			<br/>
-			<br/>
-			<br/>
+			
 		</div>
+    
 	</div>
 </template>
 
@@ -51,10 +54,11 @@
 				readyToSearchQuery: "",
 				finalQueryToReset: false,        
 				headers: [
-					{ text: "ArtifactId", align: "left", value: "metadata.artifactId" },
-					{ text: "GroupId", value: "metadata.groupId" },
-					{ text: "Source", value: "metadata.source" },
-					{ text: "Version", value: "metadata.version" }
+					{ text: "ArtifactId", align: "center", value: "metadata.artifactId" },
+					{ text: "GroupId", align: "center", value: "metadata.groupId" },
+					{ text: "Source", align: "center", value: "metadata.source" },
+					{ text: "Version", align: "center", value: "metadata.version" },
+          {text: "More Information", align: "center", value: "moreInfo" }
 				],
 				items: []
 			};
@@ -75,17 +79,20 @@
 				this.$http
 					.get("search/" + vm.readyToSearchQuery)
 					.then(response => {
-						return response.json();
+            return response.json();
 					})
 				.then(data => {
-					vm.items = data.messages;
+          vm.items = data.messages;
+          vm.items[1].metadata.push({version : "more info"});
+           //eslint-disable-next-line no-console
+           console.log(vm.items[1]);
 				//	this.readyToSearchQuery = "";
 				//	this.finalQueryToReset = true;
 				}),
 				error => {
 					alert("Invalid query!", error.messages)
-				};  
-			}
+        };
+      }
 		}
 	};
 </script>

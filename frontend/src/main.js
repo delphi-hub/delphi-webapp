@@ -17,6 +17,7 @@ Vue.http.interceptors.push((request, next) => {
     response.json = () => {
       return {messages: response.body};
     };
+   
   });
 });
 
