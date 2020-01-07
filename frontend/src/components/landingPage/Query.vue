@@ -1,5 +1,7 @@
 <template>
   <div class="col-5" id="queryCol">
+    <!--This input is equals to the finalQuery variable. 
+        After an input, the finalQuery variable will be set to the new input inside this textarea-->
     <textarea
       class="form-control form-control-lg"
       id="queryInput"
@@ -13,14 +15,14 @@
       class="error"
       v-if="metricValidator && finalQuery && submitted"
     >Incorrect metric: "{{this.metric}}" entered</div>
+    <!--This button is grey when the input is not a valid query and otherwise red-->
     <button
       id="startSearchButton"
       class="btn btn-dark"
       @click="onStartSearch"
-      :style="[(finalQuery) ? {'background-color': '#c20202'} : {'background-color':null}]"
+      :style="[($v.finalQuery.singleQValidator && finalQuery) ? {'background-color': '#c20202'} : {'background-color':null}]"
     >
-      <!-- TODO: The condition has to be changed -->
-      <h5 id="searchButtonText">Start Search</h5>
+      <h5 id="searchButtonText">Search</h5>
     </button>
   </div>
 </template>
@@ -40,10 +42,10 @@ const singleQValidator = value => {
 };
 export default {
   props: {
-    partQuery: {
+    partQuery: {        //query from SearchPart component
       type: String
     },
-    finalQueryShouldBeReseted: {
+    finalQueryShouldBeReseted: {      //boolean from SearchPart component for resetting the final query
       type: Boolean
     }
   },
@@ -63,17 +65,20 @@ export default {
     }
   },
   watch: {
-    partQuery: function(newVal) {
+    partQuery: function(newVal) {     //whenever a new query is comming from the queryMenu, it will be added to the finalQuery
       if (newVal) {
         this.finalQuery += newVal;
+        this.$emit('resetSavedQuery', "");  //without this line, if the user would choose twice the same query, nothing would happen
       }
     },
-    finalQueryShouldBeReseted: function() {
+    finalQueryShouldBeReseted: function() { //if searchPart asks for a reset, then this code here will be triggered and it calls the method finalMetricIsReseted to tell searchPart
       this.finalQuery = "";
       this.finalMetricIsReseted();
     }
   },
   methods: {
+    //the value of the current final query becomes the events value.
+    //This function i needed if the user types in the textfield.
     addToFinalQuery(event) {
       this.finalQuery = event.target.value;
     },
@@ -83,6 +88,7 @@ export default {
       this.$v.finalQuery.$touch();
       this.finalQuery = value;
     },
+    //if a valid query is given, then this function sends the final query to the searchPart component to initiate a search
     onStartSearch() {
       this.metric = this.finalQuery.substring(
         this.finalQuery.lastIndexOf("[") + 1,
@@ -96,6 +102,7 @@ export default {
         this.metricValidator = true;
       }
     },
+    //after a reset this sends a confirmation to searchPart
     finalMetricIsReseted() {
       this.$emit("confirmFinalQueryReset", false);
     },
@@ -131,17 +138,22 @@ export default {
 }
 
 #queryInput {
-  height: 160px;
+  height: 140px;
   width: 100%;
   background-color: white;
   resize: none;
 }
 #startSearchButton {
-  width: 90%;
-  height: 50px;
+  width: 50%;
   margin-top: 10px;
-  font-variant: small-caps;
+  text-align: center;
+	padding: 0 !important;
 }
+
+#searchButtonText  {
+		font-variant: small-caps;
+		font-size: 2em;
+	}
 
 #startSearchButton:hover {
   box-shadow: 1px 1px 5px 3px grey;

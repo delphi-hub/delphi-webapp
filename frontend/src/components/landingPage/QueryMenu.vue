@@ -6,10 +6,12 @@
 					class="btn btn-dark"
 					@click="onAddQuery"
 					:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
-					<h5 id="addQueryButtonText">Add to Query<br>&larr;&larr;&larr;</h5>
+					<h5 id="addQueryButtonText">Add</h5>
 				</button>	
 			</div>
 			<div class="col-10" id="menuStepsCol">
+				<!--Here the queryMenu is getting the values from the menuStep components. And the confirmations of the resets.
+					If a reset is needed then it will be sent here too.-->
 				<div class="row" id="stepsGrid">
 					<menuStepOne 
 						@metricSent="metric = $event" 
@@ -52,22 +54,19 @@
 				value: null,
 				logicalNOT: null,
 				logicalOperator: null,
-				errors: [],
 				metricToReset: false,
 				operatorAndValueToReset: false,
 				lNotAndLOperatorToReset: false
 			}
 		},
 		methods: {
+			//if all components from the menuStep compunents are given, this function creates a nice looking query. Afterwards the values will be resetted,
+			//by setting the reset variables to true. That will trigger the functions in the menuStep components.
 			onAddQuery() {
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
-					if(this.errors.length){
-						this.errors = [];
-					}
-
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')'; // + '\r\n'
+						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
 					}
 					else {
 						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
@@ -76,7 +75,7 @@
 						out += ' ' + this.logicalOperator + ' ';
 					}
 
-					this.$emit('addQuerySent', out);
+					this.$emit('addQuerySent', out);		//This sends the query to the searchPart component
 					this.metric = null;
 					this.operator = null;
 					this.value = null;
@@ -85,38 +84,6 @@
 					this.metricToReset = true;
 					this.operatorAndValueToReset = true;
 					this.lNotAndLOperatorToReset = true;
-				}
-				else {
-					if(!this.metric) {
-						if(!this.errors.includes("Metric required.")){
-							this.errors.push("Metric required.");
-						}
-					}
-					else {
-							this.removeElement(this.errors, "Metric required.");
-					}
-					if(!this.operator) {
-						if(!this.errors.includes("Operator required.")){
-							this.errors.push("Operator required.");
-						}						
-					}
-					else {
-							this.removeElement(this.errors, "Operator required.");
-					}
-					if(!this.value) {
-						if(!this.errors.includes("Value required.")){
-							this.errors.push("Value required.");
-						}					
-					}
-					else {
-							this.removeElement(this.errors, "Value required.");	
-					}
-				}			
-			},
-			removeElement(array, elem) {
-				var index = array.indexOf(elem);
-				if (index > -1) {
-					array.splice(index, 1);
 				}
 			}
 		}
@@ -139,6 +106,7 @@
 
 	#addQueryCol {
 		padding:0 5px 0 5px !important;
+		text-align: center;
 	}
 
 	#menuStepsCol {
@@ -146,14 +114,22 @@
 	}
 
 	#addQueryButton {
-		height: 60px;
-		width:100%;
-		margin-top: 30px;
+		width:90%;
+		margin: 1em auto;
+		text-align: center;
+		padding: 0 !important;
 	}
 
 	#addQueryButtonText {
 		font-variant: small-caps;
+		font-size: 2em;
 	}
+
+	#addQueryButtonText:before {
+		content: '\25c4';
+		padding-right: 0.3em;
+	}
+
 	#addQueryButton:hover{
 		box-shadow: 1px 1px 5px 3px grey;
 	}

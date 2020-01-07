@@ -10,15 +10,24 @@
 						<h5 class="queryHelpText">...or use these steps to build a query.</h5>
 					</div>
 				</div>
+				<!--SearchPart has two child components. Query is where the query textfield and the start search button is.
+					QueryMenu consists of the three steps to create a query and the add query button.-->
 				<div class="row">
+					<!--savedQuery updates the prop called partQuery
+						finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
+						After adding a new partQuery to the query component, it asks for resetting the savedquery.
+						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
+						After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
 					<query
-						:partQuery="savedQuery"
+						:partQuery="savedQuery"														
 						:finalQueryShouldBeReseted ="finalQueryToReset"
+						@resetSavedQuery="savedQuery = $event"
 						@confirmFinalQueryReset="finalQueryToReset = $event"
-						@finalQuerySend="readyToSearchQuery = $event">
+						@finalQuerySend="readyToSearchQuery = $event">						
 					</query>
+					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
 					<queryMenu 
-						@addQuerySent="saveQuery">
+						@addQuerySent="saveQueryMethod">
 					</queryMenu>
 				</div>
 			</div>
@@ -50,9 +59,9 @@
 		},
 		data() {
 			return {
-				savedQuery: "",
-				readyToSearchQuery: "",
-				finalQueryToReset: false,        
+				savedQuery: "",			//query from queryMenu will be saved here
+				readyToSearchQuery: "",	//finalQuery from the query component will be saved here
+				finalQueryToReset: false,        //if a reset is neccessary, this has to be set to true
 				headers: [
 					{ text: "ArtifactId", align: "center", value: "metadata.artifactId" },
 					{ text: "GroupId", align: "center", value: "metadata.groupId" },
@@ -64,14 +73,14 @@
 			};
 		},
 		watch: {
-			readyToSearchQuery: function (newVal) {
+			readyToSearchQuery: function (newVal) {	//if this variable is changed, the startSearch function will be triggered
 				if(newVal){
 					this.startSearch();
 				}
 			}
 		},
 		methods: {
-			saveQuery(querySent) {
+			saveQueryMethod(querySent) {		//This method saves querySent in the variable savedQuery
 				this.savedQuery = querySent;
 			},
 			startSearch() {
