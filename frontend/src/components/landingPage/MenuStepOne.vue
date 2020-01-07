@@ -13,7 +13,7 @@
 				</div>    
 				<!--This will be shown if the user hasn't yet chosen a metric-->
 				<div v-show="!selectedMetric">
-					<input type="text" id="filter" name="metric_suggest" v-on:keyup="filter1" size="15" :value="selectedMetric" placeholder="Filter Metric"> 
+					<input type="text" id="filter" name="metric_suggest" v-on:keyup="filter1" size="15" placeholder="Filter Metric"> 
 					<div v-if="info">	 
 						<select id="select" size="10" v-model="selectedMetric" @change="sendMetric">
 							<option data-toggle="tooltip" v-bind:title="data.description" id="optionSelect" v-for="data in info" v-bind:key="data.name">
@@ -50,6 +50,8 @@ export default {
 			if(newVal){
 				this.selectedMetric = null;
 				this.metricIsReseted(newVal);
+				document.getElementById("filter").value = ''; //without these, after removing metric the 
+				this.filter1();								  //list would still be filtered even though the text field is empty
 			}
 		},
 		selectedMetric: function (newVal) {		//if a metric is chosen, the border of step 1 will become green
@@ -74,7 +76,6 @@ export default {
 		removeMetric(){
 			this.selectedMetric = null;
 			this.$emit('metricSent', this.selectedMetric);	//This sets the metric to null in the component queryMenu
-			document.getElementById("filter").value = ''; //without these, after removing metric the list would still be filtered even though the text field is empty
 		},
 		filter1() {
 			var keyword = document.getElementById("filter").value;
