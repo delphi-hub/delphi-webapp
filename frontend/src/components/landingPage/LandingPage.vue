@@ -9,7 +9,6 @@
 
 <script>
 	import SearchPart from "./SearchPart";
-//	import ResultPart from "./ResultPart";
 	import Header from "../Layout/Header";
 	import Footer from "../Layout/Footer";
 
@@ -19,7 +18,6 @@
 		},
 		components: {
 			"app-search": SearchPart,
-//			"app-result": ResultPart,
 			"app-header": Header,
 			"app-footer": Footer
 		},
