@@ -11,7 +11,7 @@ import { ImagePlugin } from "bootstrap-vue";
 
 Vue.use(VueResource);
 
-Vue.http.options.root = "http://localhost:9000/";
+Vue.http.options.root = "";
 Vue.http.interceptors.push((request, next) => {
   next((response) => {
     response.json = () => {
