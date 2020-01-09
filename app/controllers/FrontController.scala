@@ -22,9 +22,10 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import spray.json.DefaultJsonProtocol
+import play.api.http.HttpErrorHandler
 
 @Singleton
-class FrontController @Inject()(assets: Assets,configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
+class FrontController @Inject()(assets: Assets, errorHandler: HttpErrorHandler, configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
   with SprayJsonSupport with DefaultJsonProtocol {
 
 
