@@ -34,12 +34,12 @@ import de.upb.cs.swt.delphi.client.SearchResultJson._
 import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.duration._
-import play.api.http.HttpErrorHandler
+
 /**
   * Created by benhermann on 02.01.18.
   */
 @Singleton
-class HomeController @Inject()(assets: Assets, errorHandler: HttpErrorHandler, configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
+class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
   with SprayJsonSupport with DefaultJsonProtocol {
 
   /**
