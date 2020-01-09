@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from './axios'
 //import VueAxios from 'vue-axios'
 export default {
 	props: {
@@ -89,7 +89,7 @@ export default {
 	},
 	mounted () {
 		axios
-		.get('https://delphi.cs.uni-paderborn.de/api/features')
+		.get()
 		.then(response => (this.info = response))
 	}
 }
