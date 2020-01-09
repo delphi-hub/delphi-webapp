@@ -17,6 +17,6 @@ package controllers
 
 object Config {
 
-  val server="https://delphi.cs.uni-paderborn.de/api/search?pretty"
+  val server="https://delphi.cs.uni-paderborn.de/api-legacy/search?pretty"
   val limit : Option[Int] = None
 }
