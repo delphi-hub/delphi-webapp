@@ -1,7 +1,7 @@
 <template>
   <div class="col-5" id="queryCol">
     <!--This input is equals to the finalQuery variable. 
-        After an input, the finalQuery variable will be set to the new input inside this textarea-->
+    After an input, the finalQuery variable will be set to the new input inside this textarea-->
     <textarea
       class="form-control form-control-lg"
       id="queryInput"
@@ -11,10 +11,10 @@
     ></textarea>
     <div class="error" v-if="!$v.finalQuery.required && submitted">Field is required</div>
     <div class="error" v-if="!$v.finalQuery.singleQValidator && finalQuery">Incorrect query format</div>
-    <div
+    <!-- <div
       class="error"
       v-if="metricValidator && finalQuery && submitted"
-    >Incorrect metric: "{{this.metric}}" entered</div>
+    >Incorrect metric: "{{this.metric}}" entered</div> -->
     <!--This button is grey when the input is not a valid query and otherwise red-->
     <button
       id="startSearchButton"
@@ -42,10 +42,12 @@ const singleQValidator = value => {
 };
 export default {
   props: {
-    partQuery: {        //query from SearchPart component
+    partQuery: {
+      //query from SearchPart component
       type: String
     },
-    finalQueryShouldBeReseted: {      //boolean from SearchPart component for resetting the final query
+    finalQueryShouldBeReseted: {
+      //boolean from SearchPart component for resetting the final query
       type: Boolean
     }
   },
@@ -54,7 +56,7 @@ export default {
       finalQuery: "",
       suggestLib: [">", "<", "=", "&&", "!", "||", "≤", "≥"],
       submitted: false,
-      metricValidator: false,
+      metricValidator: true,
       metric: ""
     };
   },
@@ -65,13 +67,15 @@ export default {
     }
   },
   watch: {
-    partQuery: function(newVal) {     //whenever a new query is comming from the queryMenu, it will be added to the finalQuery
+    partQuery: function(newVal) {
+      //whenever a new query is comming from the queryMenu, it will be added to the finalQuery
       if (newVal) {
         this.finalQuery += newVal;
-        this.$emit('resetSavedQuery', "");  //without this line, if the user would choose twice the same query, nothing would happen
+        this.$emit("resetSavedQuery", ""); //without this line, if the user would choose twice the same query, nothing would happen
       }
     },
-    finalQueryShouldBeReseted: function() { //if searchPart asks for a reset, then this code here will be triggered and it calls the method finalMetricIsReseted to tell searchPart
+    finalQueryShouldBeReseted: function() {
+      //if searchPart asks for a reset, then this code here will be triggered and it calls the method finalMetricIsReseted to tell searchPart
       this.finalQuery = "";
       this.finalMetricIsReseted();
     }
@@ -108,7 +112,7 @@ export default {
     },
     buildCorpus() {
       axios
-        .get("https://delphi.cs.uni-paderborn.de/api/features")
+        .get("https://delphi.cs.uni-paderborn.de/api-legacy/features")
         .then(
           response => (this.suggestLib = this.suggestLib.concat(response.data))
         );
@@ -147,13 +151,13 @@ export default {
   width: 50%;
   margin-top: 10px;
   text-align: center;
-	padding: 0 !important;
+  padding: 0 !important;
 }
 
-#searchButtonText  {
-		font-variant: small-caps;
-		font-size: 2em;
-	}
+#searchButtonText {
+  font-variant: small-caps;
+  font-size: 2em;
+}
 
 #startSearchButton:hover {
   box-shadow: 1px 1px 5px 3px grey;

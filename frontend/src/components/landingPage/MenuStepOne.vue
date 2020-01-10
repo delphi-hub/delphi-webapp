@@ -94,7 +94,7 @@ export default {
 	},
 	mounted () {
 		axios
-		.get('https://delphi.cs.uni-paderborn.de/api/features')
+		.get('https://delphi.cs.uni-paderborn.de/api-legacy/features')
 		.then(response => (this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1)))
 	}
 }
