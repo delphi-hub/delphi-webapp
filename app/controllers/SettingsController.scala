@@ -15,19 +15,13 @@
 // limitations under the License.
 package controllers
 
-import akka.actor.ActorSystem
+
 import de.upb.cs.swt.delphi.webapp.BuildInfo
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
-import utils.AppLogging
-import scala.concurrent.{ExecutionContext, Future}
-
-class SettingsController @Inject()(val controllerComponents: ControllerComponents) extends BaseController  with AppLogging{
-  implicit val system: ActorSystem = ActorSystem()
-  implicit val ec  : ExecutionContext = system.dispatcher
-  private val threadSleepTime:Int = 3000 // 3 second
 
 
+class SettingsController @Inject()(val controllerComponents: ControllerComponents) extends BaseController{
   //show the version of webapp service
   def version: Action[AnyContent] = Action { implicit request =>
     val version = Ok(BuildInfo.version)
@@ -35,8 +29,4 @@ class SettingsController @Inject()(val controllerComponents: ControllerComponent
 
   }
 
-  //shutdown hook for webapp shudown
-  def shutDownHook: Unit = {
-    log.info("Webapp Stopped Successfully")
-  }
 }
