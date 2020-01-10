@@ -25,7 +25,6 @@ object FrontEndBuilder {
   def apply(base: File): PlayRunHook = {
     object FrontEndBuilderScript extends PlayRunHook {
       var process: Option[Process] = None
-      val config: Config = ConfigFactory.parseFile(new File("conf/frontend.conf")).resolve()
       val isWin: Boolean = System.getProperty("os.name").toUpperCase().indexOf("WIN") >= 0
       override def afterStarted(add: InetSocketAddress): Unit = {
         process = if (isWin){
