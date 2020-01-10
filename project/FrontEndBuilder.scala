@@ -21,14 +21,13 @@ import play.sbt.PlayRunHook
 
 import scala.sys.process.Process
 
-object WebpackServer {
+object FrontEndBuilder {
   def apply(base: File): PlayRunHook = {
-    object WebpackServerScript extends PlayRunHook {
+    object FrontEndBuilderScript extends PlayRunHook {
       var process: Option[Process] = None
       val config: Config = ConfigFactory.parseFile(new File("conf/frontend.conf")).resolve()
       val isWin: Boolean = System.getProperty("os.name").toUpperCase().indexOf("WIN") >= 0
       override def afterStarted(add: InetSocketAddress): Unit = {
-        val port = config.getInt("webpack.port")
         process = if (isWin){
           Option(Process(s"cmd /c npm run build", base).run)}
         else{
@@ -40,6 +39,6 @@ object WebpackServer {
       }
     }
 
-    WebpackServerScript
+    FrontEndBuilderScript
   }
 }
