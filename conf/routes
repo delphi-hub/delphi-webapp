@@ -4,6 +4,8 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.FrontController.startPoint
+#GET     /                           controllers.FrontController.frontEndFile(file: String ?= "")
+#GET     /search/                    controllers.HomeController.query(query: String = "")
 GET     /search/:query              controllers.HomeController.query(query)
 GET     /version                    controllers.SettingsController.version
 
