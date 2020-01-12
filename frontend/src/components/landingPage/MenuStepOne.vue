@@ -26,8 +26,7 @@
 </template>
 
 <script>
-import axios from './axios'
-//import VueAxios from 'vue-axios'
+
 export default {
 	props: {
 		metricShouldBeReseted: {
@@ -88,9 +87,15 @@ export default {
 		}
 	},
 	mounted () {
-		axios
-		.get()
-		.then(response => (this.info = response))
+		this.$http
+          .get("features")
+          .then(response => {
+			this.info = response
+            return response.json();
+          })
+          error => {
+            alert("Invalid results!", error.messages)
+          };
 	}
 }
 </script>
