@@ -33,9 +33,15 @@
     <div>
       <v-app>
         <div id="resultTableDiv" class="card">
+          <div
+            class="inputQueryInResult"
+            v-if="readyToSearchQuery"
+          >you searched for the query : {{ readyToSearchQuery }}</div>
+          <hr />
           <v-data-table v-bind:headers="headers" :items="items" class="elevation-1">
             <template v-slot:item.moreInfo="{ item }">
-              <a href="#">More Information</a>
+              <!-- <a v-on:click="moreInfo" :href="moreInfoPage">More Information</a> -->
+              <router-link to="/moreInformation">More Information</router-link>
             </template>
           </v-data-table>
         </div>
@@ -55,6 +61,7 @@ export default {
   },
   data() {
     return {
+      moreInfoPage: "./MoreInformation.vue",
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       finalQueryToReset: false, //if a reset is neccessary, this has to be set to true
@@ -96,7 +103,8 @@ export default {
         error => {
           alert("Invalid query!", error.messages);
         };
-    }
+    },
+    moreInfo() {}
   }
 };
 </script>
@@ -127,5 +135,13 @@ export default {
 #resultTableDiv {
   margin: 30px;
   box-shadow: 1px 1px 5px 3px grey;
+}
+
+.inputQueryInResult {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-variant: small-caps;
+  font-size: 1.2em;
 }
 </style>
