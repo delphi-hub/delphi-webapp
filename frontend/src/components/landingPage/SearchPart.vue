@@ -80,7 +80,7 @@ export default {
             return response.json();
           })
           .then(data => {
-            vm.items = data.messages;
+            vm.items = data.messages.hits;
             this.readyToSearchQuery = "";
             this.finalQueryToReset = true;
           }),
