@@ -8,6 +8,7 @@ GET     /                           controllers.FrontController.startPoint
 #GET     /search/                    controllers.HomeController.query(query: String = "")
 GET     /search/:query              controllers.HomeController.query(query)
 GET     /version                    controllers.SettingsController.version
+GET     /retrieve/:elementId        controllers.HomeController.retrieve(elementId)
 
 
 
