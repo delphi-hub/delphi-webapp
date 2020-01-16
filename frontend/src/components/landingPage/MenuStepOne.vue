@@ -22,8 +22,10 @@
           <div>
             <select id="select" size="10" v-model="selectedMetric" @change="sendMetric">
               <template v-if="info">
-                <option id="optionSelect" v-for="data in info.data" v-bind:key="data">{{data}}</option>
-              </template>
+                <option data-toggle="tooltip" v-bind:title="data.description" id="optionSelect" v-for="data in info" v-bind:key="data.name">
+                  {{data.name}}
+                </option>
+               </template>
             </select>
           </div>
         </div>
@@ -45,7 +47,6 @@ export default {
       selectedMetric: null,
       borderColor: null,
       info: null,
-      data: null
     };
   },
   watch: {
@@ -92,7 +93,7 @@ export default {
   },
   mounted() {
     this.$http.get("features").then(response => {
-      this.info = response;
+      this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
       return response.json();
     });
     error => {
