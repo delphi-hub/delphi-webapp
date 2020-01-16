@@ -17,6 +17,6 @@ package controllers
 
 object Config {
 
-  val server = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api-legacy") + "/search?pretty"
+  val server = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api") + "/search?pretty"
   val limit : Option[Int] = None
 }

@@ -103,7 +103,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
 
-      val featuresUri = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api-legacy") + "/features"
+      val featuresUri = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api") + "/features"
 
       val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = featuresUri, method = HttpMethods.GET))
 
