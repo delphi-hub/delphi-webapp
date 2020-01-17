@@ -23,6 +23,17 @@ import scala.collection.immutable.Seq
 object CommonHelper {
 
   val configuration: Configuration = new Configuration()
+  val server = sys.env.getOrElse("DELPHI_SERVER","https://delphi.cs.uni-paderborn.de/api-legacy")
+  val limit : Option[Int] = None
+  val  urls = configuration.webApiUri
+
+  def getDelphiServer(): String = {
+    if(!configuration.webApiUri.equals(configuration.defaultWebApiHost)) {
+      configuration.webApiUri
+    } else {
+      server
+    }
+  }
 
     def addHttpProtocolIfNotExist(url: String): String = {
       val hasProtocol = url.startsWith("http://") || url.startsWith("https://")
