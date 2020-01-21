@@ -19,7 +19,6 @@ package controllers
 import akka.actor.{ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.stream.ActorMaterializer
@@ -27,10 +26,9 @@ import akka.util.ByteString
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
+import utils.CommonHelper
 
 import scala.concurrent.{Await, Future}
-import de.upb.cs.swt.delphi.client.SearchResult
-import de.upb.cs.swt.delphi.client.SearchResultJson._
 import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.duration._
@@ -64,10 +62,10 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val materializer = ActorMaterializer()
       implicit val queryFormat = jsonFormat2(Query)
 
-      val baseUri = Uri(Config.server)
+      val baseUri = Uri(CommonHelper.getDelphiServer())
       val prettyParam = Map("pretty" -> "")
       val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
-      val responseFuture = Marshal(Query(query, Config.limit)).to[RequestEntity] flatMap { entity =>
+      val responseFuture = Marshal(Query(query, CommonHelper.limit)).to[RequestEntity] flatMap { entity =>
         Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
       }
 
@@ -103,7 +101,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
 
-      val featuresUri = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api") + "/features"
+      val featuresUri = CommonHelper.getDelphiServer() + "/features"
 
       val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = featuresUri, method = HttpMethods.GET))
 
