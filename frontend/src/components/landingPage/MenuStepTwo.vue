@@ -5,9 +5,9 @@
 				<h6 class="card-title">2. Operator and Value</h6>
 				<select id="inputState" class="form-control" v-model="selectedOperator" @change="sendOperator">
 					<option>&lt;</option>
-					<option>&#8804;</option>
+					<option value="&lt;=">&#8804;</option>
 					<option>&gt;</option>
-					<option>&#8805;</option>
+					<option value="&gt;=">&#8805;</option>
 					<option>=</option>
 				</select>
 				<input class="form-control" id="valueInput" type="text" placeholder="Input Value" v-model="selectedValue" @input="sendValue">  
