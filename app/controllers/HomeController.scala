@@ -136,8 +136,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
 
-      val retrieveUri = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api") + "/retrieve/"+ elementId
-      println(retrieveUri)
+      val retrieveUri = CommonHelper.getDelphiServer() + "/retrieve/" + elementId
       val responseRetrieve: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = retrieveUri, method = HttpMethods.GET))
 
       val response = Await.result(responseRetrieve, 10 seconds)
