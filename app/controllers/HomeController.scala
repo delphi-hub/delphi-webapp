@@ -127,6 +127,40 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     }
   }
 
+  /////////
+  // you can test this method with the following URL: http://localhost:9000/retrieve/eu.eu-emi:emir-client:1.1.0
+  // it sould display the information of eu.eu-emi:emir-client:1.1.0 in an abstract way the
+  /////////
+  def retrieve(elementId: String): Action[AnyContent] = Action.async {
+    implicit request => {
+
+      implicit val system = ActorSystem()
+      implicit val ec = system.dispatcher
+      implicit val materializer = ActorMaterializer()
+
+      val retrieveUri = sys.env.getOrElse("DELPHI_WEBAPI_URL","https://delphi.cs.uni-paderborn.de/api") + "/retrieve/"+ elementId
+      println(retrieveUri)
+      val responseRetrieve: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = retrieveUri, method = HttpMethods.GET))
+
+      val response = Await.result(responseRetrieve, 10 seconds)
+
+      val resultFuture: Future[String] = response match {
+        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+          entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+            body.utf8String
+          }
+        case resp@HttpResponse(code, _, _, _) => {
+          resp.discardEntityBytes()
+          Future("")
+        }
+      }
+
+      val result = Await.result(resultFuture, Duration.Inf)
+      val retrieveResponse: Future[Result] = Future.successful(Ok(result))
+      retrieveResponse
+    }
+  }
+
   case class Query(query: String, limit: Option[Int] = None)
 }
 
