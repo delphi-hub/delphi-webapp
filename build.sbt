@@ -43,9 +43,9 @@ libraryDependencies ++= Seq(
 //Latest play sbt plugin in location project/plugins.sbt uses different jackson version that has security vulnerability as reported by snyk
 //This dependency override can be removed once play updates its jackson version
 dependencyOverrides ++= Seq(
-  "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.10.1",
-  "com.fasterxml.jackson.core" % "jackson-annotations" % "2.9.10",
-  "com.fasterxml.jackson.core" % "jackson-core" % "2.9.10"
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.10.2",
+  "com.fasterxml.jackson.core" % "jackson-annotations" % "2.10.2",
+  "com.fasterxml.jackson.core" % "jackson-core" % "2.10.2"
 )
 
 PlayKeys.playRunHooks += FrontEndBuilder(file("./frontend"))
