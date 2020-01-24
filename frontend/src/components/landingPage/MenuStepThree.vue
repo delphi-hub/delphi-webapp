@@ -1,0 +1,87 @@
+<template>
+    <div class="col-4" id="stepthreeCol">
+        <div class="card">					
+            <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
+                <h6 class="card-title">3. Logical Operator</h6>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="addnot" value="Add logical NOT" v-model="checkedNOT" @change="sendLogicalNOT">
+                    <label class="form-check-label" for="addnot">Add logical NOT</label>
+                </div>
+                <hr>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="">
+                    <label class="form-check-label" for="logical1">No logical operator</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="&&">
+                    <label class="form-check-label" for="logical2">AND</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical3" v-model="radioPicked" @change="sendLogicalOperator" value="||">
+                    <label class="form-check-label" for="logical3">OR</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="logical4" v-model="radioPicked" @change="sendLogicalOperator" value="XOR">
+                    <label class="form-check-label" for="logical4">XOR</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        props: {
+            lNOTAndLOperatorShouldBeReseted: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data () {
+            return {
+                checkedNOT: null,
+                radioPicked: null,
+                borderColor: null
+            }
+        },
+        watch: {
+            lNOTAndLOperatorShouldBeReseted: function (newVal) {
+                if(newVal){
+                    this.checkedNOT = null;
+                    this.radioPicked = null;
+                    this.lNOTAndLOperatorIsReseted(newVal);
+                }
+            },
+            radioPicked: function (newVal) {
+                if(newVal !== null){
+                  this.borderColor = '1px 1px 5px 3px green';
+                }
+                else {
+                    this.borderColor = null;
+                }
+            }
+        },
+        methods: {
+            sendLogicalNOT(){
+                this.$emit('logicalNotSent', this.checkedNOT);               
+            },
+            sendLogicalOperator(){
+                this.$emit('logicalOperatorSent', this.radioPicked);
+            },
+            lNOTAndLOperatorIsReseted(){
+                this.$emit('confirmLNotAndLOperatorReset', false);
+            }
+        }
+    }
+</script>
+
+
+<style>
+   #stepthreeCol {
+		padding:0 10px 0 5px;
+	}
+    .card-body {
+		height: 230px;
+		overflow:hidden;
+	}
+</style>

@@ -19,8 +19,12 @@ It is a web application to allow users to search for software projects.
 TBA.
 
 ## How can I use it?
-
-You can start your own instance by executing
+Install dependencies by executing following commands
+```
+cd frontend/src
+npm install
+```
+After successful installation of npm packages, you can start your own instance in root directory by executing
 ```
 sbt run
 ```

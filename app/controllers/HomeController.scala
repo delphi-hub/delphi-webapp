@@ -15,22 +15,30 @@
 // limitations under the License.
 package controllers
 
-import akka.http.scaladsl.model.HttpMethods
+
+import akka.actor.{ActorSystem}
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.marshalling.Marshal
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.stream.ActorMaterializer
+import akka.util.ByteString
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
-import utils.BlockingHttpClient
 import utils.CommonHelper
 
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.concurrent.{Await, Future}
+import spray.json.DefaultJsonProtocol
 
+import scala.concurrent.duration._
 
 /**
   * Created by benhermann on 02.01.18.
   */
 @Singleton
-class HomeController @Inject()(configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
+  with SprayJsonSupport with DefaultJsonProtocol {
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -38,24 +46,87 @@ class HomeController @Inject()(configuration: Configuration, cc: ControllerCompo
     * will be called when the application receives a `GET` request with
     * a path of `/`.
     */
-  def index : Action[AnyContent] = Action {
-    Ok(views.html.index("", "", false))
-  }
 
   /**
     * Executes a given query and shows a result page
+    *
     * @param query query to execute
     * @return
     */
-  def query(query : String) : Action[AnyContent] = Action.async {
+
+  def query(query: String): Action[AnyContent] = Action.async {
     implicit request => {
-      val request = CommonHelper.createWebApiRequest("/search/" + query, HttpMethods.GET)
-      val result = BlockingHttpClient.executeRequest(request)
-      result match {
-        case Success(response) => Future.successful(Ok(views.html.index(response, query, false)))
-        case Failure(_) => Future.successful(Ok(views.html.index("ERROR: Failed to reach server at " + request.uri, query, true)))
+
+      implicit val system = ActorSystem()
+      implicit val ec = system.dispatcher
+      implicit val materializer = ActorMaterializer()
+      implicit val queryFormat = jsonFormat2(Query)
+
+      val baseUri = Uri(CommonHelper.getDelphiServer())
+      val prettyParam = Map("pretty" -> "")
+      val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
+      val responseFuture = Marshal(Query(query, CommonHelper.limit)).to[RequestEntity] flatMap { entity =>
+        Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
       }
+
+
+      val response = Await.result(responseFuture, 10 seconds)
+      val resultFuture: Future[String] = response match {
+        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+          entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+            body.utf8String
+          }
+        case resp@HttpResponse(code, _, _, _) => {
+          resp.discardEntityBytes()
+          Future("")
+        }
+      }
+
+      val result = Await.result(resultFuture, Duration.Inf)
+      val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
+      queryResponse
     }
   }
 
+  /**
+    * Get list of features
+    *
+    * @return
+    */
+
+  def features(): Action[AnyContent] = Action.async {
+    implicit request => {
+
+      implicit val system = ActorSystem()
+      implicit val ec = system.dispatcher
+      implicit val materializer = ActorMaterializer()
+
+      val featuresUri = CommonHelper.getDelphiServer() + "/features"
+
+      val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = featuresUri, method = HttpMethods.GET))
+
+
+      val response = Await.result(responseFuture, 10 seconds)
+
+      val resultFuture: Future[String] = response match {
+        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+          entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+            body.utf8String
+          }
+        case resp@HttpResponse(code, _, _, _) => {
+          resp.discardEntityBytes()
+          Future("")
+        }
+      }
+
+      val result = Await.result(resultFuture, Duration.Inf)
+      val queryResponse: Future[Result] = Future.successful(Ok(result))
+      queryResponse
+    }
+  }
+
+  case class Query(query: String, limit: Option[Int] = None)
 }
+
+
+

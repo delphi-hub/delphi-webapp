@@ -32,6 +32,7 @@ class SettingsController @Inject()(val controllerComponents: ControllerComponent
   def version: Action[AnyContent] = Action { implicit request =>
     val version = Ok(BuildInfo.version)
     version
+
   }
 
   //shutdown hook for webapp shudown

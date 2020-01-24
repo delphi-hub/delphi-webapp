@@ -28,7 +28,8 @@ class Configuration(val bindPort: Int = ConfigFactory.load().getInt("app.portWeb
   val instanceName = "WebAppInstance"
   val instanceRegistryUri : String = sys.env.getOrElse("DELPHI_IR_URI", ConfigFactory.load().getString("instance.registry.path"))
 
-  lazy val webApiUri:String =  webApiInstance.host + ":" + webApiInstance.portNumber
+  lazy val webApiUri:String =  webApiInstance.host
+  // + ":" + webApiInstance.portNumber
 
   lazy val webApiInstance : Instance = InstanceRegistry.retrieveWebApiInstance(this) match {
     case Success(instance) => instance

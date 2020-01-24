@@ -1,5 +1,10 @@
-import com.typesafe.config._
+import java.io.File
 
+import com.typesafe.config._
+import com.typesafe.sbt.packager.MappingsHelper.directory
+
+import scala.sys.process.Process
+mappings in Universal ++= directory(baseDirectory.value / "public")
 name := "delphi-webapp"
 
 version := "1.0.0-SNAPSHOT"
@@ -29,7 +34,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core" % "10.0.14",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.6"
 )
-
+libraryDependencies += "de.upb.cs.swt.delphi" %% "delphi-client" % "0.9.0"
 // Pinning secure versions of insecure transitive libraryDependencies
 // Please update when updating dependencies above (including Play plugin)
 libraryDependencies ++= Seq(
@@ -37,11 +42,12 @@ libraryDependencies ++= Seq(
 )
 //Latest play sbt plugin in location project/plugins.sbt uses different jackson version that has security vulnerability as reported by snyk
 //This dependency override can be removed once play updates its jackson version
-dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.10.1"
-
-val conf = ConfigFactory.parseFile(new File("conf/application.conf")).resolve()
-val appPortWebapp = conf.getString("app.portWebapp")
-
-PlayKeys.devSettings := Seq(
-  "play.server.http.port" -> appPortWebapp
+dependencyOverrides ++= Seq(
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.10.1",
+  "com.fasterxml.jackson.core" % "jackson-annotations" % "2.9.10",
+  "com.fasterxml.jackson.core" % "jackson-core" % "2.9.10"
 )
+
+PlayKeys.playRunHooks += FrontEndBuilder(file("./frontend"))
+// Production front-end build
+// Play framework hooks for development

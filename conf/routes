@@ -3,9 +3,14 @@
 # ~~~~
 
 # An example controller showing a sample home page
-  GET     /                           controllers.HomeController.index
-  GET     /search/                    controllers.HomeController.query(query)
-  GET     /version                    controllers.SettingsController.version
+GET     /                           controllers.FrontController.startPoint
+#GET     /                           controllers.FrontController.frontEndFile(file: String ?= "")
+#GET     /search/                    controllers.HomeController.query(query: String = "")
+GET     /search/:query              controllers.HomeController.query(query)
+GET     /version                    controllers.SettingsController.version
+GET     /features                   controllers.HomeController.features
+
 
 # Map static resources from the /public folder to the /assets URL path
-  GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /*file                      controllers.FrontController.frontEndFile(file)
+#GET    /assets/*file              controllers.Assets.versioned(path="/public", file: Asset)

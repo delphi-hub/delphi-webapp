@@ -4,3 +4,7 @@
 project/project/target
 project/target
 target
+frontend/node_modules
+frontend/.DS_Store
+frontend/src/.DS_Store
+.DS_Store
