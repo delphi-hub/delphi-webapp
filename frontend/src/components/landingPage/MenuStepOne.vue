@@ -1,8 +1,8 @@
 <template>
-  <div class="col-4" id="steponeCol">
+  <div class="col-6" id="steponeCol">
     <div class="card">
       <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
-        <h6 class="card-title">1. Metric</h6>
+        <h6 class="card-title"><u>1. Metric</u></h6>
         <div v-show="selectedMetric">
           <p>Chosen Metric:</p>
           <div id="chosenMetricDiv">
@@ -18,6 +18,7 @@
             v-on:keyup="filter1"
             size="15"
             :value="selectedMetric"
+            placeholder="Filter Metric"
           />
           <div>
             <select id="select" size="10" v-model="selectedMetric" @change="sendMetric">
@@ -105,11 +106,12 @@ export default {
 
 <style>
 #steponeCol {
-  padding: 0 5px 0 10px;
+  padding: 0 5px 0 0;
 }
 .card-body {
-  height: 230px;
-  overflow: hidden;
+  height: 200px;
+  overflow-y:auto;
+  padding:5px !important;
 }
 #chosenMetricDiv {
   text-align: center;
@@ -138,7 +140,7 @@ export default {
 }
 #select {
   width: 100%;
-  height: 120px;
+  height: 125px;
   overflow: auto;
   border-style: solid;
 }

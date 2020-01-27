@@ -1,30 +1,36 @@
 <template>
-	<div class="col-6" id="menuCol">
+	<div class="col-7" id="menuCol">
 		<div class="row">
-			<menuStepOne 
-				@metricSent="metric = $event" 
-				@confirmMetricReset="metricToReset = $event" 
-				:metricShouldBeReseted="metricToReset">
-			</menuStepOne>
-			<menuStepTwo 
-				@operatorSent="operator = $event" 
-				@valueSent="value = $event" 
-				@confirmOperatorAndValueReset="operatorAndValueToReset = $event" 
-				:operatorAndValueShouldBeReseted="operatorAndValueToReset">
-			</menuStepTwo>
-			<menuStepThree 
-				@logicalNotSent="logicalNOT = $event" 
-				@logicalOperatorSent="logicalOperator = $event" 
-				@confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" 
-				:lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset">
-			</menuStepThree>       
-		</div>
-		<hr>
-		<button class="btn btn-dark" id="addQueryButton" 
-			@click="onAddQuery" 
-			:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
-			<h5 id="addQueryButtonText">Add to Query</h5>
-		</button>		
+			<div class="col-2" id="addQueryCol">
+				<button id="addQueryButton" 
+					class="btn btn-dark"
+					@click="onAddQuery" 
+					:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
+					<h5 id="addQueryButtonText">Add to Query<br>&larr;&larr;&larr;</h5>
+				</button>	
+			</div>
+			<div class="col-10" id="menuStepsCol">
+				<div class="row" id="stepsGrid">
+					<menuStepOne 
+						@metricSent="metric = $event" 
+						@confirmMetricReset="metricToReset = $event" 
+						:metricShouldBeReseted="metricToReset">
+					</menuStepOne>
+					<menuStepTwo 
+						@operatorSent="operator = $event" 
+						@valueSent="value = $event" 
+						@confirmOperatorAndValueReset="operatorAndValueToReset = $event" 
+						:operatorAndValueShouldBeReseted="operatorAndValueToReset">
+					</menuStepTwo>
+					<menuStepThree 
+						@logicalNotSent="logicalNOT = $event" 
+						@logicalOperatorSent="logicalOperator = $event" 
+						@confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" 
+						:lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset">
+					</menuStepThree>       
+				</div>
+			</div>			
+		</div>	
 	</div>
 </template>
 
@@ -120,29 +126,36 @@
 <style>
 	#menuCol {
 		background-color:rgb(235, 235, 235); 
-		padding-top: 10px; 
 		border-radius: 0 10px 10px 0;
 		
 	}
-	#addQueryButton {
-		width: 25%; 
-		background-color: rgb(97, 97, 97);
-		float:left;
-		margin-bottom: 15px;
-		height: 40px;
+	#stepsGrid {
+		margin:0 10px 0 0;
+		background-color: rgb(192, 192, 192);
+		padding:10px;
+		border-radius: 5px;
 	}
-
+	#addQueryCol {
+		padding:0 5px 0 5px !important;
+	}
+	#menuStepsCol {
+		padding:0 !important;
+	}
+	#addQueryButton {
+		width: 100%; 
+		background-color: rgb(97, 97, 97);
+		margin-top: 10px;
+		height: 140px;
+	}
 	#addQueryButtonText {
 		font-variant: small-caps;
 	}
-
 	#addQueryButton:hover{
 		background-color: rgb(97, 97, 97);
 		box-shadow: 1px 1px 5px 3px grey;
 		border-radius: 3px;
-}
-
-#resetButton {
+	}
+	#resetButton {
 		width: 25%; 
 		margin-bottom: 15px;
 		background-color: rgb(97, 97, 97);
@@ -150,15 +163,12 @@
 		margin-left: 15px;
 		height: 40px;
 	}
-
 	#resetButtonText {
 		font-variant: small-caps;
 	}
-
 	#resetButton:hover{
 		background-color: rgb(97, 97, 97);
 		box-shadow: 1px 1px 5px 3px grey;
 		border-radius: 3px;
-}
-
+	}
 </style>

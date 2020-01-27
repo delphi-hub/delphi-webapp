@@ -1,16 +1,16 @@
 <template>
-    <div class="col-4" id="stepthreeCol">
+    <div class="col-3" id="stepthreeCol">
         <div class="card">					
             <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
-                <h6 class="card-title">3. Logical Operator</h6>
+                <h6 class="card-title"><u>3. Logical Operator</u></h6>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="addnot" value="Add logical NOT" v-model="checkedNOT" @change="sendLogicalNOT">
-                    <label class="form-check-label" for="addnot">Add logical NOT</label>
+                    <label class="form-check-label" for="addnot">Add NOT</label>
                 </div>
                 <hr>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="">
-                    <label class="form-check-label" for="logical1">No logical operator</label>
+                    <label class="form-check-label" for="logical1">No operator</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="&&">
@@ -78,10 +78,14 @@
 
 <style>
    #stepthreeCol {
-		padding:0 10px 0 5px;
+		padding:0 0 0 5px;
 	}
     .card-body {
-		height: 230px;
-		overflow:hidden;
+		height: 200px;
+		overflow-y:auto;
+        padding:5px !important;
 	}
+    hr {
+        margin:5px !important;
+    }
 </style>
