@@ -40,8 +40,10 @@
           <hr />
           <v-data-table v-bind:headers="headers" :items="items" class="elevation-1">
             <template v-slot:item.moreInfo="{ item }">
-              <!-- <a v-on:click="moreInfo" :href="moreInfoPage">More Information</a> -->
-              <router-link to="/moreInformation">More Information</router-link>
+              <router-link
+                v-on:click.native="moreInfoNavigation(item.metadata.artifactId)"
+                :to="{ path: '/MoreInformation' }"
+              >More Information</router-link>
             </template>
           </v-data-table>
         </div>
@@ -53,6 +55,7 @@
 <script>
 import Query from "./Query.vue";
 import QueryMenu from "./QueryMenu.vue";
+import { eventBus } from "../../main";
 
 export default {
   components: {
@@ -61,7 +64,7 @@ export default {
   },
   data() {
     return {
-      moreInfoPage: "./MoreInformation.vue",
+      moreInfoArtifactId: "",
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       finalQueryToReset: false, //if a reset is neccessary, this has to be set to true
@@ -70,7 +73,9 @@ export default {
         { text: "GroupId", align: "center", value: "metadata.groupId" },
         { text: "Source", align: "center", value: "metadata.source" },
         { text: "Version", align: "center", value: "metadata.version" },
+        // { text: "Metric Value", align: "center", value: "metricResults" },
         { text: "More Information", align: "center", value: "moreInfo" }
+        // { text: "Test", align: "center", value: "test" }
       ],
       items: []
     };
@@ -97,14 +102,14 @@ export default {
         })
         .then(data => {
           vm.items = data.messages;
-          //	this.readyToSearchQuery = "";
-          //	this.finalQueryToReset = true;
         }),
         error => {
           alert("Invalid query!", error.messages);
         };
     },
-    moreInfo() {}
+    moreInfoNavigation(artifactIdParam) {
+      eventBus.$emit("moreInfoEvent", artifactIdParam);
+    }
   }
 };
 </script>

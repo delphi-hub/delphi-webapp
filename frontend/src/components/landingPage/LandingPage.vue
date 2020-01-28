@@ -1,7 +1,9 @@
 <template>
   <div>
     <app-header></app-header>
-    <app-search></app-search>
+    <keep-alive include="SearchPart">
+      <app-search></app-search>
+    </keep-alive>
     <!-- <app-result></app-result> -->
     <app-footer></app-footer>
   </div>
