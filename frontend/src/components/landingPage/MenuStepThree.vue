@@ -45,6 +45,7 @@
             }
         },
         watch: {
+            //if queryMenu asks for a reset, then this code here will be triggered and it calls the method lNOTAndLOperatorIsReseted to tell queryMenu
             lNOTAndLOperatorShouldBeReseted: function (newVal) {
                 if(newVal){
                     this.checkedNOT = null;
@@ -52,6 +53,7 @@
                     this.lNOTAndLOperatorIsReseted(newVal);
                 }
             },
+            //if a radio option is chosen, the border of step 3 will become green
             radioPicked: function (newVal) {
                 if(newVal !== null){
                   this.borderColor = '1px 1px 5px 3px green';
@@ -62,12 +64,15 @@
             }
         },
         methods: {
+            //sends the logicalNot value to queryMenu
             sendLogicalNOT(){
                 this.$emit('logicalNotSent', this.checkedNOT);               
             },
+            //sends the chosen logical operator to queryMenu
             sendLogicalOperator(){
                 this.$emit('logicalOperatorSent', this.radioPicked);
             },
+            //sends confirmation to queryMenu that the logical not and the logical operators are resettet
             lNOTAndLOperatorIsReseted(){
                 this.$emit('confirmLNotAndLOperatorReset', false);
             }

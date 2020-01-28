@@ -10,11 +10,20 @@
 						<h5 class="queryHelpText">...or use these steps to build a query.</h5>
 					</div>
 				</div>
+				<!--SearchPart has two child components. Query is where the query textfield and the start search button is.
+					QueryMenu consists of the three steps to create a query and the add query button.-->
 				<div class="row">
+					<!--savedQuery updates the prop called partQuery
+						finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
+						After adding a new partQuery to the query component, it asks for resetting the savedquery.
+						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
+						After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
 					<query
 						:partQuery="savedQuery"
 						@finalQuerySend="readyToSearchQuery = $event"
+						@resetSavedQuery="savedQuery = $event"
 					></query>
+					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
 					<queryMenu
 						@addQuerySent="saveQuery">
 					</queryMenu>
@@ -45,8 +54,8 @@
 		},
 		data() {
 			return {
-				savedQuery: "",
-				readyToSearchQuery: "",
+				savedQuery: "",			//query from queryMenu will be saved here
+				readyToSearchQuery: "",	//finalQuery from the query component will be saved here
 				headers: [
 					{ text: "ArtifactId", align: "left", value: "metadata.artifactId" },
 					{ text: "GroupId", value: "metadata.groupId" },
@@ -57,6 +66,7 @@
 			};
 		},
 		watch: {
+			//if this variable is changed, the startSearch function will be triggered
 			readyToSearchQuery: function (newVal) {
 				if(newVal){
 					this.startSearch();
@@ -64,6 +74,7 @@
 			}
 		},
 		methods: {
+			//This method saves querySent in the variable savedQuery
 			saveQuery(querySent) {
 				this.savedQuery = querySent;
 			},

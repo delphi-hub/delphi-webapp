@@ -34,6 +34,7 @@
 			}
 		},
 		watch: {
+			//if queryMenu asks for a reset, then this code here will be triggered and it calls the method operatorAndValueIsReseted to tell queryMenu
 			operatorAndValueShouldBeReseted: function (newVal) {
 				if(newVal){
 					this.selectedOperator = null;
@@ -41,6 +42,7 @@
 					this.operatorAndValueIsReseted(newVal);
 				}
 			},
+			//if a operator and value is given, the border of step 2 will become green
 			selectedOperator: function (newVal) {
 				if(newVal && this.selectedValue && !this.notANumber){
 					this.borderColor = '1px 1px 5px 3px green';
@@ -52,6 +54,7 @@
 					this.borderColor = null;
 				}
 			},
+			//if a operator and value is given, the border of step 2 will become green
 			selectedValue: function (newVal) {
 				if(newVal && this.selectedOperator && !this.notANumber){
 					this.borderColor = '1px 1px 5px 3px green';
@@ -65,9 +68,11 @@
 			}
 		},
 		methods: {
+			//sends the operator to the queryMenu
 			sendOperator(){
 				this.$emit('operatorSent', this.selectedOperator);               
 			},
+			//sends the value to the queryMenu if it is a number
 			sendValue(){
 				if(this.isNumeric(this.selectedValue) || (this.selectedValue === '')){
 					this.$emit('valueSent', this.selectedValue);
@@ -79,11 +84,13 @@
 				}
 				
 			},
+			//after a reset this sends a confirmation to queryMenu
 			operatorAndValueIsReseted(){
 				this.$emit('confirmOperatorAndValueReset', false);
 			},
+			//needed to check if the value is a number
 			isNumeric: function (n) {
-				return !isNaN(parseInt(n)) && isFinite(n);  //is .5 or 5. or +5 or -5 allowed? Are real numbers allowed?
+				return !isNaN(parseInt(n)) && isFinite(n);
 			}
 		}
 	}

@@ -6,10 +6,12 @@
 					class="btn btn-dark"
 					@click="onAddQuery" 
 					:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
-					<h5 id="addQueryButtonText">Add to Query<br>&larr;&larr;&larr;</h5>
+					<h5 id="addQueryButtonText">Add</h5>
 				</button>	
 			</div>
 			<div class="col-10" id="menuStepsCol">
+				<!--Here the queryMenu is getting the values from the menuStep components. And the confirmations of the resets.
+					If a reset is needed then it will be sent here too.-->
 				<div class="row" id="stepsGrid">
 					<menuStepOne 
 						@metricSent="metric = $event" 
@@ -52,7 +54,6 @@
 				value: null,
 				logicalNOT: null,
 				logicalOperator: null,
-				errors: [],
 				metricToReset: false,
 				operatorAndValueToReset: false,
 				lNotAndLOperatorToReset: false
@@ -61,13 +62,9 @@
 		methods: {
 			onAddQuery() {
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
-					if(this.errors.length){
-						this.errors = [];
-					}
-
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')'; // + '\r\n'
+						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
 					}
 					else {
 						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
@@ -85,39 +82,7 @@
 					this.metricToReset = true;
 					this.operatorAndValueToReset = true;
 					this.lNotAndLOperatorToReset = true;
-				}
-				else {
-					if(!this.metric) {
-						if(!this.errors.includes("Metric required.")){
-							this.errors.push("Metric required.");
-						}
-					}
-					else {
-							this.removeElement(this.errors, "Metric required.");
-					}
-					if(!this.operator) {
-						if(!this.errors.includes("Operator required.")){
-							this.errors.push("Operator required.");
-						}						
-					}
-					else {
-							this.removeElement(this.errors, "Operator required.");
-					}
-					if(!this.value) {
-						if(!this.errors.includes("Value required.")){
-							this.errors.push("Value required.");
-						}					
-					}
-					else {
-							this.removeElement(this.errors, "Value required.");	
-					}
-				}			
-			},
-			removeElement(array, elem) {
-				var index = array.indexOf(elem);
-				if (index > -1) {
-					array.splice(index, 1);
-				}
+				}		
 			}
 		}
 	}
@@ -127,7 +92,7 @@
 	#menuCol {
 		background-color:rgb(235, 235, 235); 
 		border-radius: 0 10px 10px 0;
-		
+		padding: 12px;
 	}
 	#stepsGrid {
 		margin:0 10px 0 0;
@@ -137,23 +102,27 @@
 	}
 	#addQueryCol {
 		padding:0 5px 0 5px !important;
+		text-align: center;
 	}
 	#menuStepsCol {
 		padding:0 !important;
 	}
 	#addQueryButton {
-		width: 100%; 
-		background-color: rgb(97, 97, 97);
-		margin-top: 10px;
-		height: 140px;
+		width: 90%; 
+		margin: 1em auto;
+		text-align: center;
+		padding: 0 !important;
 	}
 	#addQueryButtonText {
 		font-variant: small-caps;
+		font-size: 1.5em;
+	}
+	#addQueryButtonText:before {
+		content: '\25c4';
+		padding-right: 0.3em;
 	}
 	#addQueryButton:hover{
-		background-color: rgb(97, 97, 97);
 		box-shadow: 1px 1px 5px 3px grey;
-		border-radius: 3px;
 	}
 	#resetButton {
 		width: 25%; 
