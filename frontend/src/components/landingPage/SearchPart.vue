@@ -73,7 +73,7 @@ export default {
         { text: "GroupId", align: "center", value: "metadata.groupId" },
         { text: "Source", align: "center", value: "metadata.source" },
         { text: "Version", align: "center", value: "metadata.version" },
-        // { text: "Metric Value", align: "center", value: "metricResults" },
+        // { text: "Metric Value", align: "center", value: "metricResults" }, 
         { text: "More Information", align: "center", value: "moreInfo" }
         // { text: "Test", align: "center", value: "test" }
       ],

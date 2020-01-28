@@ -26,6 +26,7 @@ export default {
     "app-header": Header,
     "app-footer": Footer
   },
-  methods: {}
+  methods: { 
+  }
 };
 </script>
