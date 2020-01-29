@@ -1,124 +1,205 @@
 <template>
-	<div>
-		<div class="card" id="searchPart">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-6">
-						<h5 class="queryHelpText">Type in your query...</h5>
-					</div>
-					<div class="col-6">
-						<h5 class="queryHelpText">...or use these steps to build a query.</h5>
-					</div>
-				</div>
-				<!--SearchPart has two child components. Query is where the query textfield and the start search button is.
-					QueryMenu consists of the three steps to create a query and the add query button.-->
-				<div class="row">
-					<!--savedQuery updates the prop called partQuery
+  <div>
+    <div class="card" id="searchPart">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-6">
+            <h5 class="queryHelpText">Type in your query...</h5>
+          </div>
+          <div class="col-6">
+            <h5 class="queryHelpText">...or use these steps to build a query.</h5>
+          </div>
+        </div>
+        <!--SearchPart has two child components. Query is where the query textfield and the start search button is.
+        QueryMenu consists of the three steps to create a query and the add query button.-->
+        <div class="row">
+          <!--savedQuery updates the prop called partQuery
 						finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
 						After adding a new partQuery to the query component, it asks for resetting the savedquery.
 						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
-						After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
-					<query
-						:partQuery="savedQuery"
-						@finalQuerySend="readyToSearchQuery = $event"
-						@resetSavedQuery="savedQuery = $event"
-					></query>
-					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-					<queryMenu
-						@addQuerySent="saveQuery">
-					</queryMenu>
-				</div>
-			</div>
-		</div>
-		<div>
-			<v-app>
-				<div id="resultTableDiv" class="card">
-					<v-data-table v-bind:headers="headers" :items="items" class="elevation-1"></v-data-table>
-				</div>
-			</v-app>
-			<br />
-			<br />
-			<br />
-		</div>
-	</div>
+          After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
+          <query
+            :errMsg="queryError"
+            :partQuery="savedQuery"
+            @emptyQuery="clearItems = $event"
+            @finalQuerySend="readyToSearchQuery = $event"
+            @resetSavedQuery="savedQuery = $event"
+          ></query>
+          <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
+          <queryMenu @addQuerySent="saveQuery"></queryMenu>
+        </div>
+      </div>
+    </div>
+    <div class="downloadDiv">
+      <button class="download">
+        <download-excel :data="items" :fields="fields" worksheet="Sheet1" name="results.xls">
+          Export to Excel
+          <v-icon large color="green darken-2">mdi-file-excel</v-icon>
+        </download-excel>
+      </button>
+    </div>
+    <div>
+      <v-app>
+        <div id="resultTableDiv" class="card">
+          <v-data-table
+            :headers="headers"
+            :items="items"
+            :loading="progressBar"
+            loading-text="Searching for the results, please wait...."
+            class="elevation-1"
+          >
+            <v-progress-linear
+              v-show="progressBar"
+              slot="progress"
+              loading-text="Loading... Please wait"
+              indeterminate
+            ></v-progress-linear>
+            <v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
+          </v-data-table>
+        </div>
+      </v-app>
+      <br />
+      <br />
+      <br />
+    </div>
+  </div>
 </template>
 
 <script>
-	import Query from "./Query.vue";
-	import QueryMenu from "./QueryMenu.vue";
+import Query from "./Query.vue";
+import QueryMenu from "./QueryMenu.vue";
 
-	export default {
-		components: {
-			query: Query,
-			queryMenu: QueryMenu
-		},
-		data() {
-			return {
-				savedQuery: "",			//query from queryMenu will be saved here
-				readyToSearchQuery: "",	//finalQuery from the query component will be saved here
-				headers: [
-					{ text: "ArtifactId", align: "left", value: "metadata.artifactId" },
-					{ text: "GroupId", value: "metadata.groupId" },
-					{ text: "Source", value: "metadata.source" },
-					{ text: "Version", value: "metadata.version" }
-				],
-				items: []
-			};
-		},
-		watch: {
-			//if this variable is changed, the startSearch function will be triggered
-			readyToSearchQuery: function (newVal) {
-				if(newVal){
-					this.startSearch();
-				}
-			}
-		},
-		methods: {
-			//This method saves querySent in the variable savedQuery
-			saveQuery(querySent) {
-				this.savedQuery = querySent;
-			},
-			startSearch() {
-				if (this.readyToSearchQuery) {
-					var vm = this;
-					this.$http
-						.get("search/" + vm.readyToSearchQuery)
-						.then(response => {
-							return response.json();
-						})
-					.then(data => {
-						vm.items = data.messages.hits;
-					}),
-					error => {
-						alert("Invalid query!", error.messages)
-					};
-				}
-			}
-		}
-	};
+export default {
+  components: {
+    query: Query,
+    queryMenu: QueryMenu
+  },
+  data() {
+    return {
+      savedQuery: "", //query from queryMenu will be saved here
+      readyToSearchQuery: "", //finalQuery from the query component will be saved here
+      headers: [
+        { text: "ArtifactId", align: "left", value: "metadata.artifactId" },
+        { text: "GroupId", value: "metadata.groupId" },
+        { text: "Source", value: "metadata.source" },
+        { text: "Version", value: "metadata.version" },
+        { text: "Results", value: "metricResults.result" }
+      ],
+      fields: {
+        ArtifactId: "metadata.artifactId",
+        GroupId: "metadata.groupId",
+        Source: "metadata.source",
+        Version: "metadata.version",
+        Results: "metricResults.result"
+      },
+      items: [],
+      queryError: "",
+      progressBar: false,
+      clearItems: false
+    };
+  },
+  watch: {
+    //if this variable is changed, the startSearch function will be triggered
+    readyToSearchQuery: function(newVal) {
+      if (newVal) {
+        this.startSearch();
+      }
+    },
+    clearItems: function(newVal) {
+      if (newVal) {
+        this.clearItems = newVal;
+        this.clearItemsOnReqValidator(newVal);
+      }
+    }
+  },
+  methods: {
+    //This method saves querySent in the variable savedQuery
+    saveQuery(querySent) {
+      this.savedQuery = querySent;
+    },
+    startSearch() {
+      var vm = this;
+      if (this.readyToSearchQuery) {
+        this.progressBar = true;
+        this.$http
+          .get("search/" + vm.readyToSearchQuery)
+          .then(response => {
+            return response.json();
+          })
+          .then(
+            data => {
+              vm.items = data.messages.hits;
+              if (vm.items.length != 0) {
+                var key = Object.keys(vm.items[0].metricResults);
+                for (var i = 0; i < vm.items.length; i++) {
+                  var obj = vm.items[i].metricResults;
+                  obj.result = obj[key[0]];
+                  delete obj[key[0]];
+                  vm.items[i].metricResults = obj;
+                }
+                vm.progressBar = false;
+                vm.readyToSearchQuery = "";
+              } else {
+                vm.progressBar = false;
+                vm.readyToSearchQuery = "";
+              }
+            },
+            error => {
+              vm.items = [];
+              vm.progressBar = false;
+              vm.readyToSearchQuery = "";
+              vm.queryError = error.body;
+            }
+          );
+      } else if (this.clearItems) {
+        vm.items = [];
+      }
+    },
+    clearItemsOnReqValidator(newVal) {
+      if (newVal) {
+        this.items = [];
+      }
+    }
+  }
+};
 </script>
 
 <style>
-	.container-fluid {
-		margin-top: 10px;
-	}
-	#searchPart {
-		margin: 20px;
-		padding: 0;
-		height: 300px;
-		box-shadow: 1px 1px 5px 3px grey;
-		background-color: rgb(250, 250, 250);
-	}
-	.queryHelpText {
-		padding: 0;
-		font-variant: small-caps;
-	}
-	.col-6 {
-		padding-top: 0 !important;
-		padding-bottom: 0 !important;
-	}
-	#resultTableDiv {
-		margin: 30px;
-		box-shadow: 1px 1px 5px 3px grey;
-	}
+.container-fluid {
+  margin-top: 10px;
+}
+#searchPart {
+  margin: 20px;
+  padding: 0;
+  height: 300px;
+  box-shadow: 1px 1px 5px 3px grey;
+  background-color: rgb(250, 250, 250);
+}
+.queryHelpText {
+  padding: 0;
+  font-variant: small-caps;
+}
+.col-6 {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+#resultTableDiv {
+  margin: 30px;
+  box-shadow: 1px 1px 5px 3px grey;
+}
+
+.v-alert__content {
+  background-color: gainsboro;
+  padding: 10px;
+}
+
+.download {
+  background-color: white;
+  color: black;
+}
+
+.downloadDiv {
+  text-align: right;
+  padding-right: 25px;
+}
 </style>
