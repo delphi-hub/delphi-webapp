@@ -1,9 +1,7 @@
-import java.io.File
 
-import com.typesafe.config._
 import com.typesafe.sbt.packager.MappingsHelper.directory
 
-import scala.sys.process.Process
+
 mappings in Universal ++= directory(baseDirectory.value / "public")
 name := "delphi-webapp"
 
@@ -34,7 +32,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-core" % "10.0.14",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.6"
 )
-libraryDependencies += "de.upb.cs.swt.delphi" %% "delphi-client" % "0.9.0"
+libraryDependencies += "de.upb.cs.swt.delphi" %% "delphi-core" % "0.9.2"
 // Pinning secure versions of insecure transitive libraryDependencies
 // Please update when updating dependencies above (including Play plugin)
 libraryDependencies ++= Seq(

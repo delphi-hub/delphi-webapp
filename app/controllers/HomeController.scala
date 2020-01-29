@@ -27,6 +27,10 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import utils.CommonHelper
+import org.parboiled2.{ParseError}
+import de.upb.cs.swt.delphi.core.ql.Syntax
+import scala.util.{Failure, Success, Try}
+import de.upb.cs.swt.delphi.core.ql
 
 import scala.concurrent.{Await, Future}
 import spray.json.DefaultJsonProtocol
@@ -62,29 +66,35 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val materializer = ActorMaterializer()
       implicit val queryFormat = jsonFormat2(Query)
 
-      val baseUri = Uri(CommonHelper.getDelphiServer())
-      val prettyParam = Map("pretty" -> "")
-      val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
-      val responseFuture = Marshal(Query(query, CommonHelper.limit)).to[RequestEntity] flatMap { entity =>
-        Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
-      }
-
-
-      val response = Await.result(responseFuture, 10 seconds)
-      val resultFuture: Future[String] = response match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-          entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
-            body.utf8String
+      val parser = new Syntax(query)
+      val parsingResult: Try[ql.Query] = parser.QueryRule.run()
+      parsingResult match {
+        case Success(_) =>
+          val baseUri = Uri(CommonHelper.getDelphiServer())
+          val prettyParam = Map("pretty" -> "")
+          val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
+          val responseFuture = Marshal(Query(query, CommonHelper.limit)).to[RequestEntity] flatMap { entity =>
+            Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
           }
-        case resp@HttpResponse(code, _, _, _) => {
-          resp.discardEntityBytes()
-          Future("")
-        }
-      }
+          val response = Await.result(responseFuture, 10 seconds)
+          val resultFuture: Future[String] = response match {
+            case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+              entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+                body.utf8String
+              }
+            case resp@HttpResponse(code, _, _, _) => {
+              resp.discardEntityBytes()
+              Future("")
+            }
+          }
+          val result = Await.result(resultFuture, Duration.Inf)
+          val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
+          queryResponse
 
-      val result = Await.result(resultFuture, Duration.Inf)
-      val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
-      queryResponse
+        case Failure(e: ParseError) =>
+          val errorResponse: Future[Result] = Future.successful(new Status(500)(parser.formatError(e)))
+          errorResponse
+      }
     }
   }
 
