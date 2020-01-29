@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    <div class="downloadDiv">
+    <div class="downloadDiv" v-if="items.length > 0">
       <button class="download">
         <download-excel :data="items" :fields="fields" worksheet="Sheet1" name="results.xls">
           Export to Excel
