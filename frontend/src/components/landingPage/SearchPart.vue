@@ -30,9 +30,15 @@
         </div>
       </div>
     </div>
-    <div class="downloadDiv" v-if="items.length > 0">
+    <div class="downloadDiv" v-if="totalHits > 0">
       <button class="download">
-        <download-excel :data="items" :fields="fields" worksheet="Sheet1" name="results.xls">
+        <download-excel
+          :data="items"
+          :meta="meta"
+          :fields="fields"
+          worksheet="Sheet1"
+          name="results.xls"
+        >
           Export to Excel
           <v-icon large color="green darken-2">mdi-file-excel</v-icon>
         </download-excel>
@@ -79,23 +85,37 @@ export default {
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       headers: [
-        { text: "ArtifactId", align: "left", value: "metadata.artifactId" },
-        { text: "GroupId", value: "metadata.groupId" },
-        { text: "Source", value: "metadata.source" },
-        { text: "Version", value: "metadata.version" },
-        { text: "Results", value: "metricResults.result" }
+        { text: "ArtifactId", align: "left", value: "metadata.artifactId", width: "10%" },
+        { text: "GroupId", value: "metadata.groupId", width: "10%" },
+        { text: "Source", value: "metadata.source", width: "10%" },
+        { text: "Version", value: "metadata.version", width: "10%" },
+        { text: "Results", value: "metricResults.result", width: "5%" }
       ],
       fields: {
         ArtifactId: "metadata.artifactId",
         GroupId: "metadata.groupId",
         Source: "metadata.source",
-        Version: "metadata.version",
+        Version: {
+          field: "metadata.version",
+          callback: value => {
+            return `v.${value}`;
+          }
+        },
         Results: "metricResults.result"
       },
+      meta: [
+        [
+          {
+            key: "charset",
+            value: "utf-8"
+          }
+        ]
+      ],
       items: [],
       queryError: "",
       progressBar: false,
-      clearItems: false
+      clearItems: false,
+      totalHits: 0
     };
   },
   watch: {
@@ -129,20 +149,20 @@ export default {
           .then(
             data => {
               vm.items = data.messages.hits;
-              if (vm.items.length != 0) {
-                var key = Object.keys(vm.items[0].metricResults);
-                for (var i = 0; i < vm.items.length; i++) {
-                  var obj = vm.items[i].metricResults;
-                  obj.result = obj[key[0]];
-                  delete obj[key[0]];
-                  vm.items[i].metricResults = obj;
+              vm.totalHits = data.messages.totalHits;
+              if (data.messages.length != 0) {
+                if (data.messages.totalHits != 0) {
+                  var key = Object.keys(vm.items[0].metricResults);
+                  for (var i = 0; i < vm.items.length; i++) {
+                    var obj = vm.items[i].metricResults;
+                    obj.result = obj[key[0]];
+                    delete obj[key[0]];
+                    vm.items[i].metricResults = obj;
+                  }
                 }
-                vm.progressBar = false;
-                vm.readyToSearchQuery = "";
-              } else {
-                vm.progressBar = false;
-                vm.readyToSearchQuery = "";
               }
+              vm.progressBar = false;
+              vm.readyToSearchQuery = "";
             },
             error => {
               vm.items = [];
