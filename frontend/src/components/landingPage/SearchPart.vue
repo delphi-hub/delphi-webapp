@@ -169,9 +169,8 @@ export default {
   margin-top: 10px;
 }
 #searchPart {
-  margin: 20px;
-  padding: 0;
-  height: 300px;
+  margin: 10px;
+  padding: 5px;
   box-shadow: 1px 1px 5px 3px grey;
   background-color: rgb(250, 250, 250);
 }
@@ -184,7 +183,7 @@ export default {
   padding-bottom: 0 !important;
 }
 #resultTableDiv {
-  margin: 30px;
+  margin: 10px;
   box-shadow: 1px 1px 5px 3px grey;
 }
 

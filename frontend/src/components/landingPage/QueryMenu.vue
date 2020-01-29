@@ -5,7 +5,7 @@
 				<button id="addQueryButton" 
 					class="btn btn-dark"
 					@click="onAddQuery" 
-					:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
+					:disabled= "!(operator && metric && value && logicalOperator !== null)">
 					<h5 id="addQueryButtonText">Add</h5>
 				</button>	
 			</div>
@@ -109,9 +109,15 @@
 	}
 	#addQueryButton {
 		width: 90%; 
-		margin: 1em auto;
 		text-align: center;
 		padding: 0 !important;
+		background-color: green;
+	}
+	#addQueryButton:disabled {
+		background-color: grey;
+	}
+	#addQueryButton:hover:not([disabled]) {
+		box-shadow: 1px 1px 5px 3px grey;
 	}
 	#addQueryButtonText {
 		font-variant: small-caps;
@@ -120,9 +126,6 @@
 	#addQueryButtonText:before {
 		content: '\25c4';
 		padding-right: 0.3em;
-	}
-	#addQueryButton:hover{
-		box-shadow: 1px 1px 5px 3px grey;
 	}
 	#resetButton {
 		width: 25%; 
