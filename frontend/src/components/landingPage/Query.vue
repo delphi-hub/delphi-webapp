@@ -9,19 +9,22 @@
       :value="finalQuery"
       @input="addToFinalQuery, setQuery($event.target.value)"
     ></textarea>
-    <div id="errorDiv"> 
-      <div class="error" v-if="!$v.finalQuery.required && submitted">Please enter a valid query or use the query builder to add a query.</div>
-    <div
-      class="error"
-      v-if="$v.finalQuery.required && !$v.finalQuery.queryErrorValidator && submitted"
-    >{{this.queryError}}</div>
+    <div id="errorDiv">
+      <div
+        class="error"
+        v-if="!$v.finalQuery.required && submitted"
+      >Please enter a valid query or use the query builder to add a query.</div>
+      <div
+        class="error"
+        v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted"
+      >{{this.queryError}}</div>
     </div>
     <!--This button is grey when the input is not a valid query and otherwise red -->
     <button
       id="startSearchButton"
       class="btn btn-dark"
       @click="onStartSearch"
-      :disabled= "!(finalQuery)"
+      :disabled="!(finalQuery)"
     >
       <!-- TODO: The condition has to be changed -->
       <h5 id="searchButtonText">Search</h5>
@@ -31,6 +34,8 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
+import { eventBus } from "../../main";
+
 const queryErrorValidator = (value, vm) => {
   if (vm.queryError != "") {
     return false;
@@ -38,6 +43,7 @@ const queryErrorValidator = (value, vm) => {
     return true;
   }
 };
+
 export default {
   props: {
     partQuery: {
@@ -52,9 +58,10 @@ export default {
     return {
       finalQuery: "",
       submitted: false,
-      metricValidator: false,
       queryError: "",
-      emptyQuery: ""
+      emptyQuery: "",
+      metric: "",
+      metrics: []
     };
   },
   validations: {
@@ -76,6 +83,14 @@ export default {
         this.queryError = newVal;
       }
     }
+  },
+  created() {
+    eventBus.$on("metricList", data => {
+      // this.metrics = data;
+      for (let i = 0; i < data.length; i++) {
+        this.metrics.push(data[i].name);
+      }
+    });
   },
   methods: {
     //the value of the current final query becomes the events value.
@@ -112,48 +127,48 @@ export default {
 
 
 <style>
-  .queryHeading {
-    text-align: center;
-    color: white;
-    background-color: grey;
-    margin-bottom: 3px;
-    border-radius: 3px;
-  }
-  #queryCol {
-    background-color: rgb(235, 235, 235);
-    border-radius: 10px 0 0 10px;
-    padding: 12px 0 12px 12px;
-  }
-  #queryInput {
-    height: 110px;
-    width: 100%;
-    background-color: white;
-    resize: none;
-  }
-  #startSearchButton {
-    width: 30%;
-    margin-top: 10px;
-    text-align: center;
-    padding: 0 !important;
-    background-color: #c20202;
-  }
-  #startSearchButton:disabled {
-		background-color: grey;
-	}
-	#startSearchButton:hover:not([disabled]) {
-		box-shadow: 1px 1px 5px 3px grey;
-    border-radius: 3px;
-	}
-  #searchButtonText {
-    font-variant: small-caps;
-    font-size: 1.5em;
-  }
-  .error {
-    text-align: left;
-    padding-left: 5px;
-    color: red;
-  }
-  #errorDiv {
-    min-height: 65px;
-  }
+.queryHeading {
+  text-align: center;
+  color: white;
+  background-color: grey;
+  margin-bottom: 3px;
+  border-radius: 3px;
+}
+#queryCol {
+  background-color: rgb(235, 235, 235);
+  border-radius: 10px 0 0 10px;
+  padding: 12px 0 12px 12px;
+}
+#queryInput {
+  height: 110px;
+  width: 100%;
+  background-color: white;
+  resize: none;
+}
+#startSearchButton {
+  width: 30%;
+  margin-top: 10px;
+  text-align: center;
+  padding: 0 !important;
+  background-color: #c20202;
+}
+#startSearchButton:disabled {
+  background-color: grey;
+}
+#startSearchButton:hover:not([disabled]) {
+  box-shadow: 1px 1px 5px 3px grey;
+  border-radius: 3px;
+}
+#searchButtonText {
+  font-variant: small-caps;
+  font-size: 1.5em;
+}
+.error {
+  text-align: left;
+  padding-left: 5px;
+  color: red;
+}
+#errorDiv {
+  min-height: 65px;
+}
 </style>

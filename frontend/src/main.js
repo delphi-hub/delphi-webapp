@@ -24,7 +24,7 @@ Vue.http.interceptors.push((request, next) => {
     };
   });
 });
-
+export const eventBus = new Vue();
 Vue.component("app-landing", LandingPage);
 
 Vue.use(VueRouter);

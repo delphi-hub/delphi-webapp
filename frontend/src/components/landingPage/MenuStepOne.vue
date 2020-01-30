@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { eventBus } from '../../main';
 export default {
   props: {
     metricShouldBeReseted: {
@@ -99,6 +100,7 @@ export default {
   mounted() {
     this.$http.get("features").then(response => {
       this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
+      eventBus.$emit('metricList', this.info);
       return response.json();
     });
     error => {

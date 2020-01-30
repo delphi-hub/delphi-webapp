@@ -30,26 +30,12 @@
         </div>
       </div>
     </div>
-    <div class="downloadDiv" v-if="totalHits > 0">
-      <button class="download">
-        <download-excel
-          :data="items"
-          :meta="meta"
-          :fields="fields"
-          worksheet="Sheet1"
-          name="results.xls"
-        >
-          Export to Excel
-          <v-icon large color="green darken-2">mdi-file-excel</v-icon>
-        </download-excel>
-      </button>
-    </div>
     <div>
       <v-app>
         <div id="resultTableDiv" class="card">
           <v-data-table
             :headers="headers"
-            :items="items"
+            :items="items.hits"
             :loading="progressBar"
             loading-text="Searching for the results, please wait...."
             class="elevation-1"
@@ -114,8 +100,7 @@ export default {
       items: [],
       queryError: "",
       progressBar: false,
-      clearItems: false,
-      totalHits: 0
+      clearItems: false
     };
   },
   watch: {
@@ -148,16 +133,15 @@ export default {
           })
           .then(
             data => {
-              vm.items = data.messages.hits;
-              vm.totalHits = data.messages.totalHits;
+              vm.items = data.messages;
               if (data.messages.length != 0) {
                 if (data.messages.totalHits != 0) {
-                  var key = Object.keys(vm.items[0].metricResults);
-                  for (var i = 0; i < vm.items.length; i++) {
-                    var obj = vm.items[i].metricResults;
+                  var key = Object.keys(vm.items.hits[0].metricResults);
+                  for (var i = 0; i < vm.items.hits.length; i++) {
+                    var obj = vm.items.hits[i].metricResults;
                     obj.result = obj[key[0]];
                     delete obj[key[0]];
-                    vm.items[i].metricResults = obj;
+                    vm.items.hits[i].metricResults = obj;
                   }
                 }
               }
@@ -212,13 +196,4 @@ export default {
   padding: 10px;
 }
 
-.download {
-  background-color: white;
-  color: black;
-}
-
-.downloadDiv {
-  text-align: right;
-  padding-right: 25px;
-}
 </style>

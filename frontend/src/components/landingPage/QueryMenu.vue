@@ -40,7 +40,6 @@
 	import MenuStepOne from './MenuStepOne.vue';
 	import MenuStepTwo from './MenuStepTwo.vue';
 	import MenuStepThree from './MenuStepThree.vue';
-
 	export default {
 		components: {
 			'menuStepOne': MenuStepOne,
@@ -64,7 +63,7 @@
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
+						out += '!' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
 					}
 					else {
 						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
@@ -72,7 +71,6 @@
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';
 					}
-
 					this.$emit('addQuerySent', out);
 					this.metric = null;
 					this.operator = null;
