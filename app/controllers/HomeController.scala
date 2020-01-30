@@ -65,7 +65,6 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
       implicit val queryFormat = jsonFormat2(Query)
-      val statusCode:Status = new Status(500)
 
       val parser = new Syntax(query)
       val parsingResult: Try[ql.Query] = parser.QueryRule.run()
@@ -93,7 +92,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           queryResponse
 
         case Failure(e: ParseError) =>
-          val errorResponse: Future[Result] = Future.successful(statusCode(parser.formatError(e)))
+          val errorResponse: Future[Result] = Future.successful(new Status(INTERNAL_SERVER_ERROR)(parser.formatError(e)))
           errorResponse
       }
     }
