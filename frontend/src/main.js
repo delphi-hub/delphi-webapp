@@ -8,11 +8,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import vuetify from "./plugins/vuetify";
 import VueResource from "vue-resource";
 import { ImagePlugin } from "bootstrap-vue";
-import Vuelidate from 'vuelidate';
-import JsonExcel from 'vue-json-excel'
+import Vuelidate from "vuelidate";
+import JsonExcel from "vue-json-excel";
 
 
-Vue.component('downloadExcel', JsonExcel)
+Vue.component("downloadExcel", JsonExcel);
 Vue.use(Vuelidate);
 Vue.use(VueResource);
 
