@@ -41,10 +41,13 @@
           <v-data-table v-bind:headers="headers" :items="items" class="elevation-1">
             <template v-slot:item.moreInfo="{ item }">
               <router-link
-                v-on:click.native="moreInfoNavigation(item.metadata.artifactId)"
+                v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
                 :to="{ path: '/MoreInformation' }"
               >More Information</router-link>
             </template>
+            <!-- <template v-slot:item.test="{ item }">
+              <p>{{ item }}</p>
+            </template> -->
           </v-data-table>
         </div>
       </v-app>
@@ -64,7 +67,7 @@ export default {
   },
   data() {
     return {
-      moreInfoArtifactId: "",
+      id: "",
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       finalQueryToReset: false, //if a reset is neccessary, this has to be set to true
@@ -73,9 +76,7 @@ export default {
         { text: "GroupId", align: "center", value: "metadata.groupId" },
         { text: "Source", align: "center", value: "metadata.source" },
         { text: "Version", align: "center", value: "metadata.version" },
-        // { text: "Metric Value", align: "center", value: "metricResults" }, 
-        { text: "More Information", align: "center", value: "moreInfo" }
-        // { text: "Test", align: "center", value: "test" }
+        { text: "More Information", align: "center", value: "moreInfo" },
       ],
       items: []
     };
@@ -107,8 +108,9 @@ export default {
           alert("Invalid query!", error.messages);
         };
     },
-    moreInfoNavigation(artifactIdParam) {
-      eventBus.$emit("moreInfoEvent", artifactIdParam);
+    moreInfoNavigation(artifactIdParam,groupIdParam,versionParam) {
+      this.id = groupIdParam+":"+artifactIdParam+":"+versionParam;
+      eventBus.$emit("moreInfoEvent", this.id);
     }
   }
 };
