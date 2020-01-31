@@ -71,15 +71,15 @@ export default {
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       headers: [
-        { text: "ArtifactId", align: "left", value: "metadata.artifactId", width: "10%" },
-        { text: "GroupId", value: "metadata.groupId", width: "10%" },
+        { text: "GroupId",  align: "left", value: "metadata.groupId", width: "10%" },
+        { text: "ArtifactId", value: "metadata.artifactId", width: "10%" },       
         { text: "Source", value: "metadata.source", width: "10%" },
         { text: "Version", value: "metadata.version", width: "10%" },
         { text: "Results", value: "metricResults.result", width: "5%" }
       ],
       fields: {
-        ArtifactId: "metadata.artifactId",
         GroupId: "metadata.groupId",
+        ArtifactId: "metadata.artifactId",       
         Source: "metadata.source",
         Version: {
           field: "metadata.version",
