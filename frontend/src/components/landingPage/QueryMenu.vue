@@ -1,30 +1,38 @@
 <template>
-	<div class="col-6" id="menuCol">
+	<div class="col-7" id="menuCol">
 		<div class="row">
-			<menuStepOne 
-				@metricSent="metric = $event" 
-				@confirmMetricReset="metricToReset = $event" 
-				:metricShouldBeReseted="metricToReset">
-			</menuStepOne>
-			<menuStepTwo 
-				@operatorSent="operator = $event" 
-				@valueSent="value = $event" 
-				@confirmOperatorAndValueReset="operatorAndValueToReset = $event" 
-				:operatorAndValueShouldBeReseted="operatorAndValueToReset">
-			</menuStepTwo>
-			<menuStepThree 
-				@logicalNotSent="logicalNOT = $event" 
-				@logicalOperatorSent="logicalOperator = $event" 
-				@confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" 
-				:lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset">
-			</menuStepThree>       
-		</div>
-		<hr>
-		<button class="btn btn-dark" id="addQueryButton" 
-			@click="onAddQuery" 
-			:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
-			<h5 id="addQueryButtonText">Add to Query</h5>
-		</button>		
+			<div class="col-2" id="addQueryCol">
+				<button id="addQueryButton" 
+					class="btn btn-dark"
+					@click="onAddQuery" 
+					:disabled= "!(operator && metric && value && logicalOperator !== null)">
+					<h5 id="addQueryButtonText">Add</h5>
+				</button>	
+			</div>
+			<div class="col-10" id="menuStepsCol">
+				<!--Here the queryMenu is getting the values from the menuStep components. And the confirmations of the resets.
+					If a reset is needed then it will be sent here too.-->
+				<div class="row" id="stepsGrid">
+					<menuStepOne 
+						@metricSent="metric = $event" 
+						@confirmMetricReset="metricToReset = $event" 
+						:metricShouldBeReseted="metricToReset">
+					</menuStepOne>
+					<menuStepTwo 
+						@operatorSent="operator = $event" 
+						@valueSent="value = $event" 
+						@confirmOperatorAndValueReset="operatorAndValueToReset = $event" 
+						:operatorAndValueShouldBeReseted="operatorAndValueToReset">
+					</menuStepTwo>
+					<menuStepThree 
+						@logicalNotSent="logicalNOT = $event" 
+						@logicalOperatorSent="logicalOperator = $event" 
+						@confirmLNotAndLOperatorReset="lNotAndLOperatorToReset = $event" 
+						:lNOTAndLOperatorShouldBeReseted="lNotAndLOperatorToReset">
+					</menuStepThree>       
+				</div>
+			</div>			
+		</div>	
 	</div>
 </template>
 
@@ -32,7 +40,6 @@
 	import MenuStepOne from './MenuStepOne.vue';
 	import MenuStepTwo from './MenuStepTwo.vue';
 	import MenuStepThree from './MenuStepThree.vue';
-
 	export default {
 		components: {
 			'menuStepOne': MenuStepOne,
@@ -46,7 +53,6 @@
 				value: null,
 				logicalNOT: null,
 				logicalOperator: null,
-				errors: [],
 				metricToReset: false,
 				operatorAndValueToReset: false,
 				lNotAndLOperatorToReset: false
@@ -55,13 +61,9 @@
 		methods: {
 			onAddQuery() {
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
-					if(this.errors.length){
-						this.errors = [];
-					}
-
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')'; // + '\r\n'
+						out += '!' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
 					}
 					else {
 						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
@@ -69,7 +71,6 @@
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';
 					}
-
 					this.$emit('addQuerySent', out);
 					this.metric = null;
 					this.operator = null;
@@ -79,39 +80,7 @@
 					this.metricToReset = true;
 					this.operatorAndValueToReset = true;
 					this.lNotAndLOperatorToReset = true;
-				}
-				else {
-					if(!this.metric) {
-						if(!this.errors.includes("Metric required.")){
-							this.errors.push("Metric required.");
-						}
-					}
-					else {
-							this.removeElement(this.errors, "Metric required.");
-					}
-					if(!this.operator) {
-						if(!this.errors.includes("Operator required.")){
-							this.errors.push("Operator required.");
-						}						
-					}
-					else {
-							this.removeElement(this.errors, "Operator required.");
-					}
-					if(!this.value) {
-						if(!this.errors.includes("Value required.")){
-							this.errors.push("Value required.");
-						}					
-					}
-					else {
-							this.removeElement(this.errors, "Value required.");	
-					}
-				}			
-			},
-			removeElement(array, elem) {
-				var index = array.indexOf(elem);
-				if (index > -1) {
-					array.splice(index, 1);
-				}
+				}		
 			}
 		}
 	}
@@ -120,29 +89,43 @@
 <style>
 	#menuCol {
 		background-color:rgb(235, 235, 235); 
-		padding-top: 10px; 
 		border-radius: 0 10px 10px 0;
-		
+		padding: 12px;
+	}
+	#stepsGrid {
+		margin:0 10px 0 0;
+		background-color: rgb(192, 192, 192);
+		padding:10px;
+		border-radius: 5px;
+	}
+	#addQueryCol {
+		padding:0 5px 0 5px !important;
+		text-align: center;
+	}
+	#menuStepsCol {
+		padding:0 !important;
 	}
 	#addQueryButton {
-		width: 25%; 
-		background-color: rgb(97, 97, 97);
-		float:left;
-		margin-bottom: 15px;
-		height: 40px;
+		width: 90%; 
+		text-align: center;
+		padding: 0 !important;
+		background-color: green;
 	}
-
+	#addQueryButton:disabled {
+		background-color: grey;
+	}
+	#addQueryButton:hover:not([disabled]) {
+		box-shadow: 1px 1px 5px 3px grey;
+	}
 	#addQueryButtonText {
 		font-variant: small-caps;
+		font-size: 1.5em;
 	}
-
-	#addQueryButton:hover{
-		background-color: rgb(97, 97, 97);
-		box-shadow: 1px 1px 5px 3px grey;
-		border-radius: 3px;
-}
-
-#resetButton {
+	#addQueryButtonText:before {
+		content: '\25c4';
+		padding-right: 0.3em;
+	}
+	#resetButton {
 		width: 25%; 
 		margin-bottom: 15px;
 		background-color: rgb(97, 97, 97);
@@ -150,15 +133,12 @@
 		margin-left: 15px;
 		height: 40px;
 	}
-
 	#resetButtonText {
 		font-variant: small-caps;
 	}
-
 	#resetButton:hover{
 		background-color: rgb(97, 97, 97);
 		box-shadow: 1px 1px 5px 3px grey;
 		border-radius: 3px;
-}
-
+	}
 </style>

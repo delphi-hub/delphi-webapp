@@ -1,16 +1,16 @@
 <template>
-    <div class="col-4" id="stepthreeCol">
+    <div class="col-3" id="stepthreeCol">
         <div class="card">					
             <div class="card-body" v-bind:style="{ 'box-shadow': borderColor}">
-                <h6 class="card-title">3. Logical Operator</h6>
+                <h6 class="card-title"><u>3. Logical Operator</u></h6>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="addnot" value="Add logical NOT" v-model="checkedNOT" @change="sendLogicalNOT">
-                    <label class="form-check-label" for="addnot">Add logical NOT</label>
+                    <label class="form-check-label" for="addnot">Add NOT</label>
                 </div>
                 <hr>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="">
-                    <label class="form-check-label" for="logical1">No logical operator</label>
+                    <label class="form-check-label" for="logical1">No operator</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="&&">
@@ -45,6 +45,7 @@
             }
         },
         watch: {
+            //if queryMenu asks for a reset, then this code here will be triggered and it calls the method lNOTAndLOperatorIsReseted to tell queryMenu
             lNOTAndLOperatorShouldBeReseted: function (newVal) {
                 if(newVal){
                     this.checkedNOT = null;
@@ -52,6 +53,7 @@
                     this.lNOTAndLOperatorIsReseted(newVal);
                 }
             },
+            //if a radio option is chosen, the border of step 3 will become green
             radioPicked: function (newVal) {
                 if(newVal !== null){
                   this.borderColor = '1px 1px 5px 3px green';
@@ -62,12 +64,15 @@
             }
         },
         methods: {
+            //sends the logicalNot value to queryMenu
             sendLogicalNOT(){
                 this.$emit('logicalNotSent', this.checkedNOT);               
             },
+            //sends the chosen logical operator to queryMenu
             sendLogicalOperator(){
                 this.$emit('logicalOperatorSent', this.radioPicked);
             },
+            //sends confirmation to queryMenu that the logical not and the logical operators are resettet
             lNOTAndLOperatorIsReseted(){
                 this.$emit('confirmLNotAndLOperatorReset', false);
             }
@@ -78,10 +83,14 @@
 
 <style>
    #stepthreeCol {
-		padding:0 10px 0 5px;
+		padding:0 0 0 5px;
 	}
     .card-body {
-		height: 230px;
-		overflow:hidden;
+		height: 200px;
+		overflow-y:auto;
+        padding:5px !important;
 	}
+    hr {
+        margin:5px !important;
+    }
 </style>
