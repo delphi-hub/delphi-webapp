@@ -84,7 +84,9 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
               }
             case resp@HttpResponse(code, _, _, _) => {
               resp.discardEntityBytes()
-              Future("")
+              //Future("")
+              val object_error: Future[String]=Future.successful(new Status(code.intValue()).toString)
+              object_error
             }
           }
           val result = Await.result(resultFuture, Duration.Inf)
