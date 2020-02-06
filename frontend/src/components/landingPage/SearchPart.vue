@@ -174,6 +174,10 @@ export default {
       if (newVal) {
         this.items = [];
       }
+    },
+    moreInfoNavigation(artifactIdParam,groupIdParam,versionParam) {
+      this.id = groupIdParam+":"+artifactIdParam+":"+versionParam;
+      eventBus.$emit("moreInfoEvent", this.id);
     }
   }
 };
