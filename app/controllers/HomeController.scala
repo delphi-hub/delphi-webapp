@@ -130,7 +130,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
         case resp@HttpResponse(code, _, _, _) => {
           resp.discardEntityBytes()
-          Future("")
+          val object_error:Future[String]=Future.failed(throw new IOException(code.defaultMessage()))
+          object_error
         }
       }
 
@@ -163,7 +164,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
         case resp@HttpResponse(code, _, _, _) => {
           resp.discardEntityBytes()
-          Future("")
+          val object_error:Future[String]=Future.failed(throw new IOException(code.defaultMessage()))
+          object_error
         }
       }
 
