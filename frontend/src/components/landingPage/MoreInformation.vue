@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="moreInfoPage">
     <app-header></app-header>
     <h5></h5>
     <div id="moreInfoDiv">
@@ -14,9 +14,6 @@
     </div>
     <div id="moreInfoTableDiv">
       <v-data-table :headers="headers" :items="metrics" class="elevation-1"></v-data-table>
-    </div>
-    <div>
-
     </div>
     <app-footer></app-footer>
   </div>
@@ -104,20 +101,33 @@ export default {
 };
 </script>
 <style>
+#moreInfoPage {
+  background-color: rgb(250, 250, 250);
+}
+
 #moreInfoTableDiv {
-  margin: 30px;
+  margin-left: 300px;
+  margin-right: 300px;
+  margin-top: 30px;
+  margin-bottom: 60px;
   box-shadow: 1px 1px 5px 3px grey;
+  border-radius: 5px;
 }
 
 #moreInfoDiv {
-  margin: 30px;
+  margin-left: 300px;
+  margin-right: 300px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   box-shadow: 1px 1px 5px 3px grey;
   font-variant: small-caps;
-  font-size: 1.2em;
+  font-size: 1em;
+  border-radius: 5px;
+
 }
 
 #moreInfoTextDiv {
-  padding-left: 30px;
+  padding-left: 60px;
   padding-right: 30px;
   padding-top: 30px;
   padding-bottom: 30px;
