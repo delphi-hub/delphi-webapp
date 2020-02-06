@@ -152,7 +152,11 @@ export default {
               vm.items = [];
               vm.progressBar = false;
               vm.readyToSearchQuery = "";
-              vm.queryError = error.body;
+              if (error.status == 417) {
+                vm.queryError = error.body
+              } else {
+                vm.queryError ="We received " + error.status + " " + error.statusText;
+              }
             }
           );
       } else if (this.clearItems) {
