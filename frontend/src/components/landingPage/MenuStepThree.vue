@@ -10,7 +10,7 @@
                 <hr>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="exampleRadios" id="logical1" v-model="radioPicked" @change="sendLogicalOperator" value="">
-                    <label class="form-check-label" for="logical1">No Operator</label>
+                    <label class="form-check-label" for="logical1">No operator</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="exampleRadios" id="logical2" v-model="radioPicked" @change="sendLogicalOperator" value="&&">
@@ -45,14 +45,16 @@
             }
         },
         watch: {
-            lNOTAndLOperatorShouldBeReseted: function (newVal) {//if queryMenu asks for a reset, then this code here will be triggered and it calls the method lNOTAndLOperatorIsReseted to tell queryMenu
+            //if queryMenu asks for a reset, then this code here will be triggered and it calls the method lNOTAndLOperatorIsReseted to tell queryMenu
+            lNOTAndLOperatorShouldBeReseted: function (newVal) {
                 if(newVal){
                     this.checkedNOT = null;
                     this.radioPicked = null;
                     this.lNOTAndLOperatorIsReseted(newVal);
                 }
             },
-            radioPicked: function (newVal) {//if a radio option is chosen, the border of step 3 will become green
+            //if a radio option is chosen, the border of step 3 will become green
+            radioPicked: function (newVal) {
                 if(newVal !== null){
                   this.borderColor = '1px 1px 5px 3px green';
                 }
@@ -81,7 +83,7 @@
 
 <style>
    #stepthreeCol {
-		padding:0 0px 0 5px;
+		padding:0 0 0 5px;
 	}
     .card-body {
 		height: 200px;

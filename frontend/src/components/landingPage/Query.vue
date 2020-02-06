@@ -9,76 +9,88 @@
       :value="finalQuery"
       @input="addToFinalQuery, setQuery($event.target.value)"
     ></textarea>
-    <div class="error" v-if="!$v.finalQuery.required && submitted">Field is required</div>
-    <div class="error" v-if="!$v.finalQuery.singleQValidator && finalQuery">Incorrect query format</div>
-    <!-- <div
-      class="error"
-      v-if="metricValidator && finalQuery && submitted"
-    >Incorrect metric: "{{this.metric}}" entered</div> -->
-    <!--This button is grey when the input is not a valid query and otherwise red-->
+    <div id="errorDiv">
+      <div
+        class="error"
+        v-if="!$v.finalQuery.required && submitted"
+      >Please enter a valid query or use the query builder to add a query.</div>
+      <div
+        class="error"
+        v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted"
+      >{{this.queryError}}</div>
+    </div>
+    <!--This button is grey when the input is not a valid query and otherwise red -->
     <button
       id="startSearchButton"
       class="btn btn-dark"
       @click="onStartSearch"
-      :style="[($v.finalQuery.singleQValidator && finalQuery) ? {'background-color': '#c20202'} : {'background-color':null}]"
+      :disabled="!(finalQuery)"
     >
+      <!-- TODO: The condition has to be changed -->
       <h5 id="searchButtonText">Search</h5>
     </button>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import { required } from "vuelidate/lib/validators";
-const singleQValidator = value => {
-  if (
-    /^(?:[(]+)(?:[[]+)\w+(?:[^\]]+)(?:.+)[0-9](?:[)]+)$/.test(value) ||
-    /^(?:[[]+)\w+(?:[^\]]+)(?:.+)[0-9]/.test(value)
-  ) {
-    return true;
-  } else {
+import { eventBus } from "../../main";
+
+const queryErrorValidator = (value, vm) => {
+  if (vm.queryError != "") {
     return false;
+  } else {
+    return true;
   }
 };
+
 export default {
   props: {
     partQuery: {
       //query from SearchPart component
       type: String
     },
-    finalQueryShouldBeReseted: {
-      //boolean from SearchPart component for resetting the final query
-      type: Boolean
+    errMsg: {
+      type: String
     }
   },
   data() {
     return {
       finalQuery: "",
-      suggestLib: [">", "<", "=", "&&", "!", "||", "≤", "≥"],
       submitted: false,
-      metricValidator: true,
-      metric: ""
+      queryError: "",
+      emptyQuery: "",
+      metric: "",
+      metrics: []
     };
   },
   validations: {
     finalQuery: {
       required,
-      singleQValidator
+      queryErrorValidator
     }
   },
   watch: {
+    //whenever a new query is comming from the queryMenu, it will be added to the finalQuery
     partQuery: function(newVal) {
-      //whenever a new query is comming from the queryMenu, it will be added to the finalQuery
       if (newVal) {
         this.finalQuery += newVal;
         this.$emit("resetSavedQuery", ""); //without this line, if the user would choose twice the same query, nothing would happen
       }
     },
-    finalQueryShouldBeReseted: function() {
-      //if searchPart asks for a reset, then this code here will be triggered and it calls the method finalMetricIsReseted to tell searchPart
-      this.finalQuery = "";
-      this.finalMetricIsReseted();
+    errMsg: function(newVal) {
+      if (newVal) {
+        this.queryError = newVal;
+      }
     }
+  },
+  created() {
+    eventBus.$on("metricList", data => {
+      // this.metrics = data;
+      for (let i = 0; i < data.length; i++) {
+        this.metrics.push(data[i].name);
+      }
+    });
   },
   methods: {
     //the value of the current final query becomes the events value.
@@ -86,40 +98,29 @@ export default {
     addToFinalQuery(event) {
       this.finalQuery = event.target.value;
     },
-    setQuery(value) {
-      this.submitted = false;
-      // this.queryArea = value;
-      this.$v.finalQuery.$touch();
-      this.finalQuery = value;
-    },
     //if a valid query is given, then this function sends the final query to the searchPart component to initiate a search
     onStartSearch() {
-      this.metric = this.finalQuery.substring(
-        this.finalQuery.lastIndexOf("[") + 1,
-        this.finalQuery.lastIndexOf("]")
-      );
-      if (this.finalQuery && this.suggestLib.indexOf(this.metric) > -1) {
+      if (this.finalQuery) {
+        this.submitted = true;
+        this.emptyQuery = false;
+        this.$emit("emptyQuery", this.emptyQuery);
         this.$emit("finalQuerySend", this.finalQuery);
-        this.submitted = true;
       } else {
+        this.emptyQuery = true;
+        this.$emit("emptyQuery", this.emptyQuery);
         this.submitted = true;
-        this.metricValidator = true;
       }
     },
     //after a reset this sends a confirmation to searchPart
     finalMetricIsReseted() {
       this.$emit("confirmFinalQueryReset", false);
     },
-    buildCorpus() {
-      axios
-        .get("https://delphi.cs.uni-paderborn.de/api-legacy/features")
-        .then(
-          response => (this.suggestLib = this.suggestLib.concat(response.data))
-        );
+    setQuery(value) {
+      this.submitted = false;
+      this.queryError = "";
+      this.$v.finalQuery.$touch();
+      this.finalQuery = value;
     }
-  },
-  mounted() {
-    this.buildCorpus();
   }
 };
 </script>
@@ -133,40 +134,41 @@ export default {
   margin-bottom: 3px;
   border-radius: 3px;
 }
-
 #queryCol {
   background-color: rgb(235, 235, 235);
   border-radius: 10px 0 0 10px;
   padding: 12px 0 12px 12px;
-  text-align: center;
 }
-
 #queryInput {
-  height: 140px;
+  height: 110px;
   width: 100%;
   background-color: white;
   resize: none;
 }
 #startSearchButton {
-  width: 50%;
+  width: 30%;
   margin-top: 10px;
   text-align: center;
   padding: 0 !important;
+  background-color: #c20202;
 }
-
-#searchButtonText {
-  font-variant: small-caps;
-  font-size: 2em;
+#startSearchButton:disabled {
+  background-color: grey;
 }
-
-#startSearchButton:hover {
+#startSearchButton:hover:not([disabled]) {
   box-shadow: 1px 1px 5px 3px grey;
   border-radius: 3px;
 }
-
+#searchButtonText {
+  font-variant: small-caps;
+  font-size: 1.5em;
+}
 .error {
   text-align: left;
   padding-left: 5px;
   color: red;
+}
+#errorDiv {
+  min-height: 65px;
 }
 </style>

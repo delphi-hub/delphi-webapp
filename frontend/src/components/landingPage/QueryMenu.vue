@@ -2,10 +2,10 @@
 	<div class="col-7" id="menuCol">
 		<div class="row">
 			<div class="col-2" id="addQueryCol">
-				<button id="addQueryButton"
+				<button id="addQueryButton" 
 					class="btn btn-dark"
-					@click="onAddQuery"
-					:style= "[(operator && metric && value && logicalOperator !== null) ? {'background-color': 'green'} : {'background-color':null}]">
+					@click="onAddQuery" 
+					:disabled= "!(operator && metric && value && logicalOperator !== null)">
 					<h5 id="addQueryButtonText">Add</h5>
 				</button>	
 			</div>
@@ -32,7 +32,7 @@
 					</menuStepThree>       
 				</div>
 			</div>			
-		</div>		
+		</div>	
 	</div>
 </template>
 
@@ -40,7 +40,6 @@
 	import MenuStepOne from './MenuStepOne.vue';
 	import MenuStepTwo from './MenuStepTwo.vue';
 	import MenuStepThree from './MenuStepThree.vue';
-
 	export default {
 		components: {
 			'menuStepOne': MenuStepOne,
@@ -66,7 +65,7 @@
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
 					var out = '';		
 					if(this.logicalNOT) {																																					
-						out += 'NOT ' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
+						out += '!' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
 					}
 					else {
 						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
@@ -74,8 +73,7 @@
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';
 					}
-
-					this.$emit('addQuerySent', out);		//This sends the query to the searchPart component
+					this.$emit('addQuerySent', out);
 					this.metric = null;
 					this.operator = null;
 					this.value = null;
@@ -84,7 +82,7 @@
 					this.metricToReset = true;
 					this.operatorAndValueToReset = true;
 					this.lNotAndLOperatorToReset = true;
-				}
+				}		
 			}
 		}
 	}
@@ -96,44 +94,40 @@
 		border-radius: 0 10px 10px 0;
 		padding: 12px;
 	}
-
 	#stepsGrid {
 		margin:0 10px 0 0;
 		background-color: rgb(192, 192, 192);
 		padding:10px;
 		border-radius: 5px;
 	}
-
 	#addQueryCol {
 		padding:0 5px 0 5px !important;
 		text-align: center;
 	}
-
 	#menuStepsCol {
 		padding:0 !important;
 	}
 
 	#addQueryButton {
-		width:90%;
-		margin: 1em auto;
+		width: 90%; 
 		text-align: center;
 		padding: 0 !important;
+		background-color: green;
 	}
-
+	#addQueryButton:disabled {
+		background-color: grey;
+	}
+	#addQueryButton:hover:not([disabled]) {
+		box-shadow: 1px 1px 5px 3px grey;
+	}
 	#addQueryButtonText {
 		font-variant: small-caps;
-		font-size: 2em;
+		font-size: 1.5em;
 	}
-
 	#addQueryButtonText:before {
 		content: '\25c4';
 		padding-right: 0.3em;
 	}
-
-	#addQueryButton:hover{
-		box-shadow: 1px 1px 5px 3px grey;
-	}
-
 	#resetButton {
 		width: 25%; 
 		margin-bottom: 15px;
@@ -142,15 +136,12 @@
 		margin-left: 15px;
 		height: 40px;
 	}
-
 	#resetButtonText {
 		font-variant: small-caps;
 	}
-
 	#resetButton:hover{
 		background-color: rgb(97, 97, 97);
 		box-shadow: 1px 1px 5px 3px grey;
 		border-radius: 3px;
-}
-
+	}
 </style>

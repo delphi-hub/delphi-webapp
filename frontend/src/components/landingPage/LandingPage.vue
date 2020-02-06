@@ -10,23 +10,21 @@
 </template>
 
 <script>
-import SearchPart from "./SearchPart";
-//	import ResultPart from "./ResultPart";
-import Header from "../Layout/Header";
-import Footer from "../Layout/Footer";
+	import SearchPart from "./SearchPart";
+	import Header from "../Layout/Header";
+	import Footer from "../Layout/Footer";
 
-export default {
-  data() {
-    return {};
-  },
-  components: {
-    "app-search": SearchPart,
-    //"app-result": ResultPart,
-    "app-header": Header,
-    "app-footer": Footer
-  },
-  methods: {}
-};
+	export default {
+		data() {
+			return {};
+		},
+		components: {
+			"app-search": SearchPart,
+			"app-header": Header,
+			"app-footer": Footer
+		},
+		methods: {}
+	};
 </script>
 
 <style scoped>

@@ -5,10 +5,10 @@ A web UI for the Delphi platform.
 We are currently in pre-alpha state! There is no release and the code in
 this repository is purely experimental!
 
-|branch | status | codacy | snyk |
-| :---: | :---: | :---: | :---: |  
-| master | [![Build Status](https://travis-ci.org/delphi-hub/delphi-webapp.svg?branch=master)](https://travis-ci.org/delphi-hub/delphi-webapp) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/028514482122477da65ce35ef69853fc)](https://www.codacy.com/project/delphi-hub/delphi-webapp/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=delphi-hub/delphi-webapp&amp;utm_campaign=Badge_Grade_Dashboard)| [![Known Vulnerabilities](https://snyk.io/test/github/delphi-hub/delphi-webapp/badge.svg?targetFile=build.sbt)](https://snyk.io/test/github/delphi-hub/delphi-webapp/?targetFile=build.sbt) |
-| develop | [![Build Status](https://travis-ci.org/delphi-hub/delphi-webapp.svg?branch=develop)](https://travis-ci.org/delphi-hub/delphi-webapp) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/028514482122477da65ce35ef69853fc?branch=develop)](https://www.codacy.com/project/delphi-hub/delphi-webapp/dashboard?branch=develop&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=delphi-hub/delphi-webapp&amp;utm_campaign=Badge_Grade_Dashboard) | [![Known Vulnerabilities](https://snyk.io/test/github/delphi-hub/delphi-webapp/develop/badge.svg?targetFile=build.sbt)](https://snyk.io/test/github/delphi-hub/delphi-webapp/develop/?targetFile=build.sbt) |
+|branch | status | codacy | coverage | snyk |
+| :---: | :---: | :---: | :---: | :---: |  
+| master | [![Build Status](https://travis-ci.org/delphi-hub/delphi-webapp.svg?branch=master)](https://travis-ci.org/delphi-hub/delphi-webapp) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/028514482122477da65ce35ef69853fc)](https://www.codacy.com/project/delphi-hub/delphi-webapp/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=delphi-hub/delphi-webapp&amp;utm_campaign=Badge_Grade_Dashboard)| [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/028514482122477da65ce35ef69853fc)](https://www.codacy.com/manual/delphi-hub/delphi-webapp?utm_source=github.com&utm_medium=referral&utm_content=delphi-hub/delphi-webapp&utm_campaign=Badge_Coverage) |  [![Known Vulnerabilities](https://snyk.io/test/github/delphi-hub/delphi-webapp/badge.svg)](https://snyk.io/test/github/delphi-hub/delphi-webapp/) |
+| develop | [![Build Status](https://travis-ci.org/delphi-hub/delphi-webapp.svg?branch=develop)](https://travis-ci.org/delphi-hub/delphi-webapp) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/028514482122477da65ce35ef69853fc?branch=develop)](https://www.codacy.com/project/delphi-hub/delphi-webapp/dashboard?branch=develop&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=delphi-hub/delphi-webapp&amp;utm_campaign=Badge_Grade_Dashboard) | [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/028514482122477da65ce35ef69853fc?branch=develop)](https://www.codacy.com/manual/delphi-hub/delphi-webapp?branch=develop&utm_source=github.com&utm_medium=referral&utm_content=delphi-hub/delphi-webapp&utm_campaign=Badge_Coverage) | [![Known Vulnerabilities](https://snyk.io/test/github/delphi-hub/delphi-webapp/develop/badge.svg)](https://snyk.io/test/github/delphi-hub/delphi-webapp/develop/) |
 
 ## What is the Delphi Web UI?
 
@@ -19,8 +19,12 @@ It is a web application to allow users to search for software projects.
 TBA.
 
 ## How can I use it?
-
-You can start your own instance by executing
+Install dependencies by executing following commands
+```
+cd frontend/src
+npm install
+```
+After successful installation of npm packages, you can start your own instance in root directory by executing
 ```
 sbt run
 ```

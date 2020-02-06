@@ -34,14 +34,16 @@
 			}
 		},
 		watch: {
-			operatorAndValueShouldBeReseted: function (newVal) {	//if queryMenu asks for a reset, then this code here will be triggered and it calls the method operatorAndValueIsReseted to tell queryMenu
+			//if queryMenu asks for a reset, then this code here will be triggered and it calls the method operatorAndValueIsReseted to tell queryMenu
+			operatorAndValueShouldBeReseted: function (newVal) {
 				if(newVal){
 					this.selectedOperator = null;
 					this.selectedValue = null;
 					this.operatorAndValueIsReseted(newVal);
 				}
 			},
-			selectedOperator: function (newVal) {//if a operator and value is given, the border of step 2 will become green
+			//if a operator and value is given, the border of step 2 will become green
+			selectedOperator: function (newVal) {
 				if(newVal && this.selectedValue && !this.notANumber){
 					this.borderColor = '1px 1px 5px 3px green';
 				}
@@ -52,7 +54,8 @@
 					this.borderColor = null;
 				}
 			},
-			selectedValue: function (newVal) {//if a operator and value is given, the border of step 2 will become green
+			//if a operator and value is given, the border of step 2 will become green
+			selectedValue: function (newVal) {
 				if(newVal && this.selectedOperator && !this.notANumber){
 					this.borderColor = '1px 1px 5px 3px green';
 				}
@@ -87,7 +90,7 @@
 			},
 			//needed to check if the value is a number
 			isNumeric: function (n) {
-				return !isNaN(parseInt(n)) && isFinite(n);  
+				return !isNaN(parseInt(n)) && isFinite(n);
 			}
 		}
 	}
@@ -110,5 +113,6 @@
 	#nanInformation {
 		color:red;
 		text-align: center;
+		font-size: 0.8em;
 	}
 </style>

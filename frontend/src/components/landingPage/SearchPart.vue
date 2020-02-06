@@ -19,14 +19,14 @@
 						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
           After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
           <query
+            :errMsg="queryError"
             :partQuery="savedQuery"
-            :finalQueryShouldBeReseted="finalQueryToReset"
-            @resetSavedQuery="savedQuery = $event"
-            @confirmFinalQueryReset="finalQueryToReset = $event"
+            @emptyQuery="clearItems = $event"
             @finalQuerySend="readyToSearchQuery = $event"
+            @resetSavedQuery="savedQuery = $event"
           ></query>
           <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-          <queryMenu @addQuerySent="saveQueryMethod"></queryMenu>
+          <queryMenu @addQuerySent="saveQuery"></queryMenu>
         </div>
       </div>
     </div>
@@ -38,16 +38,26 @@
             v-if="readyToSearchQuery"
           >you searched for the query : {{ readyToSearchQuery }}</div>
           <hr />
-          <v-data-table v-bind:headers="headers" :items="items" class="elevation-1">
+          <v-data-table
+            :headers="headers"
+            :items="items.hits"
+            :loading="progressBar"
+            loading-text="Searching for the results, please wait...."
+            class="elevation-1"
+          >
+            <v-progress-linear
+              v-show="progressBar"
+              slot="progress"
+              loading-text="Loading... Please wait"
+              indeterminate
+            ></v-progress-linear>
+            <v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
             <template v-slot:item.moreInfo="{ item }">
               <router-link
                 v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
                 :to="{ path: '/MoreInformation' }"
               >More Information</router-link>
             </template>
-            <!-- <template v-slot:item.test="{ item }">
-              <p>{{ item }}</p>
-            </template> -->
           </v-data-table>
         </div>
       </v-app>
@@ -70,47 +80,100 @@ export default {
       id: "",
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
-      finalQueryToReset: false, //if a reset is neccessary, this has to be set to true
       headers: [
-        { text: "ArtifactId", align: "center", value: "metadata.artifactId" },
-        { text: "GroupId", align: "center", value: "metadata.groupId" },
-        { text: "Source", align: "center", value: "metadata.source" },
-        { text: "Version", align: "center", value: "metadata.version" },
-        { text: "More Information", align: "center", value: "moreInfo" },
+        { text: "GroupId",  align: "left", value: "metadata.groupId", width: "10%" },
+        { text: "ArtifactId", value: "metadata.artifactId", width: "10%" },       
+        { text: "Source", value: "metadata.source", width: "10%" },
+        { text: "Version", value: "metadata.version", width: "10%" },
+        { text: "More Information", value: "moreInfo", width: "10%" },
+        { text: "Results", value: "metricResults.result", width: "5%" }
       ],
-      items: []
+      fields: {
+        GroupId: "metadata.groupId",
+        ArtifactId: "metadata.artifactId",       
+        Source: "metadata.source",
+        Version: {
+          field: "metadata.version",
+          callback: value => {
+            return `v.${value}`;
+          }
+        },
+        Results: "metricResults.result"
+      },
+      meta: [
+        [
+          {
+            key: "charset",
+            value: "utf-8"
+          }
+        ]
+      ],
+      items: [],
+      queryError: "",
+      progressBar: false,
+      clearItems: false
     };
   },
   watch: {
+    //if this variable is changed, the startSearch function will be triggered
     readyToSearchQuery: function(newVal) {
-      //if this variable is changed, the startSearch function will be triggered
       if (newVal) {
         this.startSearch();
+      }
+    },
+    clearItems: function(newVal) {
+      if (newVal) {
+        this.clearItems = newVal;
+        this.clearItemsOnReqValidator(newVal);
       }
     }
   },
   methods: {
-    saveQueryMethod(querySent) {
-      //This method saves querySent in the variable savedQuery
+    //This method saves querySent in the variable savedQuery
+    saveQuery(querySent) {
       this.savedQuery = querySent;
     },
     startSearch() {
       var vm = this;
-      this.$http
-        .get("search/" + vm.readyToSearchQuery)
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          vm.items = data.messages;
-        }),
-        error => {
-          alert("Invalid query!", error.messages);
-        };
+      if (this.readyToSearchQuery) {
+        this.progressBar = true;
+        this.$http
+          .get("search/" + vm.readyToSearchQuery)
+          .then(response => {
+            return response.json();
+          })
+          .then(
+            data => {
+              vm.items = data.messages;
+              if (data.messages.length != 0) {
+                if (data.messages.totalHits != 0) {
+                  var key = Object.keys(vm.items.hits[0].metricResults);
+                  for (var i = 0; i < vm.items.hits.length; i++) {
+                    var obj = vm.items.hits[i].metricResults;
+                    obj.result = obj[key[0]];
+                    delete obj[key[0]];
+                    vm.items.hits[i].metricResults = obj;
+                  }
+                }
+              }
+              vm.progressBar = false;
+              vm.readyToSearchQuery = "";
+            },
+            error => {
+              vm.items = [];
+              vm.progressBar = false;
+              vm.readyToSearchQuery = "";
+              vm.queryError = error.body;
+            }
+          );
+      } else if (this.clearItems) {
+        vm.items = [];
+      }
     },
-    moreInfoNavigation(artifactIdParam,groupIdParam,versionParam) {
-      this.id = groupIdParam+":"+artifactIdParam+":"+versionParam;
-      eventBus.$emit("moreInfoEvent", this.id);
+    clearItemsOnReqValidator(newVal) {
+      if (newVal) {
+        this.items = [];
+      }
     }
   }
 };
@@ -120,35 +183,28 @@ export default {
 .container-fluid {
   margin-top: 10px;
 }
-
 #searchPart {
-  margin: 20px;
-  padding: 0;
-  height: 300px;
+  margin: 10px;
+  padding: 5px;
   box-shadow: 1px 1px 5px 3px grey;
   background-color: rgb(250, 250, 250);
 }
-
 .queryHelpText {
   padding: 0;
   font-variant: small-caps;
 }
-
 .col-6 {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
-
 #resultTableDiv {
-  margin: 30px;
+  margin: 10px;
   box-shadow: 1px 1px 5px 3px grey;
 }
 
-.inputQueryInResult {
-  text-align: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-variant: small-caps;
-  font-size: 1.2em;
+.v-alert__content {
+  background-color: gainsboro;
+  padding: 10px;
 }
+
 </style>
