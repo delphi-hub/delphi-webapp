@@ -36,7 +36,7 @@
           <div
             class="inputQueryInResult"
             v-if="readyToSearchQuery"
-          >you searched for the query : {{ readyToSearchQuery }}</div>
+          > <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
           <hr />
           <v-data-table
             :headers="headers"
@@ -157,7 +157,7 @@ export default {
                 }
               }
               vm.progressBar = false;
-              vm.readyToSearchQuery = "";
+              // vm.readyToSearchQuery = "";
             },
             error => {
               vm.items = [];
@@ -208,6 +208,14 @@ export default {
 #resultTableDiv {
   margin: 10px;
   box-shadow: 1px 1px 5px 3px grey;
+}
+
+.inputQueryInResult {
+  text-align: center;
+}
+
+#searchedQueryInResult {
+  font-weight: bold;
 }
 
 .v-alert__content {

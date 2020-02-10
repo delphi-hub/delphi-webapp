@@ -4,12 +4,10 @@
     <h5></h5>
     <div id="moreInfoDiv">
       <div id="moreInfoTextDiv">
-        <p v-if="this.receivedId != this.errorStr">ID : {{ receivedId }}</p>
         <p v-if="this.groupID != this.errorStr">Group ID : {{ groupID }}</p>
         <p v-if="this.artifactID != this.errorStr">Artifact ID : {{ artifactID }}</p>
-        <p v-if="this.discovered != this.errorStr">Discovered : {{ discovered }}</p>
-        <p v-if="this.source != this.errorStr">Source : {{ source }}</p>
         <p v-if="this.version != this.errorStr">Version : {{ version }}</p>
+        <p v-if="this.discovered != this.errorStr">Discovered : {{ discovered }}</p>
       </div>
     </div>
     <div id="moreInfoTableDiv">
