@@ -88,8 +88,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
             case resp@HttpResponse(code, _, _, _) => {
               resp.discardEntityBytes()
               //Future("")
-              val objectError:Future[String]=Future.failed(throw new IOException(code.defaultMessage()))
-              objectError
+              Future.failed(throw new IOException(code.defaultMessage()))
             }
           }
           val result = Await.result(resultFuture, Duration.Inf)
@@ -130,8 +129,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
         case resp@HttpResponse(code, _, _, _) => {
           resp.discardEntityBytes()
-          val objectError:Future[String]=Future.failed(throw new IOException(code.defaultMessage()))
-          objectError
+          Future.failed(throw new IOException(code.defaultMessage()))
         }
       }
 
@@ -164,8 +162,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
         case resp@HttpResponse(code, _, _, _) => {
           resp.discardEntityBytes()
-          val objectError:Future[String]=Future.failed(throw new IOException(code.defaultMessage()))
-          objectError
+          Future.failed(throw new IOException(code.defaultMessage()))
         }
       }
 
