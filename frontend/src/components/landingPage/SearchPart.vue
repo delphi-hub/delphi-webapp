@@ -1,37 +1,38 @@
 <template>
-  <div>
-    <div class="card" id="searchPart">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-6">
-            <h5 class="queryHelpText">Type in your query...</h5>
+  <v-app>
+    <div>
+      <div class="card" id="searchPart">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-6">
+              <h5 class="queryHelpText">Type in your query...</h5>
+            </div>
+            <div class="col-6">
+              <h5 class="queryHelpText">...or use these steps to build a query.</h5>
+            </div>
           </div>
-          <div class="col-6">
-            <h5 class="queryHelpText">...or use these steps to build a query.</h5>
+          <!--SearchPart has two child components. Query is where the query textfield and the start search button is.
+          QueryMenu consists of the three steps to create a query and the add query button.-->
+          <div class="row">
+            <!--savedQuery updates the prop called partQuery
+              finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
+              After adding a new partQuery to the query component, it asks for resetting the savedquery.
+              After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
+            After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
+            <query
+              :errMsg="queryError"
+              :partQuery="savedQuery"
+              @emptyQuery="clearItems = $event"
+              @finalQuerySend="readyToSearchQuery = $event"
+              @currentLimitSend="resultLimit = $event"
+              @resetSavedQuery="savedQuery = $event"
+            ></query>
+            <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
+            <queryMenu @addQuerySent="saveQuery"></queryMenu>
           </div>
-        </div>
-        <!--SearchPart has two child components. Query is where the query textfield and the start search button is.
-        QueryMenu consists of the three steps to create a query and the add query button.-->
-        <div class="row">
-          <!--savedQuery updates the prop called partQuery
-						finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
-						After adding a new partQuery to the query component, it asks for resetting the savedquery.
-						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
-          After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
-          <query
-            :errMsg="queryError"
-            :partQuery="savedQuery"
-            @emptyQuery="clearItems = $event"
-            @finalQuerySend="readyToSearchQuery = $event"
-            @resetSavedQuery="savedQuery = $event"
-          ></query>
-          <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-          <queryMenu @addQuerySent="saveQuery"></queryMenu>
         </div>
       </div>
-    </div>
-    <div>
-      <v-app>
+      <div>
         <div id="resultTableDiv" class="card">
           <div
             class="inputQueryInResult"
@@ -60,9 +61,9 @@
             </template>
           </v-data-table>
         </div>
-      </v-app>
+      </div>
     </div>
-  </div>
+</v-app>
 </template>
 
 <script>
@@ -111,6 +112,7 @@ export default {
       items: [],
       queryError: "",
       progressBar: false,
+      resultLimit: 100,
       clearItems: false
     };
   },
