@@ -1,12 +1,11 @@
 <template>
-  <div>
-    <app-header></app-header>
-    <keep-alive include="SearchPart">
-      <app-search></app-search>
-    </keep-alive>
-    <!-- <app-result></app-result> -->
-    <app-footer></app-footer>
-  </div>
+	<div>
+		<app-header></app-header>
+		<keep-alive include="SearchPart">
+			<app-search></app-search>
+		</keep-alive>
+		<app-footer></app-footer>
+	</div>
 </template>
 
 <script>
@@ -28,7 +27,5 @@
 </script>
 
 <style scoped>
-div {
-  background-color: rgb(250, 250, 250);
-}
+
 </style>
