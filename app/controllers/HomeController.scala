@@ -29,6 +29,7 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import utils.CommonHelper
+import models.QueryRequestBody
 import org.parboiled2.ParseError
 import de.upb.cs.swt.delphi.core.ql.Syntax
 
@@ -61,46 +62,61 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     * @return
     */
 
-  def query(query: String): Action[AnyContent] = Action.async {
+  def query(): Action[AnyContent] = Action.async {
     implicit request => {
-
-      implicit val system = ActorSystem()
-      implicit val ec = system.dispatcher
-      implicit val materializer = ActorMaterializer()
-      implicit val queryFormat = jsonFormat2(Query)
-
-      val parser = new Syntax(query)
+      //converting request body to QueryRequestBody model object
+      val json = request.body.asJson.get
+      val query1 = json.as[QueryRequestBody]
+      //checking for Syntax errors in query
+      //val query1 =  QueryRequestBody("[metrics.api.crypto.KeyStore]=20",50)
+      val parser = new Syntax(query1.query)
       val parsingResult: Try[ql.Query] = parser.QueryRule.run()
       parsingResult match {
         case Success(_) =>
-          val baseUri = Uri(CommonHelper.getDelphiServer())
-          val prettyParam = Map("pretty" -> "")
-          val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
-          val responseFuture = Marshal(Query(query, CommonHelper.limit)).to[RequestEntity] flatMap { entity =>
-            Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
-          }
-          val response = Await.result(responseFuture, 10 seconds)
-          val resultFuture: Future[String] = response match {
-            case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-              entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
-                body.utf8String
-              }
-            case resp@HttpResponse(code, _, _, _) => {
-              resp.discardEntityBytes()
-              //Future("")
-              Future.failed(throw new IOException(code.defaultMessage()))
-            }
-          }
-          val result = Await.result(resultFuture, Duration.Inf)
-          val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
-          queryResponse
+          val searchResult = executeQuery(query1.query, query1.limit)
+          searchResult
 
         case Failure(e: ParseError) =>
           val errorResponse: Future[Result] = Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
           errorResponse
+
+        case Failure(_) => Future.failed(throw new IOException("Search query failed"))
+
       }
     }
   }
+
+  private def executeQuery(query: String, limit: Int) :Future[Result] = {
+
+    implicit val system = ActorSystem()
+    implicit val ec = system.dispatcher
+    implicit val materializer = ActorMaterializer()
+    implicit val queryFormat = jsonFormat2(Query)
+
+    val checkedLimit:Option[Int]=Some(limit)
+    val baseUri = Uri(CommonHelper.getDelphiServer)
+    val prettyParam = Map("pretty" -> "")
+    val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
+    val responseFuture = Marshal(Query(query, checkedLimit)).to[RequestEntity] flatMap { entity =>
+      Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
+    }
+    val response = Await.result(responseFuture, 10 seconds)
+    val resultFuture: Future[String] = response match {
+
+      case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+        entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+          body.utf8String
+        }
+      case resp@HttpResponse(code, _, _, _) => {
+        resp.discardEntityBytes()
+        Future.failed(throw new IOException(code.defaultMessage()))
+      }
+    }
+    val result = Await.result(resultFuture, Duration.Inf)
+    val queryResponse: Future[Result] = Future.successful(Ok(result.toString))
+    queryResponse
+  }
+
 
   /**
     * Get list of features
@@ -114,14 +130,9 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val system = ActorSystem()
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
-
       val featuresUri = CommonHelper.getDelphiServer() + "/features"
-
       val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = featuresUri, method = HttpMethods.GET))
-
-
       val response = Await.result(responseFuture, 10 seconds)
-
       val resultFuture: Future[String] = response match {
         case HttpResponse(StatusCodes.OK, headers, entity, _) =>
           entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
@@ -132,7 +143,6 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           Future.failed(throw new IOException(code.defaultMessage()))
         }
       }
-
       val result = Await.result(resultFuture, Duration.Inf)
       val queryResponse: Future[Result] = Future.successful(Ok(result))
       queryResponse
@@ -171,8 +181,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       retrieveResponse
     }
   }
-
-  case class Query(query: String, limit: Option[Int] = None)
+  case class Query(query: String, limit: Option[Int] = Some(CommonHelper.defaultFetchSize))
 }
 
 

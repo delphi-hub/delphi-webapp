@@ -15,9 +15,24 @@
 // limitations under the License.
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json._
 
-case class ResultToJson(result:String)
-object ResultToJson {
-  implicit val writes = Json.writes[ResultToJson]
+case class QueryRequestBody (query : String, limit :Int)
+
+object QueryRequestBody {
+
+  implicit object QueryRequestBodyFormat extends Format[QueryRequestBody] {
+
+    def reads(json: JsValue): JsResult[QueryRequestBody] = {
+      val query = (json \ "query").as[String]
+      val limit = (json \ "limit").as[Int]
+      JsSuccess(QueryRequestBody(query, limit))
+    }
+
+    def writes(q: QueryRequestBody): JsValue = {
+      val reqBody = Seq("query" -> JsString(q.query),
+        "limit" -> JsNumber(q.limit))
+      JsObject(reqBody)
+    }
+  }
 }
