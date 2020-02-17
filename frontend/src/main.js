@@ -20,8 +20,9 @@ Vue.http.options.root = "";
 Vue.http.interceptors.push((request, next) => {
   next((response) => {
     response.json = () => {
-      return {messages: response.body};
+      return { messages: response.body };
     };
+
   });
 });
 export const eventBus = new Vue();
@@ -37,7 +38,7 @@ const router = new VueRouter({
 var vm = new Vue({
   router,
   vuetify,
-  render: (h) => h(App) 
+  render: (h) => h(App)
 });
 
 vm.$mount("#app");

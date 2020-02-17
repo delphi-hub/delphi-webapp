@@ -33,6 +33,11 @@
     <div>
       <v-app>
         <div id="resultTableDiv" class="card">
+          <div
+            class="inputQueryInResult"
+            v-if="readyToSearchQuery"
+          > <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
+          <hr />
           <v-data-table
             :headers="headers"
             :items="items.hits"
@@ -47,12 +52,15 @@
               indeterminate
             ></v-progress-linear>
             <v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
+            <template v-slot:item.moreInfo="{ item }">
+              <router-link
+                v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
+                :to="{ path: '/MoreInformation' }"
+              >More Information</router-link>
+            </template>
           </v-data-table>
         </div>
       </v-app>
-      <br />
-      <br />
-      <br />
     </div>
   </div>
 </template>
@@ -60,6 +68,7 @@
 <script>
 import Query from "./Query.vue";
 import QueryMenu from "./QueryMenu.vue";
+import { eventBus } from "../../main";
 
 export default {
   components: {
@@ -68,6 +77,7 @@ export default {
   },
   data() {
     return {
+      id: "",
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       headers: [
@@ -75,6 +85,7 @@ export default {
         { text: "ArtifactId", value: "metadata.artifactId", width: "10%" },       
         { text: "Source", value: "metadata.source", width: "10%" },
         { text: "Version", value: "metadata.version", width: "10%" },
+        { text: "More Information", value: "moreInfo", width: "10%" },
         { text: "Results", value: "metricResults.result", width: "5%" }
       ],
       fields: {
@@ -146,13 +157,17 @@ export default {
                 }
               }
               vm.progressBar = false;
-              vm.readyToSearchQuery = "";
+              // vm.readyToSearchQuery = "";
             },
             error => {
               vm.items = [];
               vm.progressBar = false;
               vm.readyToSearchQuery = "";
-              vm.queryError = error.body;
+              if (error.status == 417) {
+                vm.queryError = error.body
+              } else {
+                vm.queryError ="We received " + error.status + " " + error.statusText;
+              }
             }
           );
       } else if (this.clearItems) {
@@ -163,6 +178,10 @@ export default {
       if (newVal) {
         this.items = [];
       }
+    },
+    moreInfoNavigation(artifactIdParam,groupIdParam,versionParam) {
+      this.id = groupIdParam+":"+artifactIdParam+":"+versionParam;
+      eventBus.$emit("moreInfoEvent", this.id);
     }
   }
 };
@@ -189,6 +208,14 @@ export default {
 #resultTableDiv {
   margin: 10px;
   box-shadow: 1px 1px 5px 3px grey;
+}
+
+.inputQueryInResult {
+  text-align: center;
+}
+
+#searchedQueryInResult {
+  font-weight: bold;
 }
 
 .v-alert__content {

@@ -16,7 +16,9 @@
 package controllers
 
 
-import akka.actor.{ActorSystem}
+import java.io.IOException
+
+import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.marshalling.Marshal
@@ -27,8 +29,9 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import utils.CommonHelper
-import org.parboiled2.{ParseError}
+import org.parboiled2.ParseError
 import de.upb.cs.swt.delphi.core.ql.Syntax
+
 import scala.util.{Failure, Success, Try}
 import de.upb.cs.swt.delphi.core.ql
 
@@ -84,7 +87,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
               }
             case resp@HttpResponse(code, _, _, _) => {
               resp.discardEntityBytes()
-              Future("")
+              //Future("")
+              Future.failed(throw new IOException(code.defaultMessage()))
             }
           }
           val result = Await.result(resultFuture, Duration.Inf)
@@ -92,7 +96,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           queryResponse
 
         case Failure(e: ParseError) =>
-          val errorResponse: Future[Result] = Future.successful(new Status(INTERNAL_SERVER_ERROR)(parser.formatError(e)))
+          val errorResponse: Future[Result] = Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
           errorResponse
       }
     }
@@ -125,7 +129,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
         case resp@HttpResponse(code, _, _, _) => {
           resp.discardEntityBytes()
-          Future("")
+          Future.failed(throw new IOException(code.defaultMessage()))
         }
       }
 
@@ -158,7 +162,7 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
         case resp@HttpResponse(code, _, _, _) => {
           resp.discardEntityBytes()
-          Future("")
+          Future.failed(throw new IOException(code.defaultMessage()))
         }
       }
 

@@ -59,14 +59,19 @@
 			}
 		},
 		methods: {
+			//if all components from the menuStep compunents are given, this function creates a nice looking query. Afterwards the values will be resetted,
+			//by setting the reset variables to true. That will trigger the functions in the menuStep components.
 			onAddQuery() {
 				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
-					var out = '';		
-					if(this.logicalNOT) {																																					
-						out += '!' + '(' + '[' + this.metric + ']' + this.operator  + this.value + ')';
+					var out = '';
+					if(this.isNumeric(this.value)){
+						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
 					}
 					else {
-						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
+						out += '(' + '[' + this.metric + ']' + this.operator + '"' + this.value + '"' + ')';
+					}
+					if(this.logicalNOT) {																																					
+						out = '!' + out;
 					}
 					if(this.logicalOperator){
 						out += ' ' + this.logicalOperator + ' ';
@@ -81,6 +86,10 @@
 					this.operatorAndValueToReset = true;
 					this.lNotAndLOperatorToReset = true;
 				}		
+			},
+			//needed to check if the value is a number
+			isNumeric: function (n) {
+				return !isNaN(parseInt(n)) && isFinite(n);
 			}
 		}
 	}
@@ -105,6 +114,7 @@
 	#menuStepsCol {
 		padding:0 !important;
 	}
+
 	#addQueryButton {
 		width: 90%; 
 		text-align: center;
