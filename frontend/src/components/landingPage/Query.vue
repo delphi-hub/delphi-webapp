@@ -32,6 +32,18 @@
         </button>
       </v-col>
       <v-col cols="4" class="py-0">
+        <v-text-field
+          style="max-width:170px"
+          dense
+          label="Limit"
+          outlined
+          hint="Set limit for result entries"
+          v-model="currentLimit"
+          :rules="[rules.inlimit]"
+          persistent-hint
+          clearable
+      ></v-text-field>
+      <!--
         <v-combobox
           v-model="currentLimit"
           :items="limits"
@@ -43,6 +55,7 @@
           hide-no-data
           :rules="[rules.inlimit]"
         ></v-combobox>
+        -->
       </v-col>
     </v-row>
     <!--This button is grey when the input is not a valid query and otherwise red -->
