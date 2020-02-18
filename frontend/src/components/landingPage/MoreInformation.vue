@@ -1,7 +1,7 @@
 <template>
   <div id="moreInfoPage">
     <app-header></app-header>
-    <h5></h5>
+    <grid-loader v-if="this.flag" color="#c20202" class="loaderIcon"></grid-loader>
     <div id="moreInfoDiv">
       <div id="moreInfoTextDiv">
         <p v-if="this.groupID != this.errorStr">Group ID : {{ groupID }}</p>
@@ -20,11 +20,28 @@
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import { eventBus } from "../../main";
+import { GridLoader } from "@saeris/vue-spinners";
 
 export default {
   name: "moreInformation",
+  /* Render is used to set the values for page loading spinners */
+  render() {
+    return (
+      <div class='loader'>
+        <ClipLoader
+          class="custom-class"
+          loading={this.loading}
+          color={"#c20202"}
+          size={400}
+          sizeUnit={"px"}
+        />
+      </div>
+    )
+  },
   data() {
     return {
+      loading: true,
+      flag: true,
       receivedId: String,
       artifactID: String,
       groupID: String,
@@ -46,7 +63,7 @@ export default {
       ]
     };
   },
-  watch : function() {
+  watch: function() {
     setTimeout(() => {
       this.startRetrieve();
     }, 100);
@@ -55,13 +72,14 @@ export default {
     eventBus.$on("moreInfoEvent", data => {
       this.receivedId = data;
     }),
-    setTimeout(() => {
-      this.startRetrieve();
-    }, 100);
+      setTimeout(() => {
+        this.startRetrieve();
+      }, 100);
   },
   components: {
     "app-header": Header,
-    "app-footer": Footer
+    "app-footer": Footer,
+    "grid-loader": GridLoader
   },
   methods: {
     startRetrieve() {
@@ -89,12 +107,12 @@ export default {
               values: vm.metricValues[i]
             });
           }
+          vm.flag = false;
         }),
         error => {
           alert("Invalid results!", error.messages);
         };
-    },
-    
+    }
   }
 };
 </script>
@@ -121,7 +139,6 @@ export default {
   font-variant: small-caps;
   font-size: 1em;
   border-radius: 5px;
-
 }
 
 #moreInfoTextDiv {
@@ -129,6 +146,13 @@ export default {
   padding-right: 30px;
   padding-top: 30px;
   padding-bottom: 30px;
+}
+
+.loaderIcon {
+  position: absolute; 
+  top: 50%;
+  left: 50%;
+  color: red;
 }
 
 </style>

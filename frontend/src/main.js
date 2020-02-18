@@ -10,11 +10,12 @@ import VueResource from "vue-resource";
 import { ImagePlugin } from "bootstrap-vue";
 import Vuelidate from "vuelidate";
 import JsonExcel from "vue-json-excel";
-
+import { VueSpinners } from "@saeris/vue-spinners";
 
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(Vuelidate);
 Vue.use(VueResource);
+Vue.use(VueSpinners);
 
 Vue.http.options.root = "";
 Vue.http.interceptors.push((request, next) => {
