@@ -41,7 +41,6 @@
           v-model="currentLimit"
           :rules="[rules.inlimit]"
           persistent-hint
-          clearable
       ></v-text-field>
       <!--
         <v-combobox
@@ -104,8 +103,8 @@ export default {
           }
           else {
             this.brokeRule = true;
-            return 'Only Numbers between 1 and 10000';
           }
+          return pattern.test(value) || 'Only Numbers between 1 and 10000'
         }
       }
     }
