@@ -32,12 +32,18 @@
           </div>
         </div>
       </div>
+      <div class="downloadDiv" v-if="items.totalHits > 0">
+        <button class="download" @click.stop="dialog = true">
+          Export to Excel
+          <v-icon>mdi-file-excel</v-icon>
+        </button>
+      </div>
       <div>
         <div id="resultTableDiv" class="card">
-          <div
-            class="inputQueryInResult"
-            v-if="readyToSearchQuery"
-          > <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
+          <div class="inputQueryInResult" v-if="items.totalHits > 0">
+            <br />You searched for the query :
+            <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p>
+          </div>
           <hr />
           <v-data-table
             :headers="headers"
@@ -62,14 +68,27 @@
           </v-data-table>
         </div>
       </div>
+      <v-dialog v-model="dialog" max-width="550">
+        <v-card>
+          <v-card-title class="headline">Click yes to export all results to excel?</v-card-title>
+          <v-card-text>If you click 'yes', an excel file 'results.xlsx' will be downloaded.</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="dialog = false">No</v-btn>
+            <v-btn color="green darken-1" text @click="download">Yes</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
-</v-app>
+  </v-app>
 </template>
 
 <script>
 import Query from "./Query.vue";
 import QueryMenu from "./QueryMenu.vue";
 import { eventBus } from "../../main";
+import XLSX from "xlsx";
+import flatten from "flat";
 
 export default {
   components: {
@@ -82,38 +101,48 @@ export default {
       savedQuery: "", //query from queryMenu will be saved here
       readyToSearchQuery: "", //finalQuery from the query component will be saved here
       headers: [
-        { text: "GroupId",  align: "left", value: "metadata.groupId", width: "10%" },
-        { text: "ArtifactId", value: "metadata.artifactId", width: "10%" },       
-        { text: "Source", value: "metadata.source", width: "10%" },
-        { text: "Version", value: "metadata.version", width: "10%" },
-        { text: "More Information", value: "moreInfo", width: "10%" },
-        { text: "Results", value: "metricResults.result", width: "5%" }
-      ],
-      fields: {
-        GroupId: "metadata.groupId",
-        ArtifactId: "metadata.artifactId",       
-        Source: "metadata.source",
-        Version: {
-          field: "metadata.version",
-          callback: value => {
-            return `v.${value}`;
-          }
+        {
+          text: "GroupId",
+          align: "center",
+          value: "metadata.groupId",
+          width: "10%"
         },
-        Results: "metricResults.result"
-      },
-      meta: [
-        [
-          {
-            key: "charset",
-            value: "utf-8"
-          }
-        ]
+        {
+          text: "ArtifactId",
+          align: "center",
+          value: "metadata.artifactId",
+          width: "10%"
+        },
+        {
+          text: "Source",
+          align: "center",
+          value: "metadata.source",
+          width: "10%"
+        },
+        {
+          text: "Version",
+          align: "center",
+          value: "metadata.version",
+          width: "10%"
+        },
+        {
+          text: "More Information",
+          align: "center",
+          value: "moreInfo",
+          width: "10%"
+        }
       ],
       items: [],
       queryError: "",
       progressBar: false,
       resultLimit: 100,
-      clearItems: false
+      clearItems: false,
+      flattenItems: [],
+      dialog: false,
+      reqBody: {
+        query: this.readyToSearchQuery,
+        limit: this.resultLimit
+      }
     };
   },
   watch: {
@@ -139,8 +168,12 @@ export default {
       var vm = this;
       if (this.readyToSearchQuery) {
         this.progressBar = true;
+        const reqBody = {
+          query: this.readyToSearchQuery,
+          limit: this.resultLimit
+        };
         this.$http
-          .get("search/" + vm.readyToSearchQuery)
+          .post("search", reqBody)
           .then(response => {
             return response.json();
           })
@@ -149,12 +182,26 @@ export default {
               vm.items = data.messages;
               if (data.messages.length != 0) {
                 if (data.messages.totalHits != 0) {
-                  var key = Object.keys(vm.items.hits[0].metricResults);
-                  for (var i = 0; i < vm.items.hits.length; i++) {
-                    var obj = vm.items.hits[i].metricResults;
-                    obj.result = obj[key[0]];
-                    delete obj[key[0]];
-                    vm.items.hits[i].metricResults = obj;
+                  vm.items = data.messages;
+                  vm.headers.splice(4, vm.headers.length - 5);
+                  var keys = Object.keys(vm.items.hits[0].metricResults);
+                  for (var j = 0; j < keys.length; j++) {
+                    var modifiedKey = keys[j]
+                      .substring(keys[j].lastIndexOf(".") + 1)
+                      .trim();
+                    for (var i = 0; i < vm.items.hits.length; i++) {
+                      var obj = vm.items.hits[i].metricResults;
+                      obj[modifiedKey] = obj[keys[j]];
+                      delete obj[keys[j]];
+                      vm.items.hits[i].metricResults = obj;
+                      vm.flattenItems[i] = flatten(vm.items.hits[i]);
+                    }
+                    vm.headers.splice(4, 0, {
+                      text: modifiedKey,
+                      align: "center",
+                      value: "metricResults." + modifiedKey,
+                      width: "10%"
+                    });
                   }
                 }
               }
@@ -163,12 +210,14 @@ export default {
             },
             error => {
               vm.items = [];
+              vm.headers.splice(4, vm.headers.length - 4);
               vm.progressBar = false;
               vm.readyToSearchQuery = "";
               if (error.status == 417) {
-                vm.queryError = error.body
+                vm.queryError = error.body;
               } else {
-                vm.queryError ="We received " + error.status + " " + error.statusText;
+                vm.queryError =
+                  "We received " + error.status + " " + error.statusText;
               }
             }
           );
@@ -181,9 +230,20 @@ export default {
         this.items = [];
       }
     },
-    moreInfoNavigation(artifactIdParam,groupIdParam,versionParam) {
-      this.id = groupIdParam+":"+artifactIdParam+":"+versionParam;
+    moreInfoNavigation(artifactIdParam, groupIdParam, versionParam) {
+      this.id = groupIdParam + ":" + artifactIdParam + ":" + versionParam;
       eventBus.$emit("moreInfoEvent", this.id);
+    },
+    download() {
+      this.dialog = false;
+      for (let i = 0; i < this.flattenItems.length; i++) {
+        delete this.flattenItems[i].id;
+        delete this.flattenItems[i]["metadata.discovered"];
+      }
+      const data = XLSX.utils.json_to_sheet(this.flattenItems);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, data, "results");
+      XLSX.writeFile(wb, "results.xlsx");
     }
   }
 };
@@ -225,4 +285,18 @@ export default {
   padding: 10px;
 }
 
+.v-alert__content {
+  background-color: gainsboro;
+  padding: 10px;
+}
+
+.download {
+  background-color: white;
+  color: black;
+}
+
+.downloadDiv {
+  text-align: right;
+  padding-right: 25px;
+}
 </style>
