@@ -7,7 +7,7 @@
         <p v-if="this.groupID != this.errorStr">Group ID : {{ groupID }}</p>
         <p v-if="this.artifactID != this.errorStr">Artifact ID : {{ artifactID }}</p>
         <p v-if="this.version != this.errorStr">Version : {{ version }}</p>
-        <p v-if="this.discovered != this.errorStr">Discovered : {{ discovered }}</p>
+        <p v-if="this.discovered != this.errorStr">Discovered on : {{ discovered[0] }} at {{ discovered[2][0] }}</p>
       </div>
     </div>
     <div id="moreInfoTableDiv">
@@ -95,7 +95,9 @@ export default {
             (vm.discovered = data.messages[0].metadata.discovered),
             (vm.source = data.messages[0].metadata.source),
             (vm.version = data.messages[0].metadata.version),
-            (vm.metricKeys = Object.keys(data.messages[0].metricResults));
+            (vm.metricKeys = Object.keys(data.messages[0].metricResults)),
+            (vm.discovered = vm.discovered.split("T")),
+            (vm.discovered.push(vm.discovered[1].split(".",1)));
           for (var key = 0; key < vm.metricKeys.length; key++) {
             var metricKey = vm.metricKeys[key];
             vm.metricValues.push(data.messages[0].metricResults[metricKey]);
@@ -152,7 +154,6 @@ export default {
   position: absolute; 
   top: 50%;
   left: 50%;
-  color: red;
 }
 
 </style>
