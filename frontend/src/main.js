@@ -11,7 +11,6 @@ import { ImagePlugin } from "bootstrap-vue";
 import Vuelidate from "vuelidate";
 import JsonExcel from "vue-json-excel";
 
-
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(Vuelidate);
 Vue.use(VueResource);
@@ -22,7 +21,6 @@ Vue.http.interceptors.push((request, next) => {
     response.json = () => {
       return { messages: response.body };
     };
-
   });
 });
 export const eventBus = new Vue();

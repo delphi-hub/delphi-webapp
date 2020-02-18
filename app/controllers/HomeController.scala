@@ -62,13 +62,14 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     * @return
     */
 
-  def query(): Action[AnyContent] = Action.async {
+  def query(query: String, limit: Int): Action[AnyContent] = Action.async {
     implicit request => {
       //converting request body to QueryRequestBody model object
-      val json = request.body.asJson.get
-      val query1 = json.as[QueryRequestBody]
+      /* val json = request.body.asJson.get
+      val query1 = json.as[QueryRequestBody] */
       //checking for Syntax errors in query
       //val query1 =  QueryRequestBody("[metrics.api.crypto.KeyStore]=20",50)
+      val query1 =  QueryRequestBody(query,limit)
       val parser = new Syntax(query1.query)
       val parsingResult: Try[ql.Query] = parser.QueryRule.run()
       parsingResult match {

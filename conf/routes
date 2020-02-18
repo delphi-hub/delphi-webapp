@@ -4,8 +4,7 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.FrontController.startPoint
-+nocsrf
-POST     /search                    controllers.HomeController.query
+GET     /search/:query/:limit                    controllers.HomeController.query(query, limit: Int)
 GET     /version                    controllers.SettingsController.version
 GET     /features                   controllers.HomeController.features
 GET     /retrieve/:elementId        controllers.HomeController.retrieve(elementId)
