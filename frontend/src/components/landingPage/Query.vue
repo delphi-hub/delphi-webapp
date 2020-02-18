@@ -12,7 +12,7 @@
 				rows="1"
 				@keydown.enter.prevent
 				clearable
-				:value="finalQuery"
+				v-model="finalQuery"
 				label="Your Query:"
 				@input="addToFinalQuery($event), setQuery($event)"
 				auto-grow>

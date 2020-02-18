@@ -19,7 +19,7 @@
 						<v-card min-height="60px">
 							<v-card-subtitle class="px-2 pt-1 pb-0">Query Creation Progress:</v-card-subtitle>
 								<p class="px-2 py-1 font-weight-bold">
-									{{metric}} {{operator}} {{value}}
+									{{queryInCreation[0]}} {{queryInCreation[1]}} {{queryInCreation[2]}} {{queryInCreation[3]}} {{queryInCreation[4]}} {{queryInCreation[5]}}
 								</p>
 						</v-card>
 					</v-col>
@@ -75,14 +75,26 @@
 									</v-col>
 								</v-row>	
 							</v-card>
+							<v-tooltip top color="red">
+								<template v-slot:activator="{ on }">
+									<v-btn 
+										color="red" 
+										v-on="on" 
+										@click="undoInStepOne"
+										:disabled="!queryInCreation[1]">
+										<v-icon>mdi-undo</v-icon>
+									</v-btn>
+								</template>
+								<span>Undo Last Step</span>
+							</v-tooltip>
 							<v-tooltip top color="green">
 								<template v-slot:activator="{ on }">
 									<v-btn
 										v-on="on"
-										style="margin-left: 70px;"
+										style="margin-left: 6px;"
 										:disabled="!metric"
 										color="green"
-										@click="step = 2">
+										@click="nextStepOne">
 										<v-icon>mdi-redo</v-icon>
 									</v-btn>
 								</template>
@@ -131,13 +143,12 @@
 										v-on="on"
 										color="green"
 										:disabled="!value || !operator"
-										@click="step = 3">
+										@click="nextStepTwo">
 										<v-icon>mdi-redo</v-icon>
 									</v-btn>
 								</template>
 								<span>Next Step</span>
-							</v-tooltip>
-							
+							</v-tooltip>						
 						</v-stepper-content>
 						<v-stepper-content step="3">
 							<v-card	min-height="350px" :elevation="0">
@@ -150,7 +161,15 @@
 										</p>
 									</v-col>
 									<v-col cols="12">
-										
+										<v-checkbox color="green" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
+									</v-col>
+									<v-col cols="12">
+										<v-select
+											v-model="logicalOperator"
+											:items="logicalOperators"
+											outlined
+											label="Logical Operator">
+										</v-select>
 									</v-col>
 								</v-row>	
 							</v-card>
@@ -162,29 +181,40 @@
 								</template>
 								<span>Undo Last Step</span>
 							</v-tooltip>
-							<v-btn
-								style="margin-left: 6px;"
-								color="green"
-								:disabled="!logicalOperator"
-								>
-								<v-icon>mdi-redo</v-icon>
-							</v-btn>
+							<v-tooltip top color="green">
+								<template v-slot:activator="{ on }">
+									<v-btn
+									v-on="on"
+									style="margin-left: 6px;"
+									color="green"
+									:disabled="!logicalOperator"
+									@click="nextStepThree"
+									>
+										<v-icon>mdi-redo</v-icon>
+									</v-btn>
+								</template>
+								<span>Add a new subquery?</span>
+							</v-tooltip>
+							<v-tooltip top color="yellow">
+								<template v-slot:activator="{ on }">
+									<v-btn
+										v-on="on"
+										style="margin-left: 6px;"
+										color="yellow"
+										:disabled="logicalOperator != ''"
+										@click="onAddQuery"
+									>
+										<v-icon>mdi-redo</v-icon>
+									</v-btn>
+								</template>
+								<span>Finish</span>
+							</v-tooltip>
 						</v-stepper-content>
-			</v-stepper-items>
-		</v-stepper>
+					</v-stepper-items>
+				</v-stepper>
+			</div>
+		</v-expand-transition>
 	</div>
-	</v-expand-transition>
-	<div class="col-2" id="addQueryCol">
-		<button id="addQueryButton" 
-			class="btn btn-dark"
-			@click="onAddQuery" 
-			:disabled= "!(operator && metric && value && logicalOperator !== null)">
-			<h5 id="addQueryButtonText">add</h5>
-		</button>	
-	</div>
-	
-
-</div>
 </template>
 
 <script>
@@ -195,9 +225,18 @@
 				operators: [
 					">", ">=", "<", "<=", "="
 				],
+				logicalOperators: [
+					{text:"No Logical Operator", value:""},
+					{text:"And", value:"&&"},
+					{text:"OR", value:"||"},
+					{text:"XOR", value:"XOR"}
+				],
+				queryInCreation: [],
+				createdQuery: '',
 				info: null,
 				expanded: false,
 				step: 1,
+				level: 0,
 				operator: null,
 				value: null,
 				logicalNOT: null,
@@ -231,6 +270,7 @@
 					this.logicalOperator = null;
 					document.getElementById("filter").value = ''; //without these, after removing metric the 
 					this.filter1();								  //list would still be filtered even though the text field is empty
+					this.expanded = !this.expanded;
 				}		
 			},
 			//needed to check if the value is a number
@@ -250,17 +290,52 @@
 					}
 				}
 			},
-			undoInStepTwo() {
+			nextStepOne(){
+				this.step = 2;
+				this.queryInCreation.push(this.metric);
+				
+				
+			},
+			nextStepTwo(){
+				this.step = 3;
+				this.queryInCreation.push(this.operator);
+				this.queryInCreation.push(this.value);
+						
+			},
+			nextStepThree(){
+				this.level = this.level+1;
+				this.step = 1;
+				this.queryInCreation.push(this.logicalOperator);
+				this.queryInCreation.push(this.logicalNOT);
 				document.getElementById("filter").value = '';
 				this.filter1();
 				this.metric = null;
-				this.step = this.step-1;
+				this.value = null;
+				this.operator = null;	
+				this.logicalOperator = null;
+				this.logicalNOT = null;
+			},
+			undoInStepOne() {
+				this.level = this.level-1;
+				this.step = 3;
+				document.getElementById("filter").value = '';
+				this.filter1();
+				this.metric = this.queryInCreation[(this.level * 5)];
+				this.operator = this.queryInCreation[1 + (this.level * 5)];
+				this.value = this.queryInCreation[2 + (this.level * 5)];	
+				this.logicalOperator = this.queryInCreation[3 + (this.level * 5)];
+				this.logicalNOT = this.queryInCreation[4 + (this.level * 5)];
+				this.queryInCreation.pop();
+				this.queryInCreation.pop();
+			},
+			undoInStepTwo() {
+				this.step = 1;
+				this.queryInCreation.pop();			
 			},
 			undoInStepThree() {
-				this.value = null;
-				this.operator = null;
-				this.step = this.step-1;
-				
+				this.step = 2;
+				this.queryInCreation.pop();
+				this.queryInCreation.pop();
 			},
 		},
 		mounted() {
@@ -316,5 +391,8 @@
 	}
 	#optionSelect:hover {
 		background-color: rgba(138, 180, 228, 0.753);
+	}
+	label {
+		margin: 0 !important;
 	}
 </style>
