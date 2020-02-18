@@ -25,7 +25,7 @@
           id="startSearchButton"
           class="btn btn-dark"
           @click="onStartSearch"
-          :disabled="!(finalQuery)"
+          :disabled="(!finalQuery) || (brokeRule)"
         >
           <!-- TODO: The condition has to be changed -->
           <h5 id="searchButtonText">Search</h5>
@@ -40,8 +40,8 @@
           outlined
           hint="Set limit for result entries"
           persistent-hint
-          no-filter
-          type="number" min="0"
+          hide-no-data
+          :rules="[rules.inlimit]"
         ></v-combobox>
       </v-col>
     </v-row>
@@ -80,9 +80,22 @@ export default {
       emptyQuery: "",
       metric: "",
       metrics: [],
+      brokeRule: false,
       currentLimit: 100,
       limits: [100, 200, 500, 1000, 2000],
-    };
+      rules: {
+        inlimit: value => {
+          const pattern = /^([1-9][0-9]{0,3}|10000)$/;
+          if(pattern.test(value)){
+            this.brokeRule = false;
+          }
+          else {
+            this.brokeRule = true;
+            return 'Only Numbers between 1 and 10000';
+          }
+        }
+      }
+    }
   },
   validations: {
     finalQuery: {
@@ -125,9 +138,6 @@ export default {
         this.emptyQuery = false;
         this.$emit("emptyQuery", this.emptyQuery);
         this.$emit("finalQuerySend", this.finalQuery);
-        if(!this.isNumeric(this.currentLimit)){
-          this.currentLimit = 100;
-        }
         this.$emit("currentLimitSend", this.currentLimit);
       } else {
         this.emptyQuery = true;
