@@ -5,7 +5,6 @@
 		@input="addToFinalQuery, setQuery($event.target.value)"
 		@keydown.enter.prevent="onStartSearch"
 	-->
-			
 			<v-textarea
 				outlined
 				id="queryInput"
@@ -17,18 +16,22 @@
 				@input="addToFinalQuery($event), setQuery($event)"
 				auto-grow>
 			</v-textarea>
-			<div id="errorDiv">
-				<div
-					class="error"
-					v-if="!$v.finalQuery.required && submitted">
+			<v-alert
+				class="my-0"
+				dense
+				outlined
+				type="error"
+				v-if="!$v.finalQuery.required && submitted">
 						Please enter a valid query or use the query builder to add a query.
-				</div>
-				<div
-					class="error"
-					v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted">
+			</v-alert>
+			<v-alert
+				class="my-0"
+				dense
+				outlined
+				type="error"
+				v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted">
 						{{this.queryError}}
-				</div>
-			</div>
+			</v-alert>
 		</v-col>
 		<v-col cols="1" class="pl-0">
 			<v-btn

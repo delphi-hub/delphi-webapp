@@ -19,7 +19,7 @@
 						<v-card min-height="60px">
 							<v-card-subtitle class="px-2 pt-1 pb-0">Query Creation Progress:</v-card-subtitle>
 								<p class="px-2 py-1 font-weight-bold">
-									{{queryInCreation[0]}} {{queryInCreation[1]}} {{queryInCreation[2]}} {{queryInCreation[3]}} {{queryInCreation[4]}} {{queryInCreation[5]}}
+									{{createdQuery}}
 								</p>
 						</v-card>
 					</v-col>
@@ -168,8 +168,18 @@
 											v-model="logicalOperator"
 											:items="logicalOperators"
 											outlined
+											v-show="!(level >= maxLevel)"
 											label="Logical Operator">
 										</v-select>
+										<v-alert
+											outlined
+											type="warning"
+											prominent
+											dense
+											v-show="level >= maxLevel"
+											>
+											Maximum of 10 expressions is reached
+										</v-alert>
 									</v-col>
 								</v-row>	
 							</v-card>
@@ -187,7 +197,7 @@
 									v-on="on"
 									style="margin-left: 6px;"
 									color="green"
-									:disabled="!logicalOperator"
+									:disabled="!logicalOperator || (level >= maxLevel)"
 									@click="nextStepThree"
 									>
 										<v-icon>mdi-redo</v-icon>
@@ -237,6 +247,7 @@
 				expanded: false,
 				step: 1,
 				level: 0,
+				maxLevel: 9,
 				operator: null,
 				value: null,
 				logicalNOT: null,
@@ -248,30 +259,89 @@
 			//if all components from the menuStep compunents are given, this function creates a nice looking query. Afterwards the values will be resetted,
 			//by setting the reset variables to true. That will trigger the functions in the menuStep components.
 			onAddQuery() {
-				if(this.metric && this.operator && this.value && (this.logicalOperator !== null)){
-					var out = '';
-					if(this.isNumeric(this.value)){
-						out += '(' + '[' + this.metric + ']' + this.operator + this.value + ')';
-					}
-					else {
-						out += '(' + '[' + this.metric + ']' + this.operator + '"' + this.value + '"' + ')';
-					}
-					if(this.logicalNOT) {																																					
-						out = '!' + out;
-					}
-					if(this.logicalOperator){
-						out += ' ' + this.logicalOperator + ' ';
-					}
-					this.$emit('addQuerySent', out);
+				if(this.createdQuery){
+					this.queryInCreation.push(this.logicalOperator);
+					this.queryInCreation.push(this.logicalNOT);
+					this.updateCreatedQuery();
+					this.$emit('addQuerySent', this.createdQuery);
 					this.metric = null;
 					this.operator = null;
 					this.value = null;
 					this.logicalNOT = null;
 					this.logicalOperator = null;
-					document.getElementById("filter").value = ''; //without these, after removing metric the 
-					this.filter1();								  //list would still be filtered even though the text field is empty
+					document.getElementById("filter").value = ''; 
+					this.filter1();	
 					this.expanded = !this.expanded;
+					this.createdQuery = "";
+					this.queryInCreation = [];
+					this.step = 1;
+					this.level = 0;
 				}		
+			},
+			updateCreatedQuery() {
+				if(this.queryInCreation) {
+					this.createdQuery = "";
+					var i;
+					var restQueryAmount = this.queryInCreation.length % 5;
+					var wholeQueriesAmount = this.queryInCreation.length - restQueryAmount;	
+					//first append all whole subqueries. Afterwards in the switch statement the rest will be appended				
+					for (i = 0; i < wholeQueriesAmount; i+=5) {						
+						if(this.queryInCreation[i+4]) {																																					
+							if(this.isNumeric(this.queryInCreation[i+2])){
+								this.createdQuery += '!([' + this.queryInCreation[i] + ']' + this.queryInCreation[i+1] + this.queryInCreation[i+2] + ')';
+							}
+							else {
+								this.createdQuery += '!([' + this.queryInCreation[i] + ']' + this.queryInCreation[i+1] + '"' + this.queryInCreation[i+2] + '"' + ')';
+							}
+						}
+						else {
+							if(this.isNumeric(this.queryInCreation[i+2])){
+								this.createdQuery += '([' + this.queryInCreation[i] + ']' + this.queryInCreation[i+1] + this.queryInCreation[i+2] + ')';
+							}
+							else {
+								this.createdQuery += '([' + this.queryInCreation[i] + ']' + this.queryInCreation[i+1] + '"' + this.queryInCreation[i+2] + '"' + ')';
+							}
+						}
+						if(this.queryInCreation[i+3]){
+							this.createdQuery += ' ' + this.queryInCreation[i+3] + ' ';
+						}
+					}
+					switch(restQueryAmount){
+						case 1:
+							this.createdQuery += '([' + this.queryInCreation[wholeQueriesAmount] + '])'; 
+							break;
+						case 3:
+							if(this.isNumeric(this.queryInCreation[wholeQueriesAmount+2])){
+								this.createdQuery += '([' + this.queryInCreation[wholeQueriesAmount] + ']' + this.queryInCreation[wholeQueriesAmount+1] + this.queryInCreation[wholeQueriesAmount+2] + ')';
+							}
+							else {
+								this.createdQuery += '([' + this.queryInCreation[wholeQueriesAmount] + ']' + this.queryInCreation[wholeQueriesAmount+1] + '"' + this.queryInCreation[wholeQueriesAmount+2] + '"' + ')';
+							}
+							break;
+						case 5:
+							
+						if(this.queryInCreation[wholeQueriesAmount+4]) {																																					
+							if(this.isNumeric(this.queryInCreation[wholeQueriesAmount+2])){
+								this.createdQuery += '!([' + this.queryInCreation[wholeQueriesAmount] + ']' + this.queryInCreation[wholeQueriesAmount+1] + this.queryInCreation[wholeQueriesAmount+2] + ')';
+							}
+							else {
+								this.createdQuery += '!([' + this.queryInCreation[wholeQueriesAmount] + ']' + this.queryInCreation[wholeQueriesAmount+1] + '"' + this.queryInCreation[wholeQueriesAmount+2] + '"' + ')';
+							}
+						}
+						else {
+							if(this.isNumeric(this.queryInCreation[wholeQueriesAmount+2])){
+								this.createdQuery += '([' + this.queryInCreation[wholeQueriesAmount] + ']' + this.queryInCreation[wholeQueriesAmount+1] + this.queryInCreation[wholeQueriesAmount+2] + ')';
+							}
+							else {
+								this.createdQuery += '([' + this.queryInCreation[wholeQueriesAmount] + ']' + this.queryInCreation[wholeQueriesAmount+1] + '"' + this.queryInCreation[wholeQueriesAmount+2] + '"' + ')';
+							}
+						}
+						if(this.queryInCreation[wholeQueriesAmount+3]){
+							this.createdQuery += ' ' + this.queryInCreation[wholeQueriesAmount+3] + ' ';
+						}
+							break;
+					}
+				}
 			},
 			//needed to check if the value is a number
 			isNumeric: function (n) {
@@ -292,15 +362,14 @@
 			},
 			nextStepOne(){
 				this.step = 2;
-				this.queryInCreation.push(this.metric);
-				
-				
+				this.queryInCreation.push(this.metric);	
+				this.updateCreatedQuery();
 			},
 			nextStepTwo(){
 				this.step = 3;
 				this.queryInCreation.push(this.operator);
-				this.queryInCreation.push(this.value);
-						
+				this.queryInCreation.push(this.value);	
+				this.updateCreatedQuery();					
 			},
 			nextStepThree(){
 				this.level = this.level+1;
@@ -314,6 +383,10 @@
 				this.operator = null;	
 				this.logicalOperator = null;
 				this.logicalNOT = null;
+				if(this.level >= this.maxLevel){
+					this.logicalOperator = "";
+				}
+				this.updateCreatedQuery();
 			},
 			undoInStepOne() {
 				this.level = this.level-1;
@@ -327,15 +400,18 @@
 				this.logicalNOT = this.queryInCreation[4 + (this.level * 5)];
 				this.queryInCreation.pop();
 				this.queryInCreation.pop();
+				this.updateCreatedQuery();
 			},
 			undoInStepTwo() {
 				this.step = 1;
-				this.queryInCreation.pop();			
+				this.queryInCreation.pop();	
+				this.updateCreatedQuery();		
 			},
 			undoInStepThree() {
 				this.step = 2;
 				this.queryInCreation.pop();
 				this.queryInCreation.pop();
+				this.updateCreatedQuery();
 			},
 		},
 		mounted() {

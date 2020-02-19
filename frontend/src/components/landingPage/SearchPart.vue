@@ -27,7 +27,7 @@
 					<queryMenu @addQuerySent="saveQuery"></queryMenu>
 				</div>
 			</v-container>
-			<div>
+			<v-container  style="align-items: center;">
 				<div id="resultTableDiv" class="card">
 					<div
 						class="inputQueryInResult"
@@ -56,7 +56,7 @@
 						</template>
 					</v-data-table>
 				</div>
-			</div>
+			</v-container>
 		</div>
 	</v-app>
 </template>
@@ -194,10 +194,5 @@
 
 	#searchedQueryInResult {
 		font-weight: bold;
-	}
-
-	.v-alert__content {
-		background-color: gainsboro;
-		padding: 10px;
 	}
 </style>
