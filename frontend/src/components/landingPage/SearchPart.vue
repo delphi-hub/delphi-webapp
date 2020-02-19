@@ -209,12 +209,7 @@ export default {
               vm.headers.splice(4, vm.headers.length - 4);
               vm.progressBar = false;
               vm.readyToSearchQuery = "";
-              if (error.status == 417) {
-                vm.queryError = error.body;
-              } else {
-                vm.queryError =
-                  "We received " + error.status + " " + error.statusText;
-              }
+              vm.queryError = error.body;
             }
           );
       } else if (this.clearItems) {
@@ -295,4 +290,5 @@ export default {
   text-align: right;
   padding-right: 25px;
 }
+
 </style>

@@ -73,7 +73,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
         case Success(parsedQuery) =>
           val invalidFields = checkParsedQuery(parsedQuery, resLimit)
           if (invalidFields.size > 0) {
-            Future.failed(throw new IllegalArgumentException(s"Unknown field name(s) used. (${invalidFields.mkString(",")})"))
+            // Future.failed(throw new IllegalArgumentException(s"Unknown field name(s) used. (${invalidFields.mkString(",")})"))
+            Future.successful(new Status(EXPECTATION_FAILED)(s"Incorrect metric name(s) [${invalidFields.mkString(", ")}] entered"))
           }
           else{
             val searchResult = executeQuery(query, resLimit)
@@ -81,8 +82,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
           }
 
         case Failure(e: ParseError) =>
-          //Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
-          Future.failed(throw new IllegalArgumentException(parser.formatError(e)))
+          Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
+          // Future.failed(throw new IllegalArgumentException(parser.formatError(e)))
 
         case Failure(_) => Future.failed(throw new IOException("Search query failed"))
       }
