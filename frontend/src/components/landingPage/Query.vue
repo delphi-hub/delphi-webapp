@@ -68,7 +68,7 @@
 			errMsg: {
 				type: String
 			},
-				isLoading: {
+			isLoading: {
 				type: Boolean
 			}
 		},
@@ -96,7 +96,7 @@
 					if(this.finalQuery == null){
 						this.finalQuery = "";
 					}
-					this.finalQuery += newVal;
+					this.finalQuery = newVal;
 					this.$emit("resetSavedQuery", ""); //without this line, if the user would choose twice the same query, nothing would happen
 				}
 			},

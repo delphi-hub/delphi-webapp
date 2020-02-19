@@ -200,25 +200,67 @@
 									:disabled="!logicalOperator || (level >= maxLevel)"
 									@click="nextStepThree"
 									>
-										<v-icon>mdi-redo</v-icon>
+										<v-icon>mdi-shape-square-plus</v-icon>
 									</v-btn>
 								</template>
-								<span>Add a new subquery?</span>
+								<span>Add new expression</span>
 							</v-tooltip>
-							<v-tooltip top color="yellow">
+							<v-tooltip top color="blue">
 								<template v-slot:activator="{ on }">
 									<v-btn
 										v-on="on"
 										style="margin-left: 6px;"
-										color="yellow"
+										color="blue"
 										:disabled="logicalOperator != ''"
-										@click="onAddQuery"
+										@click.stop="dialog = true"
 									>
-										<v-icon>mdi-redo</v-icon>
+										<v-icon>mdi-file-send-outline</v-icon>
 									</v-btn>
 								</template>
-								<span>Finish</span>
+								<span>Send Query</span>
 							</v-tooltip>
+							<v-dialog
+								v-model="dialog"
+								max-width="400"
+								>
+								<v-card>
+									<v-card-title
+										class="headline red lighten-2"
+										primary-title
+										>
+										Warning
+										</v-card-title>
+									<v-card-text>
+										The created query will replace the content of 'Your Query'. 
+									</v-card-text>
+
+									<v-card-actions>
+									<v-spacer></v-spacer>
+
+									<v-btn
+										color="green darken-1"
+										text
+										@click="onAddQuery"
+									>
+										Ok
+									</v-btn>
+									<v-btn
+										color="red darken-1"
+										text
+										@click="dialog = false"
+									>
+										Back
+									</v-btn>
+									<v-btn
+										color="blue darken-1"
+										text
+										@click="dialog = false"
+								>
+									Save in Query Storage
+								</v-btn>
+									</v-card-actions>
+								</v-card>
+								</v-dialog>
 						</v-stepper-content>
 					</v-stepper-items>
 				</v-stepper>
@@ -244,6 +286,7 @@
 				queryInCreation: [],
 				createdQuery: '',
 				info: null,
+				dialog: false,
 				expanded: false,
 				step: 1,
 				level: 0,
@@ -276,6 +319,9 @@
 					this.queryInCreation = [];
 					this.step = 1;
 					this.level = 0;
+					if(this.dialog) {
+						this.dialog = false;
+					}
 				}		
 			},
 			updateCreatedQuery() {
