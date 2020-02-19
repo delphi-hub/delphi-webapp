@@ -15,8 +15,8 @@
 // limitations under the License.
 package utils
 
-import akka.http.scaladsl.model.headers.{Host, RawHeader}
-import akka.http.scaladsl.model.{HttpMethod, HttpRequest, HttpEntity, MediaTypes}
+import akka.http.scaladsl.model.headers.{Host}
+import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
 
 import scala.collection.immutable.Seq
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Delphi Team.
+// Copyright (C) 2019 The Delphi Team.
 // See the LICENCE file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -15,24 +15,10 @@
 // limitations under the License.
 package models
 
-import play.api.libs.json._
+import spray.json.DefaultJsonProtocol
 
-case class QueryRequestBody (query : String, limit :Int)
+case class InternalFeature(name : String, description : String)
 
-object QueryRequestBody {
-
-  implicit object QueryRequestBodyFormat extends Format[QueryRequestBody] {
-
-    def reads(json: JsValue): JsResult[QueryRequestBody] = {
-      val query = (json \ "query").as[String]
-      val limit = (json \ "limit").as[Int]
-      JsSuccess(QueryRequestBody(query, limit))
-    }
-
-    def writes(q: QueryRequestBody): JsValue = {
-      val reqBody = Seq("query" -> JsString(q.query),
-        "limit" -> JsNumber(q.limit))
-      JsObject(reqBody)
-    }
-  }
+object InternalFeatureJson extends DefaultJsonProtocol {
+  implicit val featureFormat = jsonFormat2(InternalFeature)
 }

@@ -4,7 +4,7 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.FrontController.startPoint
-GET     /search/:query/:limit                    controllers.HomeController.query(query, limit: Int)
+GET     /search/:query/:limit       controllers.HomeController.query(query, limit: Int)
 GET     /version                    controllers.SettingsController.version
 GET     /features                   controllers.HomeController.features
 GET     /retrieve/:elementId        controllers.HomeController.retrieve(elementId)

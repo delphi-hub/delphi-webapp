@@ -23,18 +23,19 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import utils.CommonHelper
-import models.QueryRequestBody
+import models.InternalFeature
 import org.parboiled2.ParseError
-import de.upb.cs.swt.delphi.core.ql.Syntax
+import de.upb.cs.swt.delphi.core.ql
 
 import scala.util.{Failure, Success, Try}
-import de.upb.cs.swt.delphi.core.ql
+import de.upb.cs.swt.delphi.core.ql._
 
 import scala.concurrent.{Await, Future}
 import spray.json.DefaultJsonProtocol
@@ -48,6 +49,7 @@ import scala.concurrent.duration._
 class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: ControllerComponents) extends AbstractController(cc)
   with SprayJsonSupport with DefaultJsonProtocol {
 
+  var featureList: List[InternalFeature] = List[InternalFeature]()
   /**
     * Create an Action to render an HTML page with a welcome message.
     * The configuration in the `routes` file means that this method
@@ -64,41 +66,47 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
 
   def query(query: String, limit: Int): Action[AnyContent] = Action.async {
     implicit request => {
-      //converting request body to QueryRequestBody model object
-      /* val json = request.body.asJson.get
-      val query1 = json.as[QueryRequestBody] */
-      //checking for Syntax errors in query
-      //val query1 =  QueryRequestBody("[metrics.api.crypto.KeyStore]=20",50)
-      val query1 =  QueryRequestBody(query,limit)
-      val parser = new Syntax(query1.query)
+      val resLimit :Option[Int] = Some(limit)
+      val parser = new Syntax(query)
       val parsingResult: Try[ql.Query] = parser.QueryRule.run()
       parsingResult match {
-        case Success(_) =>
-          val searchResult = executeQuery(query1.query, query1.limit)
-          searchResult
+        case Success(parsedQuery) =>
+          val invalidFields = checkParsedQuery(parsedQuery, resLimit)
+          if (invalidFields.size > 0) {
+            Future.failed(throw new IllegalArgumentException(s"Unknown field name(s) used. (${invalidFields.mkString(",")})"))
+          }
+          else{
+            val searchResult = executeQuery(query, resLimit)
+            searchResult
+          }
 
         case Failure(e: ParseError) =>
-          val errorResponse: Future[Result] = Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
-          errorResponse
+          //Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
+          Future.failed(throw new IllegalArgumentException(parser.formatError(e)))
 
         case Failure(_) => Future.failed(throw new IOException("Search query failed"))
-
       }
     }
   }
 
-  private def executeQuery(query: String, limit: Int) :Future[Result] = {
+  private def checkParsedQuery(parsedQuery: ql.Query, limit: Option[Int]) : Set[String] = {
+    val fields = collectFieldNames(parsedQuery.expr)
+    val publicFieldNames = featureList.map(i => i.name)
+    val invalidFields = fields.toSet.filter(f => !publicFieldNames.contains(f))
+    invalidFields
+  }
+
+  private def executeQuery(query: String, limit: Option[Int]) :Future[Result] = {
 
     implicit val system = ActorSystem()
     implicit val ec = system.dispatcher
     implicit val materializer = ActorMaterializer()
     implicit val queryFormat = jsonFormat2(Query)
 
-    val checkedLimit:Option[Int]=Some(limit)
     val baseUri = Uri(CommonHelper.getDelphiServer)
     val prettyParam = Map("pretty" -> "")
     val searchUri = baseUri.withPath(baseUri.path + "/search").withQuery(akka.http.scaladsl.model.Uri.Query(prettyParam))
-    val responseFuture = Marshal(Query(query, checkedLimit)).to[RequestEntity] flatMap { entity =>
+    val responseFuture = Marshal(Query(query, limit)).to[RequestEntity] flatMap { entity =>
       Http().singleRequest(HttpRequest(uri = searchUri, method = HttpMethods.POST, entity = entity))
     }
     val response = Await.result(responseFuture, 10 seconds)
@@ -131,6 +139,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val system = ActorSystem()
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
+      implicit val queryFormat = jsonFormat2(InternalFeature)
+
       val featuresUri = CommonHelper.getDelphiServer() + "/features"
       val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = featuresUri, method = HttpMethods.GET))
       val response = Await.result(responseFuture, 10 seconds)
@@ -145,6 +155,8 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
         }
       }
       val result = Await.result(resultFuture, Duration.Inf)
+      val featureListFuture = Unmarshal(result).to[List[InternalFeature]]
+      featureList = Await.result(featureListFuture, Duration.Inf)
       val queryResponse: Future[Result] = Future.successful(Ok(result))
       queryResponse
     }
@@ -182,6 +194,26 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       retrieveResponse
     }
   }
+
+  private def collectFieldNames(node: CombinatorialExpr): Seq[String] = {
+    node match {
+      case AndExpr(left, right) => collectFieldNames(left) ++ collectFieldNames(right)
+      case OrExpr(left, right) => collectFieldNames(left) ++ collectFieldNames(right)
+      case NotExpr(expr) => collectFieldNames(expr)
+      case XorExpr(left, right) => collectFieldNames(left) ++ collectFieldNames(right)
+      case EqualExpr(field, _) => Seq(field.fieldName)
+      case NotEqualExpr(field, _) => Seq(field.fieldName)
+      case GreaterThanExpr(field, _) => Seq(field.fieldName)
+      case GreaterOrEqualExpr(field, _) => Seq(field.fieldName)
+      case LessThanExpr(field, _) => Seq(field.fieldName)
+      case LessOrEqualExpr(field, _) => Seq(field.fieldName)
+      case LikeExpr(field, _) => Seq(field.fieldName)
+      case IsTrueExpr(field) => Seq(field.fieldName)
+      case FieldReference(name) => Seq(name)
+      case _ => Seq()
+    }
+  }
+
   case class Query(query: String, limit: Option[Int] = Some(CommonHelper.defaultFetchSize))
 }
 
