@@ -30,7 +30,7 @@ import javax.inject._
 import play.api.Configuration
 import play.api.mvc._
 import utils.CommonHelper
-import models.InternalFeature
+import models.{InternalFeature, QueryRequestBody}
 import org.parboiled2.ParseError
 import de.upb.cs.swt.delphi.core.ql
 
@@ -64,20 +64,22 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
     * @return
     */
 
-  def query(query: String, limit: Int): Action[AnyContent] = Action.async {
+  def search: Action[AnyContent] = Action.async {
     implicit request => {
-      val resLimit :Option[Int] = Some(limit)
-      val parser = new Syntax(query)
+      val json = request.body.asJson.get
+      val query = json.as[QueryRequestBody]
+      //val resLimit :Option[Int] = Some(limit)
+      val parser = new Syntax(query.query)
       val parsingResult: Try[ql.Query] = parser.QueryRule.run()
       parsingResult match {
         case Success(parsedQuery) =>
-          val invalidFields = checkParsedQuery(parsedQuery, resLimit)
+          val invalidFields = checkParsedQuery(parsedQuery, query.limit)
           if (invalidFields.size > 0) {
             // Future.failed(throw new IllegalArgumentException(s"Unknown field name(s) used. (${invalidFields.mkString(",")})"))
             Future.successful(new Status(EXPECTATION_FAILED)(s"Incorrect metric name(s) [${invalidFields.mkString(", ")}] entered"))
           }
           else{
-            val searchResult = executeQuery(query, resLimit)
+            val searchResult = executeQuery(query.query, query.limit)
             searchResult
           }
 
