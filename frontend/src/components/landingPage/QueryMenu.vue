@@ -469,8 +469,7 @@
 			},
 		},
 		mounted() {
-			this.$http.get('https://delphi.cs.uni-paderborn.de/api/features').then(response => {
-				// this.$http.get("features").then(response => {
+			this.$http.get("features").then(response => {
 				this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
 				eventBus.$emit('metricList', this.info);
 				return response.json();
