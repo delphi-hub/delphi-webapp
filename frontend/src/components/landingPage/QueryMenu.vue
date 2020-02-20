@@ -3,8 +3,7 @@
 		<v-btn
 			tile
 			outlined
-			color="red"
-			class="mb-1"
+			color="blue"
 			text
 			@click="expanded = !expanded">
 			<v-icon left dark>mdi-creation</v-icon>
@@ -12,8 +11,17 @@
 				<p style="margin: 0" v-else>Use Query Creation Menu</p>
 				
 		</v-btn>
+		<v-btn
+			class="ml-1"
+			tile
+			outlined
+			color="green"
+			text>
+			<v-icon left dark>mdi-database</v-icon>
+				Query Storage		
+		</v-btn>
 		<v-expand-transition>
-			<div v-show="expanded" style="box-shadow: 1px 1px 5px 3px grey;	border-radius: 3px; padding: 0 5px 5px 5px;">
+			<div v-show="expanded" style="box-shadow: 1px 1px 5px 3px grey;	border-radius: 3px; padding: 0 5px 5px 5px; background-color: rgb(107, 166, 235);">
 				<v-row>
 					<v-col cols="12">
 						<v-card min-height="60px">
@@ -25,19 +33,19 @@
 					</v-col>
 				</v-row>	
 				<v-stepper v-model="step">
-					<v-stepper-header>
+					<!-- <v-stepper-header>
 						<v-stepper-step :complete="step > 1" step="1">Metric</v-stepper-step>
 						<v-divider></v-divider>
 						<v-stepper-step :complete="step > 2" step="2">Operator & Value</v-stepper-step>
 						<v-divider></v-divider>
 						<v-stepper-step step="3">Wrap Up</v-stepper-step>						
-					</v-stepper-header>
+					</v-stepper-header> -->
 					<v-stepper-items>
 						<v-stepper-content step="1">
 							<v-card	min-height="350px" :elevation="0">
 								<v-row>
 									<v-col cols="12">
-										<h5>Step 1: Metric</h5>
+										<h5>Step 1 (Expression {{level+1}}) : Metric</h5>
 										<p class="text-justify">
 											Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
 											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Phasellus accumsan cursus velit. Pellentesque ut neque.
@@ -105,7 +113,7 @@
 							<v-card	min-height="350px" :elevation="0">
 								<v-row>
 									<v-col cols="12">
-										<h5>Step 2: Operator & Value</h5>
+										<h5>Step 2 (Expression {{level+1}}): Operator & Value</h5>
 										<p class="text-justify">
 											Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
 											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Phasellus accumsan cursus velit. Pellentesque ut neque.
@@ -154,7 +162,7 @@
 							<v-card	min-height="350px" :elevation="0">
 								<v-row>
 									<v-col cols="12">
-										<h5>Step 3: Operator & Value</h5>
+										<h5>Step 3 (Expression {{level+1}}): Operator & Value</h5>
 										<p class="text-justify">
 											Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
 											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Phasellus accumsan cursus velit. Pellentesque ut neque.

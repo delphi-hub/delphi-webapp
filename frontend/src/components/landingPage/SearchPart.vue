@@ -1,63 +1,69 @@
 <template>
-	<v-app>
-		<div>
-			<v-container  style="align-items: center;"  id="searchPart">
-				<div>
-					<h5 class="queryHelpText">Welcome to Delphi, ... , formulate your query and start the search. If you need help with the formulation of the 
-											query, use the query creation helper below the query text field. 
-					</h5> 
-				</div>
-				<!--SearchPart has two child components. Query is where the query textfield and the start search button is.
-				QueryMenu consists of the three steps to create a query and the add query button.-->
-				<div>
-					<!--savedQuery updates the prop called partQuery
-					finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
-					After adding a new partQuery to the query component, it asks for resetting the savedquery.
-					After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
-					After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
-					<query
-						:errMsg="queryError"
-						:partQuery="savedQuery"
-						:isLoading="progressBar"
-						@emptyQuery="clearItems = $event"
-						@finalQuerySend="readyToSearchQuery = $event"
-						@resetSavedQuery="savedQuery = $event"
-					></query>
-					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-					<queryMenu @addQuerySent="saveQuery"></queryMenu>
-				</div>
-			</v-container>
-			<v-container  style="align-items: center;">
-				<div id="resultTableDiv" class="card">
-					<div
-						class="inputQueryInResult"
-						v-if="readyToSearchQuery"
-					> <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
-					<hr />
-					<v-data-table
-						:headers="headers"
-						:items="items.hits"
-						:loading="progressBar"
-						loading-text="Searching for the results, please wait...."
-						class="elevation-1"
-					>
-						<v-progress-linear
-							v-show="progressBar"
-							slot="progress"
-							loading-text="Loading... Please wait"
-							indeterminate
-						></v-progress-linear>
-						<v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
-						<template v-slot:item.moreInfo="{ item }">
-							<router-link
-								v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
-								:to="{ path: '/MoreInformation' }"
-							>More Information</router-link>
-						</template>
-					</v-data-table>
-				</div>
-			</v-container>
-		</div>
+	<v-app style="background-color: rgb(139, 12, 12);">
+		<v-container style="align-items: center; background-color: rgb(189, 190, 194);"  id="searchPart">
+			<v-card>
+				<v-card-title>
+					Welcome to Delphi 
+				</v-card-title>
+				<v-card-text>
+					... , formulate your query and start the search. If you need help with the formulation of the 
+										query, use the query creation helper below the query text field. 
+										formulate your query and start the search. If you need help with the formulation of the 
+										query, use the query creation helper below the query text field.
+				</v-card-text>
+
+				
+			</v-card>
+			<!--SearchPart has two child components. Query is where the query textfield and the start search button is.
+			QueryMenu consists of the three steps to create a query and the add query button.-->
+			<v-card class="pa-2 mt-1">
+				<!--savedQuery updates the prop called partQuery
+				finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
+				After adding a new partQuery to the query component, it asks for resetting the savedquery.
+				After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
+				After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
+				<query
+					:errMsg="queryError"
+					:partQuery="savedQuery"
+					:isLoading="progressBar"
+					@emptyQuery="clearItems = $event"
+					@finalQuerySend="readyToSearchQuery = $event"
+					@resetSavedQuery="savedQuery = $event"
+				></query>
+				<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
+				<queryMenu @addQuerySent="saveQuery"></queryMenu>
+				</v-card>
+		</v-container>
+		<v-container  style="align-items: center; background-color:rgb(189, 190, 194);;">
+			<div id="resultTableDiv" class="card">
+				<div
+					class="inputQueryInResult"
+					v-if="readyToSearchQuery"
+				> <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
+				<hr />
+				<v-data-table
+					:headers="headers"
+					:items="items.hits"
+					:loading="progressBar"
+					loading-text="Searching for the results, please wait...."
+					class="elevation-1"
+				>
+					<v-progress-linear
+						v-show="progressBar"
+						slot="progress"
+						loading-text="Loading... Please wait"
+						indeterminate
+					></v-progress-linear>
+					<v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
+					<template v-slot:item.moreInfo="{ item }">
+						<router-link
+							v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
+							:to="{ path: '/MoreInformation' }"
+						>More Information</router-link>
+					</template>
+				</v-data-table>
+			</div>
+		</v-container>	
 	</v-app>
 </template>
 
@@ -184,7 +190,6 @@
 
 <style>
 	#resultTableDiv {
-		margin: 10px;
 		box-shadow: 1px 1px 5px 3px grey;
 	}
 

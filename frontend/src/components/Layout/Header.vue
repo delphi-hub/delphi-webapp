@@ -1,14 +1,7 @@
 <template>
-    <nav class="navbar navbar-light bg-light justify-content-between" id="bar">
-        <div id="barDiv">
-            <a href="home">
-                <img :src="require('../../assets/Logo.png')" id="logoDelphi">
-            </a>
-        </div>  
-        <div id="item">
-            <a href="#" id="itemA"><h5 class="text">About</h5></a>
-        </div >
-    </nav>
+    <v-container style="padding:0 !important; background-color: white;">  
+        <v-img max-height="80" max-width="200" :src="require('../../assets/Logo.png')"></v-img>
+    </v-container>
 </template>
 <script>
 export default {
@@ -17,7 +10,7 @@ export default {
 </script>
 <style scoped>
     #bar {
-        background-color: #c20202 !important;
+        background-color: white !important;
         padding:0 !important;
     }
     #barDiv {
@@ -44,7 +37,7 @@ export default {
         border-radius: 3px;
     }
     #logoDelphi {
-        height:55px;
-        width:150px;
+        height:62px;
+        width:160px;
     }
 </style>

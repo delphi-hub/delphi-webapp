@@ -15,19 +15,19 @@ export default {
 </script>
 <style scoped>
     .foot {
-    background-color: #c20202;
+    background-color: whitesmoke;
     text-align: center;
-    color: whitesmoke;
+    color: black;
     font-size: 11px;
 }
 
 .footerLinks {
-    color: whitesmoke;
+    color: black;
     text-decoration: underline;
     font-size: 12px;
 }
 
 .footerLinks:hover{
-    color: rgb(0, 0, 0);
+    color: red;
 }
 </style>

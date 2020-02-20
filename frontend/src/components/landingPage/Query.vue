@@ -1,6 +1,6 @@
 <template>
 	<v-row>
-		<v-col cols="11" id="queryCol" class="pr-0">
+		<v-col cols="9" id="queryCol" class="pr-0">
 	<!--
 		@input="addToFinalQuery, setQuery($event.target.value)"
 		@keydown.enter.prevent="onStartSearch"
@@ -35,7 +35,7 @@
 		</v-col>
 		<v-col cols="1" class="pl-0">
 			<v-btn
-				height="56px"
+				height="56"
 				id="startSearchButton"
 				@click="onStartSearch"
 				:loading="isLoading"
@@ -44,6 +44,23 @@
 				class="ml-2 white--text">
 				<v-icon dark large>mdi-magnify</v-icon>
 			</v-btn>
+		</v-col>
+		<v-col cols="1" class="pl-0">
+			<v-tooltip top color="green">
+				<template v-slot:activator="{ on }">
+					<v-btn
+						height="40"
+						width="40"
+						fab
+						v-on="on"
+						@click="onStartSearch"
+						color="green"
+						class="ml-2 white--text">
+						<v-icon>mdi-content-save</v-icon>
+					</v-btn>
+				</template>
+				<span>Save Query in Query Storage</span>
+			</v-tooltip>
 		</v-col>
 	</v-row>
 </template>

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="background-color: rgb(139, 12, 12)">
 		<app-header></app-header>
 		<keep-alive include="SearchPart">
 			<app-search></app-search>
