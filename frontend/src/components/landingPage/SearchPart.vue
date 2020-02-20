@@ -169,7 +169,7 @@ export default {
       if (this.readyToSearchQuery) {
         this.progressBar = true;
         this.$http
-          .get("search/" + this.readyToSearchQuery + "/" + this.resultLimit)
+          .post("search/", {query: this.readyToSearchQuery, limit: this.resultLimit})
           .then(response => {
             return response.json();
           })
