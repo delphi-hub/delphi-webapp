@@ -36,6 +36,7 @@ import de.upb.cs.swt.delphi.core.ql
 
 import scala.util.{Failure, Success, Try}
 import de.upb.cs.swt.delphi.core.ql._
+import play.api.libs.json.{JsValue, Json}
 
 import scala.concurrent.{Await, Future}
 import spray.json.DefaultJsonProtocol
@@ -66,9 +67,11 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
 
   def search: Action[AnyContent] = Action.async {
     implicit request => {
-      val json = request.body.asJson.get
+      val jsonBody: Option[JsValue]  = Some(request.body.asJson.get)
+      val jsonEmptyBody = Json.toJson(QueryRequestBody("",Some(0)))
+      val json : JsValue = jsonBody.getOrElse(jsonEmptyBody)
+
       val query = json.as[QueryRequestBody]
-      //val resLimit :Option[Int] = Some(limit)
       val parser = new Syntax(query.query)
       val parsingResult: Try[ql.Query] = parser.QueryRule.run()
       parsingResult match {
