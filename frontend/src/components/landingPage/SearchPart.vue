@@ -23,8 +23,7 @@
               :errMsg="queryError"
               :partQuery="savedQuery"
               @emptyQuery="clearItems = $event"
-              @finalQuerySend="readyToSearchQuery = $event"
-              @currentLimitSend="resultLimit = $event"
+              @finalQueryAndLimitSend="finalQAndLimit = $event"
               @resetSavedQuery="savedQuery = $event"
             ></query>
             <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
@@ -139,6 +138,7 @@ export default {
       clearItems: false,
       flattenItems: [],
       dialog: false,
+      finalQAndLimit: {query:"", limit:"100"},
       reqBody: {
         query: this.readyToSearchQuery,
         limit: this.resultLimit
@@ -147,9 +147,13 @@ export default {
   },
   watch: {
     //if this variable is changed, the startSearch function will be triggered
-    readyToSearchQuery: function(newVal) {
-      if (newVal) {
-        this.startSearch();
+    finalQAndLimit: function(newVal, oldVal) {
+      if (newVal.query) {
+        this.readyToSearchQuery = newVal.query;
+        this.resultLimit = newVal.limit;
+        if(!((oldVal.query == newVal.query) && (oldVal.limit == newVal.limit))){ //If both values stay the same, no search will be happen
+          this.startSearch();
+        }
       }
     },
     clearItems: function(newVal) {

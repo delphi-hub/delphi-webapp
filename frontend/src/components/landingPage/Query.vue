@@ -149,8 +149,8 @@ export default {
         this.submitted = true;
         this.emptyQuery = false;
         this.$emit("emptyQuery", this.emptyQuery);
-        this.$emit("finalQuerySend", this.finalQuery);
-        this.$emit("currentLimitSend", this.currentLimit);
+        var qAndL = {query: this.finalQuery, limit: this.currentLimit};
+        this.$emit("finalQueryAndLimitSend", qAndL);
       } else {
         this.emptyQuery = true;
         this.$emit("emptyQuery", this.emptyQuery);
