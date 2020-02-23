@@ -40,8 +40,8 @@
 					<v-icon large>mdi-magnify</v-icon>
 				</v-btn>
 			</v-row>	
-		</v-col>	
-		<v-col cols="12" class="pt-1">
+		</v-col>
+		<v-col cols="12" class="py-1">
 			<v-alert
 				class="my-0 mx-6 py-1"
 				dense
@@ -59,6 +59,17 @@
 						{{this.queryError}}
 			</v-alert>
 		</v-col>
+		<v-col cols="6" class="py-0 ml-7">
+			<v-text-field
+				style="max-width:160px"
+				dense
+				filled
+				hint="Amount of Result Entries"
+				v-model="currentLimit"
+				:rules="[rules.inlimit]"
+				persistent-hint>
+			</v-text-field>
+		</v-col>	
 	</v-row>	
 </template>
 
@@ -92,6 +103,19 @@
 				submitted: false,
 				queryError: "",
 				emptyQuery: "",
+				currentLimit: 100,
+				rules: {
+					inlimit: value => {
+						const pattern = /^([1-9][0-9]{0,3}|10000)$/;
+						if(pattern.test(value)){
+							this.brokeRule = false;
+						}
+						else {
+							this.brokeRule = true;
+						}
+						return pattern.test(value) || 'Only Numbers between 1 and 10000'
+					}
+				},
 				metric: "",
 				metrics: [],
 				loader: null,
@@ -148,7 +172,8 @@
 					this.submitted = true;
 					this.emptyQuery = false;
 					this.$emit("emptyQuery", this.emptyQuery);
-					this.$emit("finalQuerySend", this.finalQuery);
+					var qAndL = {query: this.finalQuery, limit: this.currentLimit};
+					this.$emit("finalQueryAndLimitSend", qAndL);
 				} else {
 					this.emptyQuery = true;
 					this.$emit("emptyQuery", this.emptyQuery);

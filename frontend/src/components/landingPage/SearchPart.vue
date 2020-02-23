@@ -26,7 +26,7 @@
 					:partQuery="savedQuery"
 					:isLoading="progressBar"
 					@emptyQuery="clearItems = $event"
-					@finalQuerySend="readyToSearchQuery = $event"
+					@finalQueryAndLimitSend="finalQAndLimit = $event"
 					@resetSavedQuery="savedQuery = $event"
 					></query>
 					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
@@ -53,7 +53,7 @@
 							loading-text="Loading... Please wait"
 							indeterminate
 						></v-progress-linear>
-						<v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
+						<v-alert slot="no-data" :value="true" class="ma-0">No data available</v-alert>
 						<template v-slot:item.moreInfo="{ item }">
 							<router-link
 								v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
@@ -113,14 +113,20 @@
 				items: [],
 				queryError: "",
 				progressBar: false,
+				resultLimit: 100,
+				finalQAndLimit: {query:"", limit:"100"},
 				clearItems: false
 			};
 		},
 		watch: {
 			//if this variable is changed, the startSearch function will be triggered
-			readyToSearchQuery: function(newVal) {
-				if (newVal) {
-					this.startSearch();
+			finalQAndLimit: function(newVal, oldVal) {
+				if (newVal.query) {
+					this.readyToSearchQuery = newVal.query;
+					this.resultLimit = newVal.limit;
+					if(!((oldVal.query == newVal.query) && (oldVal.limit == newVal.limit))){ //If both values stay the same, no search will be happen
+						this.startSearch();
+					}
 				}
 			},
 			clearItems: function(newVal) {
