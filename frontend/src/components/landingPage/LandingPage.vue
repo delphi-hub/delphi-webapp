@@ -1,11 +1,11 @@
 <template>
-	<div style="background-color: rgb(139, 12, 12)">
+	<v-app style="background-color: rgb(255, 255, 255)">
 		<app-header></app-header>
 		<keep-alive include="SearchPart">
 			<app-search></app-search>
 		</keep-alive>
 		<app-footer></app-footer>
-	</div>
+	</v-app>
 </template>
 
 <script>

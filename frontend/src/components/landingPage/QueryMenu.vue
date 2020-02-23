@@ -1,45 +1,50 @@
 <template>
-	<div>
+	<v-row>
 		<v-btn
-			tile
-			outlined
-			color="blue"
-			text
+			class="ml-6 mb-1 white--text"
+			rounded
+			color="rgb(190, 33, 33)"
 			@click="expanded = !expanded">
-			<v-icon left dark>mdi-creation</v-icon>
+			<v-icon left>mdi-creation</v-icon>
 				<p style="margin: 0" v-if="expanded">Hide Query Creation Menu</p>
 				<p style="margin: 0" v-else>Use Query Creation Menu</p>
-				
 		</v-btn>
 		<v-btn
-			class="ml-1"
-			tile
-			outlined
-			color="green"
-			text>
-			<v-icon left dark>mdi-database</v-icon>
-				Query Storage		
+			class="mx-1 mb-1 white--text"
+			rounded
+			color="#5E35B1"
+			>
+			<v-icon left>mdi-database</v-icon>
+				Storage		
 		</v-btn>
 		<v-expand-transition>
-			<div v-show="expanded" style="box-shadow: 1px 1px 5px 3px grey;	border-radius: 3px; padding: 0 5px 5px 5px; background-color: rgb(107, 166, 235);">
+			<div v-show="expanded" style="border-radius: 15px; padding: 0 10px 10px 10px; margin: 0 20px 5px 20px; background-color: rgb(190, 33, 33)">
 				<v-row>
-					<v-col cols="12">
-						<v-card min-height="60px">
-							<v-card-subtitle class="px-2 pt-1 pb-0">Query Creation Progress:</v-card-subtitle>
-								<p class="px-2 py-1 font-weight-bold">
-									{{createdQuery}}
-								</p>
+					<v-col cols="12" class="pa-4">
+						<v-card>
+							<v-card-subtitle class="py-0 pl-1">
+								Query Creation Progress:
+							</v-card-subtitle>
+							<v-textarea
+								rows="1"
+								hide-details
+								@input="addToFinalQuery($event), setQuery($event)"
+								auto-grow
+								v-model="createdQuery"
+								readonly
+								class="px-2 py-0 title">
+							</v-textarea>
 						</v-card>
 					</v-col>
 				</v-row>	
 				<v-stepper v-model="step">
-					<!-- <v-stepper-header>
+					<v-stepper-header>
 						<v-stepper-step :complete="step > 1" step="1">Metric</v-stepper-step>
 						<v-divider></v-divider>
 						<v-stepper-step :complete="step > 2" step="2">Operator & Value</v-stepper-step>
 						<v-divider></v-divider>
 						<v-stepper-step step="3">Wrap Up</v-stepper-step>						
-					</v-stepper-header> -->
+					</v-stepper-header> 
 					<v-stepper-items>
 						<v-stepper-content step="1">
 							<v-card	min-height="350px" :elevation="0">
@@ -274,7 +279,7 @@
 				</v-stepper>
 			</div>
 		</v-expand-transition>
-	</div>
+	</v-row>
 </template>
 
 <script>
@@ -469,7 +474,8 @@
 			},
 		},
 		mounted() {
-			this.$http.get("features").then(response => {
+			this.$http.get('https://delphi.cs.uni-paderborn.de/api/features').then(response => {
+			//this.$http.get("features").then(response => {
 				this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
 				eventBus.$emit('metricList', this.info);
 				return response.json();

@@ -1,70 +1,70 @@
 <template>
-	<v-app style="background-color: rgb(139, 12, 12);">
-		<v-container style="align-items: center; background-color: rgb(189, 190, 194);"  id="searchPart">
-			<v-card>
-				<v-card-title>
-					Welcome to Delphi 
-				</v-card-title>
-				<v-card-text>
-					... , formulate your query and start the search. If you need help with the formulation of the 
-										query, use the query creation helper below the query text field. 
-										formulate your query and start the search. If you need help with the formulation of the 
-										query, use the query creation helper below the query text field.
-				</v-card-text>
-
-				
-			</v-card>
-			<!--SearchPart has two child components. Query is where the query textfield and the start search button is.
-			QueryMenu consists of the three steps to create a query and the add query button.-->
-			<v-card class="pa-2 mt-1">
-				<!--savedQuery updates the prop called partQuery
-				finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
-				After adding a new partQuery to the query component, it asks for resetting the savedquery.
-				After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
-				After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
-				<query
+	<div style="background-color: rgb(255, 255, 255); margin-bottom: 10px; padding:0 30px 30px 30px">
+		<v-row justify="center">
+			<v-col cols="12" class="py-1">
+				<v-card elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
+					<v-card-title style="background-color: rgb(190, 33, 33); color:white" class="layout justify-center mb-1 pa-1"> 
+						<div  class="headline text-center">Welcome to Delphi</div> 
+					</v-card-title>
+					<v-card-text>
+						... , formulate your query and start the search. If you need help with the formulation of the 
+											query, use the query creation helper below the query text field. 
+											formulate your query and start the search. If you need help with the formulation of the 
+											query, use the query creation helper below the query text field.
+					</v-card-text>	
+				</v-card>
+			</v-col>
+			<v-col cols="12">
+				<v-card class="pa-1" elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
+						<!--savedQuery updates the prop called partQuery
+					finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
+					After adding a new partQuery to the query component, it asks for resetting the savedquery.
+					After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
+					After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->	
+					<query
 					:errMsg="queryError"
 					:partQuery="savedQuery"
 					:isLoading="progressBar"
 					@emptyQuery="clearItems = $event"
 					@finalQuerySend="readyToSearchQuery = $event"
 					@resetSavedQuery="savedQuery = $event"
-				></query>
-				<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-				<queryMenu @addQuerySent="saveQuery"></queryMenu>
+					></query>
+					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
+					<queryMenu @addQuerySent="saveQuery"></queryMenu>
 				</v-card>
-		</v-container>
-		<v-container  style="align-items: center; background-color:rgb(189, 190, 194);;">
-			<div id="resultTableDiv" class="card">
-				<div
-					class="inputQueryInResult"
-					v-if="readyToSearchQuery"
-				> <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
-				<hr />
-				<v-data-table
-					:headers="headers"
-					:items="items.hits"
-					:loading="progressBar"
-					loading-text="Searching for the results, please wait...."
-					class="elevation-1"
-				>
-					<v-progress-linear
-						v-show="progressBar"
-						slot="progress"
-						loading-text="Loading... Please wait"
-						indeterminate
-					></v-progress-linear>
-					<v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
-					<template v-slot:item.moreInfo="{ item }">
-						<router-link
-							v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
-							:to="{ path: '/MoreInformation' }"
-						>More Information</router-link>
-					</template>
-				</v-data-table>
-			</div>
-		</v-container>	
-	</v-app>
+			</v-col>
+			<v-col cols="12"> 
+				<v-card elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
+					<div
+						class="inputQueryInResult"
+						v-if="readyToSearchQuery"
+					> <br> You searched for the query : <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p></div>
+					<hr />
+					<v-data-table
+						:headers="headers"
+						:items="items.hits"
+						:loading="progressBar"
+						loading-text="Searching for the results, please wait...."
+						class="elevation-1"
+					>
+						<v-progress-linear
+							v-show="progressBar"
+							slot="progress"
+							loading-text="Loading... Please wait"
+							indeterminate
+						></v-progress-linear>
+						<v-alert slot="no-data" :value="true" class="error1">No data available</v-alert>
+						<template v-slot:item.moreInfo="{ item }">
+							<router-link
+								v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
+								:to="{ path: '/MoreInformation' }"
+							>More Information</router-link>
+						</template>
+					</v-data-table>
+				</v-card>
+			</v-col>
+		</v-row>
+	</div>
 </template>
 
 <script>
@@ -189,10 +189,6 @@
 </script>
 
 <style>
-	#resultTableDiv {
-		box-shadow: 1px 1px 5px 3px grey;
-	}
-
 	.inputQueryInResult {
 		text-align: center;
 	}

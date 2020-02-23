@@ -1,31 +1,57 @@
 <template>
 	<v-row>
-		<v-col cols="9" id="queryCol" class="pr-0">
-	<!--
-		@input="addToFinalQuery, setQuery($event.target.value)"
-		@keydown.enter.prevent="onStartSearch"
-	-->
-			<v-textarea
-				outlined
-				id="queryInput"
-				rows="1"
-				@keydown.enter.prevent
-				clearable
-				v-model="finalQuery"
-				label="Your Query:"
-				@input="addToFinalQuery($event), setQuery($event)"
-				auto-grow>
-			</v-textarea>
+		<v-col cols="12" class="pb-1">
+			<v-row>
+				<v-tooltip top color="#5E35B1">
+					<template v-slot:activator="{ on }">
+						<v-btn
+							height="25"
+							width="25"
+							fab
+							v-on="on"
+							@click="onStartSearch"
+							color="#5E35B1"
+							class="ml-4 white--text">
+							<v-icon small>mdi-content-save</v-icon>
+						</v-btn>
+					</template>
+					<span>Save Query in Query Storage</span>
+				</v-tooltip>
+				<v-textarea
+					outlined
+					id="queryInput"
+					rows="1"
+					@keydown.enter.prevent="onStartSearch"
+					clearable
+					hide-details
+					v-model="finalQuery"
+					label="Your Query"
+					@input="addToFinalQuery($event), setQuery($event)"
+					auto-grow>
+				</v-textarea>
+				<v-btn
+					height="50"
+					id="startSearchButton"
+					@click="onStartSearch"
+					:loading="isLoading"
+					:disabled="isLoading || !finalQuery"
+					color="green"
+					class="mr-4 ml-1 mt-1 white--text">
+					<v-icon large>mdi-magnify</v-icon>
+				</v-btn>
+			</v-row>	
+		</v-col>	
+		<v-col cols="12" class="pt-1">
 			<v-alert
-				class="my-0"
+				class="my-0 mx-6 py-1"
 				dense
 				outlined
 				type="error"
 				v-if="!$v.finalQuery.required && submitted">
-						Please enter a valid query or use the query builder to add a query.
+				Please enter a valid query or use the query builder to add a query.
 			</v-alert>
 			<v-alert
-				class="my-0"
+				class="my-0 mx-6 py-1"
 				dense
 				outlined
 				type="error"
@@ -33,36 +59,7 @@
 						{{this.queryError}}
 			</v-alert>
 		</v-col>
-		<v-col cols="1" class="pl-0">
-			<v-btn
-				height="56"
-				id="startSearchButton"
-				@click="onStartSearch"
-				:loading="isLoading"
-				:disabled="isLoading"
-				color="red"
-				class="ml-2 white--text">
-				<v-icon dark large>mdi-magnify</v-icon>
-			</v-btn>
-		</v-col>
-		<v-col cols="1" class="pl-0">
-			<v-tooltip top color="green">
-				<template v-slot:activator="{ on }">
-					<v-btn
-						height="40"
-						width="40"
-						fab
-						v-on="on"
-						@click="onStartSearch"
-						color="green"
-						class="ml-2 white--text">
-						<v-icon>mdi-content-save</v-icon>
-					</v-btn>
-				</template>
-				<span>Save Query in Query Storage</span>
-			</v-tooltip>
-		</v-col>
-	</v-row>
+	</v-row>	
 </template>
 
 <script>
@@ -173,7 +170,5 @@
 </script>
 
 <style>
-	#errorDiv {
-		min-height: 30px;
-	}
+
 </style>
