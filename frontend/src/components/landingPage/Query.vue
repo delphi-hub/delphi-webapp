@@ -9,7 +9,7 @@
 							width="25"
 							fab
 							v-on="on"
-							@click="onStartSearch"
+							@click="sendToStorage"
 							color="#5E35B1"
 							class="ml-4 white--text">
 							<v-icon small>mdi-content-save</v-icon>
@@ -181,8 +181,8 @@
 				}
 			},
 			//after a reset this sends a confirmation to searchPart
-			finalMetricIsReseted() {
-				this.$emit("confirmFinalQueryReset", false);
+			sendToStorage() {
+				this.$emit("sendQueryToStorage", this.finalQuery);
 			},
 			setQuery(value) {
 				this.submitted = false;

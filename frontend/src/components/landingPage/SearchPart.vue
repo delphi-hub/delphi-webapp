@@ -28,9 +28,12 @@
 						@emptyQuery="clearItems = $event"
 						@finalQueryAndLimitSend="finalQAndLimit = $event"
 						@resetSavedQuery="savedQuery = $event"
+						@sendQueryToStorage="storageSaveQuery = $event"
 					></query>
 					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-					<queryMenu 
+					<queryMenu
+						:queryForStorage="storageSaveQuery"
+						@resetStorageQuery="storageSaveQuery = $event"
 						@addQuerySent="saveQuery"
 						@addFromStorage="saveQuery">
 					</queryMenu>
@@ -117,8 +120,9 @@
 				queryError: "",
 				progressBar: false,
 				resultLimit: 100,
-				finalQAndLimit: {query:"", limit:"100"},
-				clearItems: false
+				finalQAndLimit: {query:"", limit:100},
+				clearItems: false,
+				storageSaveQuery: "",
 			};
 		},
 		watch: {

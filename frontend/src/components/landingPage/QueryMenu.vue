@@ -38,8 +38,7 @@
 												<v-list-item-title class="ml-1" v-on="on">{{ item.title }}</v-list-item-title>
 											</template>
 											<span>{{ item.value }}</span>
-										</v-tooltip>
-										
+										</v-tooltip>	
 									</v-list-item-content>
 									<v-tooltip top color="green">
 										<template v-slot:activator="{ on }">
@@ -47,42 +46,14 @@
 												class="mt-1 green--text"
 												icon
 												v-on="on"
-												@click.stop="dialogFromStorage = true"
+												@click.stop="showDialogFromStorage(item.value)"
 												>
 												<v-icon>mdi-content-copy</v-icon>
 											</v-btn>
 										</template>
 										<span>Copy Query to 'Your Query'</span>
 									</v-tooltip>
-									<v-dialog
-										v-model="dialogFromStorage"
-										max-width="400">
-										<v-card>
-											<v-card-title
-												class="headline red lighten-2 py-1"
-												primary-title>
-												Warning
-											</v-card-title>
-											<v-card-text class="mt-2 py-0">
-												The created query will replace the content of 'Your Query'. 
-											</v-card-text>
-											<v-card-actions>
-												<v-spacer></v-spacer>
-												<v-btn
-													color="green darken-1"
-													text
-													@click="copyFromStorage(item.value)">
-													Ok
-												</v-btn>
-												<v-btn
-													color="red darken-1"
-													text
-													@click="dialogFromStorage = false">
-													Back
-												</v-btn>
-											</v-card-actions>
-										</v-card>
-									</v-dialog>
+									
 									<v-tooltip top color="red">
 										<template v-slot:activator="{ on }">
 											<v-btn
@@ -386,12 +357,65 @@
 				Close
 			</v-btn>
 		</v-snackbar>
+		<v-dialog
+			v-model="dialogFromStorage"
+			max-width="400">
+			<v-card>
+				<v-card-title
+					class="headline red lighten-2 py-1"
+					primary-title>
+					Warning
+				</v-card-title>
+				<v-card-text class="mt-2 py-0">
+					The created query will replace the content of 'Your Query'. 
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn
+						color="green darken-1"
+						text
+						@click="copyFromStorage(tempQuery)">
+						Ok
+					</v-btn>
+					<v-btn
+						color="red darken-1"
+						text
+						@click="dialogFromStorage = false">
+						Back
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-row>
 </template>
 
 <script>
 	import { eventBus } from '../../main';
 	export default {
+		props: {
+			queryForStorage: {
+				type: String
+			}
+		},
+		watch: {
+			queryForStorage: function(newVal) {
+				if(newVal){
+					if(!this.storageCheckDuplicates(newVal)){
+						if(newVal.length > 35){
+							this.menuItems.push({title: newVal.substring(0,35)+'...', value: newVal});
+						}
+						else{
+							this.menuItems.push({title: newVal, value: newVal});
+						}	
+						this.snackbar = true;
+					}
+					else {
+						this.snackbar2 = true;
+					}
+					this.$emit("resetStorageQuery", "");
+				}
+			}
+		},
 		data () {
 			return {
 				operators: [
@@ -412,6 +436,7 @@
 				info: null,
 				dialog: false,
 				dialogFromStorage: false,
+				tempQuery: "",
 				expanded: false,
 				step: 1,
 				level: 0,
@@ -630,6 +655,10 @@
 					}
 				}
 				return false;
+			},
+			showDialogFromStorage(qu) {
+				this.dialogFromStorage = true;
+				this.tempQuery = qu;
 			}
 		},
 		mounted() {
