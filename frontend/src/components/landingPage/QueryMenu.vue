@@ -9,18 +9,108 @@
 				<p style="margin: 0" v-if="expanded">Hide Query Creation Menu</p>
 				<p style="margin: 0" v-else>Use Query Creation Menu</p>
 		</v-btn>
-		<v-btn
-			class="mx-1 mb-1 white--text"
-			rounded
-			color="#5E35B1"
-			>
-			<v-icon left>mdi-database</v-icon>
-				Storage		
-		</v-btn>
+		<div class="text-center">
+			<v-menu
+				v-model="menu"
+				:close-on-content-click="false"
+				min-width="300"
+				max-height="300"
+				offset-y>
+				<template v-slot:activator="{ on }">
+					<v-btn
+						class="mx-1 mb-1 white--text"
+						rounded
+						color="#5E35B1"
+						v-on="on">
+						<v-icon left>mdi-database</v-icon>
+						Storage		
+					</v-btn>
+				</template>	
+					<v-list v-if="menuItems.length != 0" color="#5E35B1" class="py-1">
+							<v-list-item
+							class="mx-1"
+							v-for="(item, index) in menuItems"
+							:key="index">
+								<v-row style="background-color:white; border-radius: 5px 5px 5px 5px;">
+									<v-list-item-content>
+										<v-tooltip bottom color="#5E35B1">
+											<template v-slot:activator="{ on }">
+												<v-list-item-title class="ml-1" v-on="on">{{ item.title }}</v-list-item-title>
+											</template>
+											<span>{{ item.value }}</span>
+										</v-tooltip>
+										
+									</v-list-item-content>
+									<v-tooltip top color="green">
+										<template v-slot:activator="{ on }">
+											<v-btn
+												class="mt-1 green--text"
+												icon
+												v-on="on"
+												@click.stop="dialogFromStorage = true"
+												>
+												<v-icon>mdi-content-copy</v-icon>
+											</v-btn>
+										</template>
+										<span>Copy Query to 'Your Query'</span>
+									</v-tooltip>
+									<v-dialog
+										v-model="dialogFromStorage"
+										max-width="400">
+										<v-card>
+											<v-card-title
+												class="headline red lighten-2 py-1"
+												primary-title>
+												Warning
+											</v-card-title>
+											<v-card-text class="mt-2 py-0">
+												The created query will replace the content of 'Your Query'. 
+											</v-card-text>
+											<v-card-actions>
+												<v-spacer></v-spacer>
+												<v-btn
+													color="green darken-1"
+													text
+													@click="copyFromStorage(item.value)">
+													Ok
+												</v-btn>
+												<v-btn
+													color="red darken-1"
+													text
+													@click="dialogFromStorage = false">
+													Back
+												</v-btn>
+											</v-card-actions>
+										</v-card>
+									</v-dialog>
+									<v-tooltip top color="red">
+										<template v-slot:activator="{ on }">
+											<v-btn
+												class="mt-1 red--text"
+												icon
+												v-on="on"
+												@click="menuItems.splice(index, 1)">
+												<v-icon>mdi-delete</v-icon>
+											</v-btn>
+										</template>
+										<span>Remove Query from Storage</span>
+									</v-tooltip>
+								</v-row>
+							</v-list-item>
+					</v-list>
+					<v-list v-else color="#5E35B1" class="py-1">
+						<v-list-item>
+							<v-row style="background-color:white; border-radius: 5px 5px 5px 5px;">
+								<v-list-item-title class="text-center title">Query Storage Empty</v-list-item-title>
+							</v-row>
+						</v-list-item>
+					</v-list>
+			</v-menu>
+		</div>
 		<v-expand-transition>
 			<div v-show="expanded" style="border-radius: 15px; padding: 0 10px 10px 10px; margin: 0 20px 5px 20px; background-color: rgb(190, 33, 33)">
 				<v-row>
-					<v-col cols="12" class="pa-4">
+					<v-col cols="12" class="px-4 py-3">
 						<v-card>
 							<v-card-subtitle class="py-0 pl-1">
 								Query Creation Progress:
@@ -46,16 +136,16 @@
 						<v-stepper-step step="3">Wrap Up</v-stepper-step>						
 					</v-stepper-header> 
 					<v-stepper-items>
-						<v-stepper-content step="1">
-							<v-card	min-height="350px" :elevation="0">
+						<v-stepper-content class="pa-2" step="1">
+							<v-card	min-height="350px" elevation="0">
+								<v-card-title class="pa-1">
+									Step 1 (Expression {{level+1}}) : Metric
+								</v-card-title>
+								<v-card-text class="pa-1">
+									Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
+											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Ph
+								</v-card-text>
 								<v-row>
-									<v-col cols="12">
-										<h5>Step 1 (Expression {{level+1}}) : Metric</h5>
-										<p class="text-justify">
-											Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
-											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Phasellus accumsan cursus velit. Pellentesque ut neque.
-										</p>
-									</v-col>
 									<v-col cols="12">
 										<div v-show="metric">
 											<p>Chosen Metric:</p>
@@ -114,16 +204,16 @@
 								<span>Next Step</span>
 							</v-tooltip>
 						</v-stepper-content>
-						<v-stepper-content step="2">
+						<v-stepper-content class="pa-2" step="2">
 							<v-card	min-height="350px" :elevation="0">
+								<v-card-title class="pa-1">
+									Step 2 (Expression {{level+1}}): Operator & Value
+								</v-card-title>
+								<v-card-text class="pa-1">
+									Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
+											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Ph
+								</v-card-text>
 								<v-row>
-									<v-col cols="12">
-										<h5>Step 2 (Expression {{level+1}}): Operator & Value</h5>
-										<p class="text-justify">
-											Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
-											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Phasellus accumsan cursus velit. Pellentesque ut neque.
-										</p>
-									</v-col>
 									<v-col cols="12" class="py-0">
 										<v-select
 											v-model="operator"
@@ -163,18 +253,18 @@
 								<span>Next Step</span>
 							</v-tooltip>						
 						</v-stepper-content>
-						<v-stepper-content step="3">
+						<v-stepper-content class="pa-2" step="3">
 							<v-card	min-height="350px" :elevation="0">
+								<v-card-title class="pa-1">
+									Step 3 (Expression {{level+1}}): Wrap Up
+								</v-card-title>
+								<v-card-text class="pa-1">
+									Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
+											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Ph
+								</v-card-text>
 								<v-row>
 									<v-col cols="12">
-										<h5>Step 3 (Expression {{level+1}}): Operator & Value</h5>
-										<p class="text-justify">
-											Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
-											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Phasellus accumsan cursus velit. Pellentesque ut neque.
-										</p>
-									</v-col>
-									<v-col cols="12">
-										<v-checkbox color="green" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
+										<v-checkbox color="blue" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
 									</v-col>
 									<v-col cols="12">
 										<v-select
@@ -224,7 +314,7 @@
 										v-on="on"
 										style="margin-left: 6px;"
 										color="blue"
-										:disabled="logicalOperator != ''"
+										:disabled="(logicalOperator != '') && !(level >= maxLevel)"
 										@click.stop="dialog = true"
 									>
 										<v-icon>mdi-file-send-outline</v-icon>
@@ -234,51 +324,68 @@
 							</v-tooltip>
 							<v-dialog
 								v-model="dialog"
-								max-width="400"
-								>
+								max-width="400">
 								<v-card>
 									<v-card-title
-										class="headline red lighten-2"
-										primary-title
-										>
+										class="headline red lighten-2 py-1"
+										primary-title>
 										Warning
-										</v-card-title>
-									<v-card-text>
+									</v-card-title>
+									<v-card-text class="mt-2 py-0">
 										The created query will replace the content of 'Your Query'. 
 									</v-card-text>
-
 									<v-card-actions>
-									<v-spacer></v-spacer>
-
-									<v-btn
-										color="green darken-1"
-										text
-										@click="onAddQuery"
-									>
-										Ok
-									</v-btn>
-									<v-btn
-										color="red darken-1"
-										text
-										@click="dialog = false"
-									>
-										Back
-									</v-btn>
-									<v-btn
-										color="blue darken-1"
-										text
-										@click="dialog = false"
-								>
-									Save in Query Storage
-								</v-btn>
+										<v-spacer></v-spacer>
+										<v-btn
+											color="green darken-1"
+											text
+											@click="onAddQuery">
+											Ok
+										</v-btn>
+										<v-btn
+											color="red darken-1"
+											text
+											@click="dialog = false">
+											Back
+										</v-btn>
+										<v-btn
+											color="blue darken-1"
+											text
+											@click="addToMenu">
+											Save in Query Storage
+										</v-btn>
 									</v-card-actions>
 								</v-card>
-								</v-dialog>
+							</v-dialog>
 						</v-stepper-content>
 					</v-stepper-items>
 				</v-stepper>
 			</div>
 		</v-expand-transition>
+		<v-snackbar
+			class="mb-3"
+			v-model="snackbar"
+			:timeout=3000>
+			Query saved in Storage
+			<v-btn
+				color="red"
+				text
+				@click="snackbar = false">
+				Close
+			</v-btn>
+		</v-snackbar>
+		<v-snackbar
+			class="mb-3"
+			v-model="snackbar2"
+			:timeout=3000>
+			Query already in Storage
+			<v-btn
+				color="red"
+				text
+				@click="snackbar2 = false">
+				Close
+			</v-btn>
+		</v-snackbar>
 	</v-row>
 </template>
 
@@ -297,9 +404,14 @@
 					{text:"XOR", value:"XOR"}
 				],
 				queryInCreation: [],
+				menuItems: [],
+				snackbar: false,
+				snackbar2: false,
+				menu: false,
 				createdQuery: '',
 				info: null,
 				dialog: false,
+				dialogFromStorage: false,
 				expanded: false,
 				step: 1,
 				level: 0,
@@ -472,6 +584,53 @@
 				this.queryInCreation.pop();
 				this.updateCreatedQuery();
 			},
+			addToMenu(){
+				this.queryInCreation.push(this.logicalOperator);
+				this.queryInCreation.push(this.logicalNOT);
+				this.updateCreatedQuery();
+				if(!this.storageCheckDuplicates(this.createdQuery)){
+					if(this.createdQuery.length > 35){
+						this.menuItems.push({title: this.createdQuery.substring(0,35)+'...', value: this.createdQuery});
+					}
+					else{
+						this.menuItems.push({title: this.createdQuery, value: this.createdQuery});
+					}	
+					this.snackbar = true;
+				}
+				else {
+					this.snackbar2 = true;
+				}
+				this.metric = null;
+				this.operator = null;
+				this.value = null;
+				this.logicalNOT = null;
+				this.logicalOperator = null;
+				document.getElementById("filter").value = ''; 
+				this.filter1();	
+				this.expanded = !this.expanded;
+				this.createdQuery = "";
+				this.queryInCreation = [];
+				this.step = 1;
+				this.level = 0;
+				if(this.dialog) {
+					this.dialog = false;
+				}
+				
+			},
+			copyFromStorage(query){
+				this.$emit('addFromStorage', query);
+				if(this.dialogFromStorage) {
+					this.dialogFromStorage = false;
+				}
+			},
+			storageCheckDuplicates(q){
+				for(var i = 0; i < this.menuItems.length; i++) {
+					if (this.menuItems[i].value == q) {
+						return true;
+					}
+				}
+				return false;
+			}
 		},
 		mounted() {
 			this.$http.get('https://delphi.cs.uni-paderborn.de/api/features').then(response => {

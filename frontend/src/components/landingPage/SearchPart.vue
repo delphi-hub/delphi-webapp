@@ -22,15 +22,18 @@
 					After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
 					After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->	
 					<query
-					:errMsg="queryError"
-					:partQuery="savedQuery"
-					:isLoading="progressBar"
-					@emptyQuery="clearItems = $event"
-					@finalQueryAndLimitSend="finalQAndLimit = $event"
-					@resetSavedQuery="savedQuery = $event"
+						:errMsg="queryError"
+						:partQuery="savedQuery"
+						:isLoading="progressBar"
+						@emptyQuery="clearItems = $event"
+						@finalQueryAndLimitSend="finalQAndLimit = $event"
+						@resetSavedQuery="savedQuery = $event"
 					></query>
 					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
-					<queryMenu @addQuerySent="saveQuery"></queryMenu>
+					<queryMenu 
+						@addQuerySent="saveQuery"
+						@addFromStorage="saveQuery">
+					</queryMenu>
 				</v-card>
 			</v-col>
 			<v-col cols="12"> 
