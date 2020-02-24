@@ -172,8 +172,12 @@ export default {
       var vm = this;
       if (this.readyToSearchQuery) {
         this.progressBar = true;
+          const reqBody = {
+              query: this.readyToSearchQuery,
+              limit: this.resultLimit
+          };
         this.$http
-          .post("search/", {query: this.readyToSearchQuery, limit: this.resultLimit})
+          .post("search/", reqBody)
           .then(response => {
             return response.json();
           })
