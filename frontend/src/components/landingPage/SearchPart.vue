@@ -138,7 +138,7 @@ export default {
       clearItems: false,
       flattenItems: [],
       dialog: false,
-      finalQAndLimit: {query:"", limit:"100"},
+      finalQAndLimit: {query:"", limit:100},
       reqBody: {
         query: this.readyToSearchQuery,
         limit: this.resultLimit
@@ -173,7 +173,7 @@ export default {
       if (this.readyToSearchQuery) {
         this.progressBar = true;
         this.$http
-          .post("search/", {query: this.readyToSearchQuery, limit: this.resultLimit})
+          .post("search/", {query: this.readyToSearchQuery, limit: parseInt(this.resultLimit)})
           .then(response => {
             return response.json();
           })
