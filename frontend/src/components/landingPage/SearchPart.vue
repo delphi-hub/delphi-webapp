@@ -150,6 +150,8 @@ export default {
       clearItems: false,
       flattenItems: [],
       dialog: false,
+      dialog2:false,
+      errorText:"",
       finalQAndLimit: {query:"", limit:100},
       reqBody: {
         query: this.readyToSearchQuery,
