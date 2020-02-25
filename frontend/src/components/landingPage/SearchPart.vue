@@ -78,6 +78,18 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-dialog v-model="dialog2" max-width="550">
+        <v-card>
+          <v-card-title class="headline">OOPS...!!!</v-card-title>
+          <v-card-text>{{errorText}}</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="dialog2 = false">OK</v-btn>
+
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </v-app>
 </template>
@@ -213,7 +225,14 @@ export default {
               vm.headers.splice(4, vm.headers.length - 4);
               vm.progressBar = false;
               vm.readyToSearchQuery = "";
-              vm.queryError = error.body;
+              //vm.queryError = error.body;
+              if (error.status == 500) {
+                this.errorText= error.status + "  " + error.statusText+"!!! "+ " Something Went Wrong......Please Try Again";
+                this.dialog2=true;
+              }
+              else {
+                vm.queryError = error.body;
+              }
             }
           );
       } else if (this.clearItems) {
