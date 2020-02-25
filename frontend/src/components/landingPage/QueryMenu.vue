@@ -1,7 +1,8 @@
 <template>
 	<v-row>
-		<v-btn
-			class="ml-6 mb-1 white--text"
+		<v-col cols="12" class="py-0">
+			<v-btn
+			class="ml-0 mb-1 white--text"
 			rounded
 			color="rgb(190, 33, 33)"
 			@click="expanded = !expanded">
@@ -9,11 +10,10 @@
 				<p style="margin: 0" v-if="expanded">Hide Query Creation Menu</p>
 				<p style="margin: 0" v-else>Use Query Creation Menu</p>
 		</v-btn>
-		<div class="text-center">
 			<v-menu
 				v-model="menu"
 				:close-on-content-click="false"
-				min-width="300"
+				min-width="410"
 				max-height="300"
 				offset-y>
 				<template v-slot:activator="{ on }">
@@ -46,21 +46,19 @@
 												class="mt-1 green--text"
 												icon
 												v-on="on"
-												@click.stop="showDialogFromStorage(item.value)"
-												>
+												@click.stop="showDialogFromStorage(item.value)">
 												<v-icon>mdi-content-copy</v-icon>
 											</v-btn>
 										</template>
 										<span>Copy Query to 'Your Query'</span>
 									</v-tooltip>
-									
 									<v-tooltip top color="red">
 										<template v-slot:activator="{ on }">
 											<v-btn
 												class="mt-1 red--text"
 												icon
 												v-on="on"
-												@click="menuItems.splice(index, 1)">
+												@click="DeletItemFromStorage(index)">
 												<v-icon>mdi-delete</v-icon>
 											</v-btn>
 										</template>
@@ -77,262 +75,265 @@
 						</v-list-item>
 					</v-list>
 			</v-menu>
-		</div>
-		<v-expand-transition>
-			<div v-show="expanded" style="border-radius: 15px; padding: 0 10px 10px 10px; margin: 0 20px 5px 20px; background-color: rgb(190, 33, 33)">
-				<v-row>
-					<v-col cols="12" class="px-4 py-3">
-						<v-card>
-							<v-card-subtitle class="py-0 pl-1">
-								Query Creation Progress:
-							</v-card-subtitle>
-							<v-textarea
-								rows="1"
-								hide-details
-								@input="addToFinalQuery($event), setQuery($event)"
-								auto-grow
-								v-model="createdQuery"
-								readonly
-								class="px-2 py-0 title">
-							</v-textarea>
-						</v-card>
-					</v-col>
-				</v-row>	
-				<v-stepper v-model="step">
-					<v-stepper-header>
-						<v-stepper-step :complete="step > 1" step="1">Metric</v-stepper-step>
-						<v-divider></v-divider>
-						<v-stepper-step :complete="step > 2" step="2">Operator & Value</v-stepper-step>
-						<v-divider></v-divider>
-						<v-stepper-step step="3">Wrap Up</v-stepper-step>						
-					</v-stepper-header> 
-					<v-stepper-items>
-						<v-stepper-content class="pa-2" step="1">
-							<v-card	min-height="350px" elevation="0">
-								<v-card-title class="pa-1">
-									Step 1 (Expression {{level+1}}) : Metric
+		</v-col>
+		<v-col cols="12" class="py-0"> 
+			<v-expand-transition>
+				<div v-show="expanded" style="border-radius: 15px; padding: 0 10px 10px 10px; margin: 0 20px 5px 20px; background-color: rgb(190, 33, 33)">
+					<v-row>
+						<v-col cols="12" class="px-4 py-3">
+							<v-card style="min-height:60px">
+								<v-card-subtitle class="py-0 pl-1">
+									Query Creation Progress:
+								</v-card-subtitle>
+								<v-card-title
+									class="px-2 py-0">
+									{{createdQuery}}
 								</v-card-title>
-								<v-card-text class="pa-1">
-									Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
-											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Ph
-								</v-card-text>
-								<v-row>
-									<v-col cols="12">
-										<div v-show="metric">
-											<p>Chosen Metric:</p>
-											<div id="chosenMetricDiv">
-												<p id="chosenMetricP">[{{ metric }}]</p>
-												<button id="removeMetricButton" class="btn btn-dark" @click="metric = null">Rechoose</button>
-											</div>
-										</div>
-										<div v-show="!metric">
-											<input
-												type="text"
-												id="filter"
-												name="metric_suggest"
-												v-on:keyup="filter1"
-												size="15"
-												placeholder="Filter Metric"/>
-											<div v-if="info">
-												<select id="select" size="10" v-model="metric">
-													<option 
-														data-toggle="tooltip"
-														v-bind:title="data.description"
-														id="optionSelect"
-														v-for="data in info"
-														v-bind:key="data.name">
-															{{data.name}}
-													</option>
-												</select>
-											</div>
-										</div>
-									</v-col>
-								</v-row>	
 							</v-card>
-							<v-tooltip top color="red">
-								<template v-slot:activator="{ on }">
-									<v-btn 
-										color="red" 
-										v-on="on" 
-										@click="undoInStepOne"
-										:disabled="!queryInCreation[1]">
-										<v-icon>mdi-undo</v-icon>
-									</v-btn>
-								</template>
-								<span>Undo Last Step</span>
-							</v-tooltip>
-							<v-tooltip top color="green">
-								<template v-slot:activator="{ on }">
-									<v-btn
-										v-on="on"
-										style="margin-left: 6px;"
-										:disabled="!metric"
-										color="green"
-										@click="nextStepOne">
-										<v-icon>mdi-redo</v-icon>
-									</v-btn>
-								</template>
-								<span>Next Step</span>
-							</v-tooltip>
-						</v-stepper-content>
-						<v-stepper-content class="pa-2" step="2">
-							<v-card	min-height="350px" :elevation="0">
-								<v-card-title class="pa-1">
-									Step 2 (Expression {{level+1}}): Operator & Value
-								</v-card-title>
-								<v-card-text class="pa-1">
-									Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
-											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Ph
-								</v-card-text>
-								<v-row>
-									<v-col cols="12" class="py-0">
-										<v-select
-											v-model="operator"
-											:items="operators"
-											outlined
-											label="Operator"
-										></v-select>
-									</v-col>
-									<v-col cols="12" class="py-0">
-										<v-text-field
-											label="Value"
-											outlined
-											v-model="value"
-										></v-text-field>
-									</v-col>
-								</v-row>	
-							</v-card>
-							<v-tooltip top color="red">
-								<template v-slot:activator="{ on }">
-									<v-btn color="red" v-on="on" @click="undoInStepTwo">
-										<v-icon>mdi-undo</v-icon>
-									</v-btn>
-								</template>
-								<span>Undo Last Step</span>
-							</v-tooltip>
-							<v-tooltip top color="green">
-								<template v-slot:activator="{ on }">
-									<v-btn
-										style="margin-left: 6px;"
-										v-on="on"
-										color="green"
-										:disabled="!value || !operator"
-										@click="nextStepTwo">
-										<v-icon>mdi-redo</v-icon>
-									</v-btn>
-								</template>
-								<span>Next Step</span>
-							</v-tooltip>						
-						</v-stepper-content>
-						<v-stepper-content class="pa-2" step="3">
-							<v-card	min-height="350px" :elevation="0">
-								<v-card-title class="pa-1">
-									Step 3 (Expression {{level+1}}): Wrap Up
-								</v-card-title>
-								<v-card-text class="pa-1">
-									Morbi mattis ullamcorper velit. Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Fusce convallis metus id felis luctus adipiscing. Aenean massa. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.
-											Nulla consequat massa quis enim. Praesent venenatis metus at tortor pulvinar varius. Donec venenatis vulputate lorem. Ph
-								</v-card-text>
-								<v-row>
-									<v-col cols="12">
-										<v-checkbox color="blue" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
-									</v-col>
-									<v-col cols="12">
-										<v-select
-											v-model="logicalOperator"
-											:items="logicalOperators"
-											outlined
-											v-show="!(level >= maxLevel)"
-											label="Logical Operator">
-										</v-select>
-										<v-alert
-											outlined
-											type="warning"
-											prominent
-											dense
-											v-show="level >= maxLevel"
-											>
-											Maximum of 10 expressions is reached
-										</v-alert>
-									</v-col>
-								</v-row>	
-							</v-card>
-							<v-tooltip top color="red">
-								<template v-slot:activator="{ on }">
-									<v-btn color="red" v-on="on" @click="undoInStepThree">
-										<v-icon>mdi-undo</v-icon>
-									</v-btn>
-								</template>
-								<span>Undo Last Step</span>
-							</v-tooltip>
-							<v-tooltip top color="green">
-								<template v-slot:activator="{ on }">
-									<v-btn
-									v-on="on"
-									style="margin-left: 6px;"
-									color="green"
-									:disabled="!logicalOperator || (level >= maxLevel)"
-									@click="nextStepThree"
-									>
-										<v-icon>mdi-shape-square-plus</v-icon>
-									</v-btn>
-								</template>
-								<span>Add new expression</span>
-							</v-tooltip>
-							<v-tooltip top color="blue">
-								<template v-slot:activator="{ on }">
-									<v-btn
-										v-on="on"
-										style="margin-left: 6px;"
-										color="blue"
-										:disabled="(logicalOperator != '') && !(level >= maxLevel)"
-										@click.stop="dialog = true"
-									>
-										<v-icon>mdi-file-send-outline</v-icon>
-									</v-btn>
-								</template>
-								<span>Send Query</span>
-							</v-tooltip>
-							<v-dialog
-								v-model="dialog"
-								max-width="400">
-								<v-card>
-									<v-card-title
-										class="headline red lighten-2 py-1"
-										primary-title>
-										Warning
-									</v-card-title>
-									<v-card-text class="mt-2 py-0">
-										The created query will replace the content of 'Your Query'. 
+						</v-col>
+					</v-row>	
+					<v-stepper v-model="step">
+						<v-stepper-header>
+							<v-stepper-step :complete="step > 1" step="1">Metric</v-stepper-step>
+							<v-divider></v-divider>
+							<v-stepper-step :complete="step > 2" step="2">Operator & Value</v-stepper-step>
+							<v-divider></v-divider>
+							<v-stepper-step step="3">Wrap Up</v-stepper-step>						
+						</v-stepper-header> 
+						<v-stepper-items>
+							<v-stepper-content class="pa-2" step="1">
+								<v-card	min-height="350px" elevation="0">
+									<v-card-text class="pa-1">
+										A Delphi query consists of one or more expressions which are connected with logical operators. 
+										An expression has the syntax: 'metric operator value'. The following steps guide you through the query creation process.
 									</v-card-text>
-									<v-card-actions>
-										<v-spacer></v-spacer>
-										<v-btn
-											color="green darken-1"
-											text
-											@click="onAddQuery">
-											Ok
-										</v-btn>
-										<v-btn
-											color="red darken-1"
-											text
-											@click="dialog = false">
-											Back
-										</v-btn>
-										<v-btn
-											color="blue darken-1"
-											text
-											@click="addToMenu">
-											Save in Query Storage
-										</v-btn>
-									</v-card-actions>
+									<v-card-title class="pa-1">
+										Step 1 (Expression {{level+1}}) : Metric
+									</v-card-title>
+									<v-card-text class="pa-1">
+										Pick a metric, depending on your desired result of artifacts.
+									</v-card-text>
+									<v-row>
+										<v-col cols="12">
+											<div v-show="metric">
+												<p>Chosen Metric:</p>
+												<div id="chosenMetricDiv">
+													<p id="chosenMetricP">[{{ metric }}]</p>
+													<button id="removeMetricButton" class="btn btn-dark" @click="metric = null">Rechoose</button>
+												</div>
+											</div>
+											<div v-show="!metric">
+												<input
+													type="text"
+													id="filter"
+													name="metric_suggest"
+													v-on:keyup="filter1"
+													size="15"
+													placeholder="Filter Metric"/>
+												<div v-if="info">
+													<select id="select" size="10" v-model="metric">
+														<option 
+															data-toggle="tooltip"
+															v-bind:title="data.description"
+															id="optionSelect"
+															v-for="data in info"
+															v-bind:key="data.name">
+																{{data.name}}
+														</option>
+													</select>
+												</div>
+											</div>
+										</v-col>
+									</v-row>	
 								</v-card>
-							</v-dialog>
-						</v-stepper-content>
-					</v-stepper-items>
-				</v-stepper>
-			</div>
-		</v-expand-transition>
+								<v-tooltip top color="red">
+									<template v-slot:activator="{ on }">
+										<v-btn 
+											color="red" 
+											v-on="on" 
+											@click="undoInStepOne"
+											:disabled="!queryInCreation[1]">
+											<v-icon>mdi-undo</v-icon>
+										</v-btn>
+									</template>
+									<span>Undo Last Step</span>
+								</v-tooltip>
+								<v-tooltip top color="green">
+									<template v-slot:activator="{ on }">
+										<v-btn
+											v-on="on"
+											style="margin-left: 6px;"
+											:disabled="!metric"
+											color="green"
+											@click="nextStepOne">
+											<v-icon>mdi-redo</v-icon>
+										</v-btn>
+									</template>
+									<span>Next Step</span>
+								</v-tooltip>
+							</v-stepper-content>
+							<v-stepper-content class="pa-2" step="2">
+								<v-card	min-height="350px" :elevation="0">
+									<v-card-title class="pa-1">
+										Step 2 (Expression {{level+1}}): Operator & Value
+									</v-card-title>
+									<v-card-text class="pa-1 mb-2">
+										Now, after you have chosen a metric, you have to pick an operator and give a value.
+										That will bound the metric and only artifacts within that bound will be part of the result.
+									</v-card-text>
+									<v-row>
+										<v-col cols="12" class="py-0">
+											<v-select
+												v-model="operator"
+												:items="operators"
+												outlined
+												label="Operator"
+											></v-select>
+										</v-col>
+										<v-col cols="12" class="py-0">
+											<v-text-field
+												label="Value"
+												outlined
+												v-model="value"
+											></v-text-field>
+										</v-col>
+									</v-row>	
+								</v-card>
+								<v-tooltip top color="red">
+									<template v-slot:activator="{ on }">
+										<v-btn color="red" v-on="on" @click="undoInStepTwo">
+											<v-icon>mdi-undo</v-icon>
+										</v-btn>
+									</template>
+									<span>Undo Last Step</span>
+								</v-tooltip>
+								<v-tooltip top color="green">
+									<template v-slot:activator="{ on }">
+										<v-btn
+											style="margin-left: 6px;"
+											v-on="on"
+											color="green"
+											:disabled="!value || !operator"
+											@click="nextStepTwo">
+											<v-icon>mdi-redo</v-icon>
+										</v-btn>
+									</template>
+									<span>Next Step</span>
+								</v-tooltip>						
+							</v-stepper-content>
+							<v-stepper-content class="pa-2" step="3">
+								<v-card	min-height="350px" :elevation="0">
+									<v-card-title class="pa-1">
+										Step 3 (Expression {{level+1}}): Wrap Up
+									</v-card-title>
+									<v-card-text class="pa-1">
+										This step will wrap up your expression and possibly your query. First decide if you would like to negate your expression.
+										Afterwards you have two options. Either pick a logical operator, that will initiate the creation 
+										of another expression connected with the chosen logical operator.
+										Or pick 'No Logical Operator' to finish this query and send it to 'Your Query' or save it in the query storage.
+									</v-card-text>
+									<v-row>
+										<v-col cols="12">
+											<v-checkbox color="blue" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
+										</v-col>
+										<v-col cols="12">
+											<v-select
+												v-model="logicalOperator"
+												:items="logicalOperators"
+												outlined
+												v-show="!(level >= maxLevel)"
+												label="Logical Operator">
+											</v-select>
+											<v-alert
+												outlined
+												type="warning"
+												prominent
+												dense
+												v-show="level >= maxLevel"
+												>
+												Maximum of 10 expressions is reached. If you need more, you can add them manually after adding this created query to 
+												'Your Query'
+											</v-alert>
+										</v-col>
+									</v-row>	
+								</v-card>
+								<v-tooltip top color="red">
+									<template v-slot:activator="{ on }">
+										<v-btn color="red" v-on="on" @click="undoInStepThree">
+											<v-icon>mdi-undo</v-icon>
+										</v-btn>
+									</template>
+									<span>Undo Last Step</span>
+								</v-tooltip>
+								<v-tooltip top color="green">
+									<template v-slot:activator="{ on }">
+										<v-btn
+										v-on="on"
+										style="margin-left: 6px;"
+										color="green"
+										:disabled="!logicalOperator || (level >= maxLevel)"
+										@click="nextStepThree"
+										>
+											<v-icon>mdi-shape-square-plus</v-icon>
+										</v-btn>
+									</template>
+									<span>Add new expression</span>
+								</v-tooltip>
+								<v-tooltip top color="blue">
+									<template v-slot:activator="{ on }">
+										<v-btn
+											v-on="on"
+											style="margin-left: 6px;"
+											color="blue"
+											:disabled="(logicalOperator != '') && !(level >= maxLevel)"
+											@click.stop="dialog = true"
+										>
+											<v-icon>mdi-file-send-outline</v-icon>
+										</v-btn>
+									</template>
+									<span>Send Query</span>
+								</v-tooltip>
+								<v-dialog
+									v-model="dialog"
+									max-width="400">
+									<v-card>
+										<v-card-title
+											class="headline red lighten-2 py-1"
+											primary-title>
+											Warning
+										</v-card-title>
+										<v-card-text class="mt-2 py-0">
+											The created query will replace the content of 'Your Query'. 
+										</v-card-text>
+										<v-card-actions>
+											<v-spacer></v-spacer>
+											<v-btn
+												color="green darken-1"
+												text
+												@click="onAddQuery">
+												Ok
+											</v-btn>
+											<v-btn
+												color="red darken-1"
+												text
+												@click="dialog = false">
+												Back
+											</v-btn>
+											<v-btn
+												color="blue darken-1"
+												text
+												@click="addToMenu">
+												Save in Query Storage
+											</v-btn>
+										</v-card-actions>
+									</v-card>
+								</v-dialog>
+							</v-stepper-content>
+						</v-stepper-items>
+					</v-stepper>
+				</div>
+			</v-expand-transition>
+		</v-col>
 		<v-snackbar
 			class="mb-3"
 			v-model="snackbar"
@@ -408,6 +409,7 @@
 							this.menuItems.push({title: newVal, value: newVal});
 						}	
 						this.snackbar = true;
+						this.updateMenuInBrowserStorage();
 					}
 					else {
 						this.snackbar2 = true;
@@ -621,6 +623,7 @@
 						this.menuItems.push({title: this.createdQuery, value: this.createdQuery});
 					}	
 					this.snackbar = true;
+					this.updateMenuInBrowserStorage();
 				}
 				else {
 					this.snackbar2 = true;
@@ -642,6 +645,10 @@
 				}
 				
 			},
+			DeletItemFromStorage(index) {
+				this.menuItems.splice(index, 1);
+				this.updateMenuInBrowserStorage();
+			},
 			copyFromStorage(query){
 				this.$emit('addFromStorage', query);
 				if(this.dialogFromStorage) {
@@ -659,6 +666,10 @@
 			showDialogFromStorage(qu) {
 				this.dialogFromStorage = true;
 				this.tempQuery = qu;
+			},
+			updateMenuInBrowserStorage() {
+				const parsed = JSON.stringify(this.menuItems);
+				localStorage.setItem('menuItems', parsed);
 			}
 		},
 		mounted() {
@@ -671,6 +682,13 @@
 			error => {
 				alert("Invalid results!", error.messages);
 			};
+			if (localStorage.getItem('menuItems')) {
+				try {
+					this.menuItems = JSON.parse(localStorage.getItem('menuItems'));
+				} catch(e) {
+					localStorage.removeItem('menuItems');
+				}
+			}
 		}
 	}
 </script>
