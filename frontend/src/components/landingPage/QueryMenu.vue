@@ -93,35 +93,33 @@
 						</v-col>
 					</v-row>	
 					<v-stepper v-model="step">
-						<v-stepper-header>
-							<v-stepper-step :complete="step > 1" step="1">Metric</v-stepper-step>
-							<v-divider></v-divider>
-							<v-stepper-step :complete="step > 2" step="2">Operator & Value</v-stepper-step>
-							<v-divider></v-divider>
-							<v-stepper-step step="3">Wrap Up</v-stepper-step>						
+						<v-stepper-header style="height: 45px;">
+							<v-stepper-step :complete="step > 1" step="1" class="pa-2">Metric</v-stepper-step>
+							<v-divider class="mx-2"></v-divider>
+							<v-stepper-step :complete="step > 2" step="2" class="pa-2">Operator & Value</v-stepper-step>
+							<v-divider class="mx-2"></v-divider>
+							<v-stepper-step step="3" class="pa-2">Wrap Up</v-stepper-step>						
 						</v-stepper-header> 
 						<v-stepper-items>
 							<v-stepper-content class="pa-2" step="1">
-								<v-card	min-height="350px" elevation="0">
-									<v-card-text class="pa-1">
-										A Delphi query consists of one or more expressions which are connected with logical operators. 
-										An expression has the syntax: 'metric operator value'. The following steps guide you through the query creation process.
-									</v-card-text>
+								<v-card elevation="0" style="min-height:270px">
 									<v-card-title class="pa-1">
 										Step 1 (Expression {{level+1}}) : Metric
 									</v-card-title>
 									<v-card-text class="pa-1">
-										Pick a metric, depending on your desired result of artifacts.
+										A Delphi query consists of one or more expressions which are connected with logical operators. 
+										An expression has the syntax: 'metric operator value'. The following steps guide you through the query creation process.
+										First pick a metric, depending on your desired result of artifacts.
 									</v-card-text>
 									<v-row>
 										<v-col cols="12">
-											<div v-show="metric">
-												<p>Chosen Metric:</p>
+											<v-card v-show="metric" :elevation="0">
+												<v-card-subtitle class="py-0 px-1">Chosen Metric:</v-card-subtitle>
 												<div id="chosenMetricDiv">
 													<p id="chosenMetricP">[{{ metric }}]</p>
-													<button id="removeMetricButton" class="btn btn-dark" @click="metric = null">Rechoose</button>
+													<v-btn @click="metric = null">Change Metric</v-btn>
 												</div>
-											</div>
+											</v-card>
 											<div v-show="!metric">
 												<input
 													type="text"
@@ -129,7 +127,7 @@
 													name="metric_suggest"
 													v-on:keyup="filter1"
 													size="15"
-													placeholder="Filter Metric"/>
+													placeholder="Filter Metrics"/>
 												<div v-if="info">
 													<select id="select" size="10" v-model="metric">
 														<option 
@@ -173,7 +171,7 @@
 								</v-tooltip>
 							</v-stepper-content>
 							<v-stepper-content class="pa-2" step="2">
-								<v-card	min-height="350px" :elevation="0">
+								<v-card :elevation="0" style="min-height:270px">
 									<v-card-title class="pa-1">
 										Step 2 (Expression {{level+1}}): Operator & Value
 									</v-card-title>
@@ -222,21 +220,21 @@
 								</v-tooltip>						
 							</v-stepper-content>
 							<v-stepper-content class="pa-2" step="3">
-								<v-card	min-height="350px" :elevation="0">
+								<v-card :elevation="0" style="min-height:270px">
 									<v-card-title class="pa-1">
 										Step 3 (Expression {{level+1}}): Wrap Up
 									</v-card-title>
 									<v-card-text class="pa-1">
 										This step will wrap up your expression and possibly your query. First decide if you would like to negate your expression.
 										Afterwards you have two options. Either pick a logical operator, that will initiate the creation 
-										of another expression connected with the chosen logical operator.
+										of another expression connected with the chosen logical operator (Maximum of 10 expression).
 										Or pick 'No Logical Operator' to finish this query and send it to 'Your Query' or save it in the query storage.
 									</v-card-text>
 									<v-row>
-										<v-col cols="12">
+										<v-col cols="12" class="py-0">
 											<v-checkbox color="blue" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
 										</v-col>
-										<v-col cols="12">
+										<v-col cols="12" class="py-0">
 											<v-select
 												v-model="logicalOperator"
 												:items="logicalOperators"
@@ -249,10 +247,8 @@
 												type="warning"
 												prominent
 												dense
-												v-show="level >= maxLevel"
-												>
-												Maximum of 10 expressions is reached. If you need more, you can add them manually after adding this created query to 
-												'Your Query'
+												v-show="level >= maxLevel">
+												Maximum of 10 expressions is reached.
 											</v-alert>
 										</v-col>
 									</v-row>	
@@ -272,8 +268,7 @@
 										style="margin-left: 6px;"
 										color="green"
 										:disabled="!logicalOperator || (level >= maxLevel)"
-										@click="nextStepThree"
-										>
+										@click="nextStepThree">
 											<v-icon>mdi-shape-square-plus</v-icon>
 										</v-btn>
 									</template>
@@ -286,8 +281,7 @@
 											style="margin-left: 6px;"
 											color="blue"
 											:disabled="(logicalOperator != '') && !(level >= maxLevel)"
-											@click.stop="dialog = true"
-										>
+											@click.stop="dialog = true">
 											<v-icon>mdi-file-send-outline</v-icon>
 										</v-btn>
 									</template>
@@ -643,7 +637,6 @@
 				if(this.dialog) {
 					this.dialog = false;
 				}
-				
 			},
 			DeletItemFromStorage(index) {
 				this.menuItems.splice(index, 1);
@@ -697,29 +690,19 @@
 	#chosenMetricDiv {
 		text-align: center;
 		border-radius: 5px;
+		color: white;
 		padding: 5px;
-		background-color: rgba(138, 180, 228, 0.753);
+		background-color: rgb(190, 33, 33);
 	}
 	#chosenMetricP {
-		margin: 0px 0px 5px 0px;
-	}
-	#removeMetricButton {
-		background-color: rgb(192, 197, 192);
-		font-variant: small-caps;
-		color: black;
-		width: 100%;
-	}
-	#removeMetricButton:hover {
-		box-shadow: 1px 1px 5px 3px rgb(190, 32, 32);
-		color: red;
-		border-radius: 3px;
+		margin: 0px 0px 0px 0px;
 	}
 	#filter {
 		width: 100%;
 		border-style: solid;
 		border-color: grey;
 		border-width: 0.2em 0.2em 0 0.2em;
-		border-radius: 8px 8px 0 0;
+		border-radius: 8px 8px 8px 8px;
 	}
 	#select {
 		width: 100%;
@@ -728,10 +711,10 @@
 		border-style: solid;
 		border-color: grey;
 		border-width: 0.1em 0.2em 0.2em 0.2em;
-		border-radius: 0 0 8px 8px;
+		border-radius: 8px 8px 8px 8px;
 	}
 	#optionSelect:hover {
-		background-color: rgba(138, 180, 228, 0.753);
+		background-color: rgb(247, 186, 186);
 	}
 	label {
 		margin: 0 !important;

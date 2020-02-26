@@ -6,7 +6,7 @@
 					<v-card-title style="background-color: rgb(190, 33, 33); color:white" class="layout justify-center mb-1 pa-1"> 
 						<div  class="headline text-center">Welcome to Delphi</div> 
 					</v-card-title>
-					<v-card-text>
+					<v-card-text class="pb-1">
 						Delphi is a software... . Type in your query directly into the 
 						'Your Query' textarea or use the query creation menu below, which will guide you through the steps of forming a query.
 					</v-card-text>	
