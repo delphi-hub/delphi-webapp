@@ -57,6 +57,9 @@
     },
     "parserOptions": {
       "parser": "babel-eslint"
+    },
+    "globals": {
+      "_": true
     }
   },
   "postcss": {

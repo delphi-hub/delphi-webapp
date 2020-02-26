@@ -17,6 +17,7 @@ Vue.use(Vuelidate);
 Vue.use(VueResource);
 Vue.use(VueSpinners);
 
+
 Vue.http.options.root = "";
 Vue.http.interceptors.push((request, next) => {
   next((response) => {
