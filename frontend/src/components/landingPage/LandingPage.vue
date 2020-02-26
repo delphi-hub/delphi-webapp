@@ -1,5 +1,5 @@
 <template>
-	<v-app style="background-color: rgb(255, 255, 255)">
+	<v-app id="vuetifyApp">
 		<app-header></app-header>
 		<keep-alive include="SearchPart">
 			<app-search></app-search>
@@ -26,6 +26,8 @@
 	};
 </script>
 
-<style scoped>
-
+<style>
+	#vuetifyApp {
+		background-color: rgb(255, 255, 255);
+	}
 </style>

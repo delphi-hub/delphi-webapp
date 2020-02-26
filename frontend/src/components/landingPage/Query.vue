@@ -48,7 +48,7 @@
 				outlined
 				type="error"
 				v-if="!$v.finalQuery.required && submitted">
-				Please enter a valid query or use the query builder to add a query.
+				Please enter a valid query or use the query creation menu to add a query.
 			</v-alert>
 			<v-alert
 				class="my-0 mx-6 py-1"
@@ -180,7 +180,6 @@
 					this.submitted = true;
 				}
 			},
-			//after a reset this sends a confirmation to searchPart
 			sendToStorage() {
 				this.$emit("sendQueryToStorage", this.finalQuery);
 			},

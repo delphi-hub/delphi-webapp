@@ -104,7 +104,7 @@
 							<v-stepper-content class="pa-2" step="1">
 								<v-card elevation="0" style="min-height:270px">
 									<v-card-title class="pa-1">
-										Step 1 (Expression {{level+1}}) : Metric
+										Step 1 (Expression {{level+1}}): Metric
 									</v-card-title>
 									<v-card-text class="pa-1">
 										A Delphi query consists of one or more expressions which are connected with logical operators. 
@@ -227,8 +227,9 @@
 									<v-card-text class="pa-1">
 										This step will wrap up your expression and possibly your query. First decide if you would like to negate your expression.
 										Afterwards you have two options. Either pick a logical operator, that will initiate the creation 
-										of another expression connected with the chosen logical operator (Maximum of 10 expression).
-										Or pick 'No Logical Operator' to finish this query and send it to 'Your Query' or save it in the query storage.
+										of a new expression (Maximum of 10 expression).
+										Or pick 'No Logical Operator' to finish this query and either 
+										send it to 'Your Query' or save it in the query storage.
 									</v-card-text>
 									<v-row>
 										<v-col cols="12" class="py-0">
@@ -445,8 +446,6 @@
 			}
 		},
 		methods: {
-			//if all components from the menuStep compunents are given, this function creates a nice looking query. Afterwards the values will be resetted,
-			//by setting the reset variables to true. That will trigger the functions in the menuStep components.
 			onAddQuery() {
 				if(this.createdQuery){
 					this.queryInCreation.push(this.logicalOperator);
@@ -666,8 +665,7 @@
 			}
 		},
 		mounted() {
-			this.$http.get('https://delphi.cs.uni-paderborn.de/api/features').then(response => {
-			//this.$http.get("features").then(response => {
+			this.$http.get("features").then(response => {
 				this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
 				eventBus.$emit('metricList', this.info);
 				return response.json();

@@ -1,9 +1,9 @@
 <template>
-	<div style="background-color: rgb(255, 255, 255); margin-bottom: 10px; padding:0 30px 30px 30px">
+	<div id="searchPartDiv">
 		<v-row justify="center">
 			<v-col cols="12" class="py-1">
 				<v-card elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
-					<v-card-title style="background-color: rgb(190, 33, 33); color:white" class="layout justify-center mb-1 pa-1"> 
+					<v-card-title style="background-color: rgb(190, 33, 33); color:white" class="justify-center mb-1 pa-1"> 
 						<div  class="headline text-center">Welcome to Delphi</div> 
 					</v-card-title>
 					<v-card-text class="pb-1">
@@ -200,10 +200,14 @@
 </script>
 
 <style>
+	#searchPartDiv {
+		background-color: rgb(255, 255, 255);
+		margin-bottom: 10px;
+		padding:0 30px 30px 30px;
+	}
 	.inputQueryInResult {
 		text-align: center;
 	}
-
 	#searchedQueryInResult {
 		font-weight: bold;
 	}
