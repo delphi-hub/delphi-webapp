@@ -70,27 +70,32 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       val jsonBody: Option[JsValue]  = Some(request.body.asJson.get)
       val jsonEmptyBody = Json.toJson(QueryRequestBody("",Some(0)))
       val json : JsValue = jsonBody.getOrElse(jsonEmptyBody)
-
       val query = json.as[QueryRequestBody]
-      val parser = new Syntax(query.query)
-      val parsingResult: Try[ql.Query] = parser.QueryRule.run()
-      parsingResult match {
-        case Success(parsedQuery) =>
-          val invalidFields = checkParsedQuery(parsedQuery, query.limit)
-          if (invalidFields.size > 0) {
+
+      val resultLimit = query.limit.getOrElse(CommonHelper.defaultFetchSize)
+      if (resultLimit <= CommonHelper.maxFetchSize) {
+        val parser = new Syntax(query.query)
+        val parsingResult: Try[ql.Query] = parser.QueryRule.run()
+        parsingResult match {
+          case Success(parsedQuery) =>
+            val invalidFields = checkParsedQuery(parsedQuery, query.limit)
+            if (invalidFields.size > 0) {
             // Future.failed(throw new IllegalArgumentException(s"Unknown field name(s) used. (${invalidFields.mkString(",")})"))
             Future.successful(new Status(EXPECTATION_FAILED)(s"Incorrect metric name(s) [${invalidFields.mkString(", ")}] entered"))
-          }
-          else{
-            val searchResult = executeQuery(query.query, query.limit)
-            searchResult
-          }
-
-        case Failure(e: ParseError) =>
-          Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
+            }
+            else{
+              val searchResult = executeQuery(query.query, query.limit)
+              searchResult
+            }
+          case Failure(e: ParseError) =>
+            Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
           // Future.failed(throw new IllegalArgumentException(parser.formatError(e)))
-
-        case Failure(_) => Future.failed(throw new IOException("Search query failed"))
+          case Failure(_) =>
+            Future.successful(new Status(EXPECTATION_FAILED)("Search query failed"))
+        }
+      }
+      else {
+        Future.successful(new Status(EXPECTATION_FAILED)(s"Query limit exceeded default limit: ${resultLimit}>${CommonHelper.maxFetchSize}"))
       }
     }
   }
@@ -179,25 +184,31 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
       implicit val ec = system.dispatcher
       implicit val materializer = ActorMaterializer()
 
-      val retrieveUri = CommonHelper.getDelphiServer() + "/retrieve/" + elementId
-      val responseRetrieve: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = retrieveUri, method = HttpMethods.GET))
-
-      val response = Await.result(responseRetrieve, 10 seconds)
-
-      val resultFuture: Future[String] = response match {
-        case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-          entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
-            body.utf8String
-          }
-        case resp@HttpResponse(code, _, _, _) => {
-          resp.discardEntityBytes()
-          Future.failed(throw new IOException(code.defaultMessage()))
-        }
+      val splitString: Array[String] = elementId.split(':')
+      if (splitString.length < 2 || splitString.length > 3) {
+        Future.successful(new Status(EXPECTATION_FAILED)(s"Incorrect maven identifier format"))
       }
+      else {
+        val retrieveUri = CommonHelper.getDelphiServer() + "/retrieve/" + elementId
+        val responseRetrieve: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = retrieveUri, method = HttpMethods.GET))
 
-      val result = Await.result(resultFuture, Duration.Inf)
-      val retrieveResponse: Future[Result] = Future.successful(Ok(result))
-      retrieveResponse
+        val response = Await.result(responseRetrieve, 10 seconds)
+
+        val resultFuture: Future[String] = response match {
+          case HttpResponse(StatusCodes.OK, headers, entity, _) =>
+            entity.dataBytes.runFold(ByteString(""))(_ ++ _).map { body =>
+              body.utf8String
+            }
+          case resp@HttpResponse(code, _, _, _) => {
+            resp.discardEntityBytes()
+            Future.failed(throw new IOException(code.defaultMessage()))
+          }
+        }
+
+        val result = Await.result(resultFuture, Duration.Inf)
+        val retrieveResponse: Future[Result] = Future.successful(Ok(result))
+        retrieveResponse
+      }
     }
   }
 
