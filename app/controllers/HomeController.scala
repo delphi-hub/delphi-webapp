@@ -31,12 +31,12 @@ import play.api.Configuration
 import play.api.mvc._
 import utils.CommonHelper
 import models.{InternalFeature, QueryRequestBody}
-import org.parboiled2.ParseError
+import org.parboiled2.{ErrorFormatter, ParseError}
 import de.upb.cs.swt.delphi.core.ql
 
 import scala.util.{Failure, Success, Try}
 import de.upb.cs.swt.delphi.core.ql._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json._
 
 import scala.concurrent.{Await, Future}
 import spray.json.DefaultJsonProtocol
@@ -87,9 +87,17 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
               val searchResult = executeQuery(query.query, query.limit)
               searchResult
             }
-          case Failure(e: ParseError) =>
-            Future.successful(new Status(EXPECTATION_FAILED)(parser.formatError(e)))
-          // Future.failed(throw new IllegalArgumentException(parser.formatError(e)))
+          case Failure(e: ParseError) => {
+            val parserInput = parser.input
+            val formatter = new ErrorFormatter()
+            val parseErrorResponse = JsObject(Seq(
+              "problem" -> JsString(formatter.formatProblem(e, parserInput)),
+              "line" -> JsNumber(e.position.line),
+              "column" -> JsNumber(e.position.column),
+              "query" -> JsString(formatter.formatErrorLine(e, parserInput)),
+              "suggestion" -> JsString(formatter.formatExpected(e))))
+            Future.successful(new Status(UNPROCESSABLE_ENTITY)(parseErrorResponse))
+          }
           case Failure(_) =>
             Future.successful(new Status(EXPECTATION_FAILED)("Search query failed"))
         }
