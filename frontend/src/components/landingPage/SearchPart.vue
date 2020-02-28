@@ -2,8 +2,8 @@
 	<div id="searchPartDiv">
 		<v-row justify="center">
 			<v-col cols="12" class="py-1">
-				<v-card elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
-					<v-card-title style="background-color: rgb(190, 33, 33); color:white" class="justify-center mb-1 pa-1"> 
+				<v-card elevation=24 style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);">
+					<v-card-title style="background-color: #db2909; color:white" class="justify-center mb-1 pa-1"> 
 						<div  class="headline text-center">Welcome to Delphi</div> 
 					</v-card-title>
 					<v-card-text class="pb-1">
@@ -13,7 +13,7 @@
 				</v-card>
 			</v-col>
 			<v-col cols="12">
-				<v-card class="pa-1" elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
+				<v-card class="px-2 pt-0 pb-2" elevation=24 style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);">
 						<!--savedQuery updates the prop called partQuery
 					finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
 					After adding a new partQuery to the query component, it asks for resetting the savedquery.
@@ -38,7 +38,7 @@
 				</v-card>
 			</v-col>
 			<v-col cols="12"> 
-				<v-card elevation=24 style="border-radius: 15px 15px 15px 15px; background-color: rgb(255, 255, 255);">
+				<v-card elevation=24 style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);">
 					<div
 						class="inputQueryInResult"
 						v-if="readyToSearchQuery"

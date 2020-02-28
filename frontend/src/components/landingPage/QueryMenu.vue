@@ -1,14 +1,16 @@
 <template>
 	<v-row>
-		<v-col cols="12" class="py-0">
+		<v-col cols="12" class="py-0 pl-8">
 			<v-btn
-			class="ml-0 mb-1 white--text"
+			class="mb-1"
+			outlined
 			rounded
-			color="rgb(190, 33, 33)"
+			color="#0959db"
 			@click="expanded = !expanded">
 			<v-icon left>mdi-creation</v-icon>
-				<p style="margin: 0" v-if="expanded">Hide Query Creation Menu</p>
-				<p style="margin: 0" v-else>Use Query Creation Menu</p>
+				<p style="margin: 0">Query Creation</p>
+				<v-icon v-if="expanded" right>mdi-arrow-up-bold</v-icon>
+				<v-icon v-else right>mdi-arrow-down-bold</v-icon>
 		</v-btn>
 			<v-menu
 				v-model="menu"
@@ -18,22 +20,23 @@
 				offset-y>
 				<template v-slot:activator="{ on }">
 					<v-btn
-						class="mx-1 mb-1 white--text"
+						class="mx-1 mb-1"
 						rounded
-						color="#5E35B1"
+						outlined
+						color="#299e3c"
 						v-on="on">
 						<v-icon left>mdi-database</v-icon>
 						Storage		
 					</v-btn>
 				</template>	
-					<v-list v-if="menuItems.length != 0" color="#5E35B1" class="py-1">
+					<v-list v-if="menuItems.length != 0" color="#299e3c" class="py-1">
 							<v-list-item
-							class="mx-1"
+							class="mx-0"
 							v-for="(item, index) in menuItems"
 							:key="index">
-								<v-row style="background-color:white; border-radius: 5px 5px 5px 5px;">
+								<v-row style="background-color:white;">
 									<v-list-item-content>
-										<v-tooltip bottom color="#5E35B1">
+										<v-tooltip bottom color="#299e3c">
 											<template v-slot:activator="{ on }">
 												<v-list-item-title class="ml-1" v-on="on">{{ item.title }}</v-list-item-title>
 											</template>
@@ -67,10 +70,12 @@
 								</v-row>
 							</v-list-item>
 					</v-list>
-					<v-list v-else color="#5E35B1" class="py-1">
-						<v-list-item>
-							<v-row style="background-color:white; border-radius: 5px 5px 5px 5px;">
-								<v-list-item-title class="text-center title">Query Storage Empty</v-list-item-title>
+					<v-list v-else color="#299e3c" class="py-1">
+						<v-list-item class="mx-0">
+							<v-row style="background-color:white;">
+								<v-list-item-content>
+									<v-list-item-title style="text-align: center;">Query Storage Empty</v-list-item-title>
+								</v-list-item-content>
 							</v-row>
 						</v-list-item>
 					</v-list>
@@ -78,9 +83,9 @@
 		</v-col>
 		<v-col cols="12" class="py-0"> 
 			<v-expand-transition>
-				<div v-show="expanded" style="border-radius: 15px; padding: 0 10px 10px 10px; margin: 0 20px 5px 20px; background-color: rgb(190, 33, 33)">
-					<v-row>
-						<v-col cols="12" class="px-4 py-3">
+				<div v-show="expanded" style="border-radius: 5px; padding: 0 2px 2px 2px; background-color: #0959db">
+					<v-row class="pa-0">
+						<v-col cols="12" style="padding: 2px 15px 2px 15px;">
 							<v-card style="min-height:60px">
 								<v-card-subtitle class="py-0 pl-1">
 									Query Creation Progress:
@@ -300,7 +305,7 @@
 										<v-card-text class="mt-2 py-0">
 											The created query will replace the content of 'Your Query'. 
 										</v-card-text>
-										<v-card-actions>
+										<v-card-actions class="pa-1">
 											<v-spacer></v-spacer>
 											<v-btn
 												color="green darken-1"
@@ -688,9 +693,8 @@
 	#chosenMetricDiv {
 		text-align: center;
 		border-radius: 5px;
-		color: white;
 		padding: 5px;
-		background-color: rgb(190, 33, 33);
+		background-color: #cdd8eb;
 	}
 	#chosenMetricP {
 		margin: 0px 0px 0px 0px;
@@ -712,7 +716,7 @@
 		border-radius: 8px 8px 8px 8px;
 	}
 	#optionSelect:hover {
-		background-color: rgb(247, 186, 186);
+		background-color: #cdd8eb;
 	}
 	label {
 		margin: 0 !important;

@@ -2,16 +2,17 @@
 	<v-row>
 		<v-col cols="12" class="pb-1">
 			<v-row>
-				<v-tooltip top color="#5E35B1">
+				<v-tooltip top color="#299e3c">
 					<template v-slot:activator="{ on }">
 						<v-btn
 							height="25"
 							width="25"
 							fab
+							outlined
 							v-on="on"
 							@click="sendToStorage"
-							color="#5E35B1"
-							class="ml-4 white--text">
+							color="#299e3c"
+							class="ml-4">
 							<v-icon small>mdi-content-save</v-icon>
 						</v-btn>
 					</template>
@@ -21,7 +22,7 @@
 					outlined
 					id="queryInput"
 					rows="1"
-					@keydown.enter.prevent="onStartSearch"
+					@keydown.enter.prevent
 					clearable
 					hide-details
 					v-model="finalQuery"
@@ -35,7 +36,7 @@
 					@click="onStartSearch"
 					:loading="isLoading"
 					:disabled="isLoading || !finalQuery"
-					color="green"
+					color="#db2909"
 					class="mr-4 ml-1 mt-1 white--text">
 					<v-icon large>mdi-magnify</v-icon>
 				</v-btn>
