@@ -231,8 +231,9 @@ export default {
               if (error.status == 500) {
                 this.errorText= error.status + "  " + error.statusText+"!!! "+ " Something Went Wrong......Please Try Again";
                 this.dialog2=true;
-              }
-              else {
+              } else if (error.status == 422) {
+                vm.queryError = error.body.problem + error.body.suggestion
+              } else {
                 vm.queryError = error.body;
               }
             }
