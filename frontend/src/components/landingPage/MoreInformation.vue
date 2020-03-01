@@ -188,7 +188,11 @@ export default {
 
     startRetrieve(receivedIdParam) {
       var vm = this; 
-      this.$http
+      if(receivedIdParam != this.errorStr){
+        if(this.receivedId != this.errorStr){
+        this.idToRetrieve = receivedIdParam;
+      }
+        this.$http
         .get("retrieve/" + receivedIdParam)
         .then(response => {
           return response.json();
@@ -221,6 +225,8 @@ export default {
         error => {
           alert("Invalid results!", error.messages);
         };
+      }
+      
     },
     displayTree() {
       var vm = this;
