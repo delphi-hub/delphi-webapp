@@ -1,7 +1,7 @@
 <template id="moreInfoPage">
   <div>
     <app-header></app-header>
-    <grid-loader v-if="this.flag" color="#c20202" class="loaderIcon"></grid-loader>
+    <grid-loader v-if="this.flag && this.flag2" color="#c20202" class="loaderIcon" style="z-index:1"></grid-loader>
     <v-container fluid>
       <v-row style="width:1365px; height: 20px; position: relative; left: -112px; ">
       <h6 style="font-variant:small-caps">Enter the ID to retrieve corresponding metric values</h6>
@@ -17,7 +17,7 @@
 					rows="1"
 					clearable
           auto-grow
-          @input="startRetrieve($event)"
+          @input="startDirectRetrieve($event)"
           >
 				</v-textarea>
       </v-row>
@@ -115,7 +115,7 @@ export default {
           class="custom-class"
           loading={this.loading}
           color={"#c20202"}
-          size={400}
+          size={600}
           sizeUnit={"px"}
         />
       </div>
@@ -125,6 +125,7 @@ export default {
     return {
       loading: true,
       flag: true,
+      flag2: false,
       tree: [],
       temp: [],
       temp2: [],
@@ -165,6 +166,7 @@ export default {
   created: function() {
     eventBus.$on("moreInfoEvent", data => {
       this.receivedId = data;
+      this.flag2 = true;
     }),
       setTimeout(() => {
         this.startRetrieve(this.receivedId);
@@ -176,12 +178,16 @@ export default {
     "grid-loader": GridLoader
   },
   methods: {
-    startRetrieve(receivedIdParam) {
-      var vm = this;
-      if(vm.receivedId !="function String() { [native code] }"){
-        vm.idToRetrieve = receivedIdParam;
+    startDirectRetrieve(value) {
+      if(this.receivedId != this.errorStr){
+        this.idToRetrieve = value;
       }
-      
+      this.flag2 = true;
+      this.startRetrieve(value);
+    },
+
+    startRetrieve(receivedIdParam) {
+      var vm = this; 
       this.$http
         .get("retrieve/" + receivedIdParam)
         .then(response => {
@@ -209,6 +215,7 @@ export default {
             });
           }
           vm.flag = false;
+          vm.flag2 = false;
           this.displayTree();
         }),
         error => {
