@@ -1,5 +1,5 @@
 <template id="moreInfoPage">
-  <div>
+  <v-app style="background-color: white;">
     <app-header></app-header>
     <grid-loader
       v-if="this.flag && this.flag2"
@@ -7,11 +7,11 @@
       class="loaderIcon"
       style="z-index:1"
     ></grid-loader>
-    <v-container fluid>
-      <v-row style="width:1365px; height: 20px; position: relative; left: -112px; ">
-        <h6 style="font-variant:small-caps">Enter the ID to retrieve corresponding metric values</h6>
+    <v-container fluid >
+      <v-row style="width:1365px; height: 20px; position: relative; left: -112px;">
+        <h6 style="font-weight: bold; font-size:14pt;">Enter the ID to retrieve corresponding metric values</h6>
       </v-row>
-      <v-row style="width:1365px; height: 50px; position: relative; left: -112px; ">
+      <v-row style="width:1365px; height: 50px; position: relative; left: -112px;">
         <v-textarea
           outlined
           append-icon="mdi-magnify"
@@ -34,11 +34,10 @@
           width="400"
           height="500"
           outlined
-          elevation="20px"
-          style="overflow: auto;"
+          style="overflow: auto; border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;"
         >
           <v-card-title
-            style="font-variant: small-caps; top: 0; position: sticky; background-color: #db2909; color: white"
+            style="top: 0; position: sticky; background-color: #db2909; color: white; font-size:14pt;"
           >Information</v-card-title>
           <div id="moreInfoTextDiv">
             <v-card-text
@@ -66,14 +65,13 @@
             >{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-text>
           </div>
         </v-card>
-        <v-card class="mx-auto" id="tree" width="400" max-height="500" outlined elevation="5">
+        <v-card class="mx-auto" id="tree" width="400" max-height="500" outlined style="border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;">
           <v-card-title
-            style=" font-variant: small-caps;  top: 0; position: sticky; background-color: #db2909; color: white"
+            style="font-size:14pt;  top: 0; position: sticky; background-color: #db2909; color: white"
           >Metric Categories</v-card-title>
-          <div style="margin-left:20px; top:10%; height:90%; max-height:87%; overflow: auto;">
-            <!-- <div>{{ temp4 }}</div> -->
-            <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
-              <v-chip color="green" x-large style="margin: 10px; width: 310px">
+          <div style=" margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
+             <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
+              <v-chip color="green" x-large style="margin: 10px; width: 310px; background-color: #626466; color: white">
                 <span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span>
               </v-chip>
             </div>
@@ -102,23 +100,31 @@
           height="500"
           outlined
           elevation="5"
-          style="overflow: auto;"
+          style="border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;"
         >
           <v-card-title
-            style="font-variant: small-caps; top: 0; position: sticky; background-color: #db2909; color: white"
+            style="font-size:14pt; top: 0; position: sticky; background-color: #db2909; color: white"
           >Result</v-card-title>
-          <v-data-table
+          <div style="display:inline-block; max-height: 85%; overflow: auto !important">
+            <v-data-table
             :headers="headers"
             :items="metrics"
+            :items-per-page="10"
             :loading="progressBar"
             loading-text="Searching for the results, please wait...."
-            class="elevation-1"
-          ></v-data-table>
+            style="display: inline-block; height: 100%; overflow: auto !important"
+          > <v-tooltip left>
+            <template v-slot:activator="{ on }">
+          <span v-on="on">Test tootltip</span>
+        </template>
+        <span>Test tootltip</span></v-tooltip> </v-data-table>
+          </div>
+          
         </v-card>
       </v-row>
     </v-container>
     <app-footer></app-footer>
-  </div>
+  </v-app>
 </template>
 <script>
 import Header from "../Layout/Header";
@@ -303,4 +309,5 @@ export default {
   top: 50%;
   left: 50%;
 }
+
 </style>
