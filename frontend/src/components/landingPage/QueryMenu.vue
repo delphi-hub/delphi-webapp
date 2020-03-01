@@ -155,7 +155,7 @@
 											color="red" 
 											v-on="on" 
 											@click="undoInStepOne"
-											:disabled="!queryInCreation[1]">
+											:disabled="!queryInCreation[1] || step != 1">
 											<v-icon>mdi-undo</v-icon>
 										</v-btn>
 									</template>
@@ -166,7 +166,7 @@
 										<v-btn
 											v-on="on"
 											style="margin-left: 6px;"
-											:disabled="!metric"
+											:disabled="!metric || step != 1"
 											color="green"
 											@click="nextStepOne">
 											<v-icon>mdi-redo</v-icon>
@@ -204,7 +204,7 @@
 								</v-card>
 								<v-tooltip top color="red">
 									<template v-slot:activator="{ on }">
-										<v-btn color="red" v-on="on" @click="undoInStepTwo">
+										<v-btn color="red" v-on="on" @click="undoInStepTwo" :disabled="step != 2">
 											<v-icon>mdi-undo</v-icon>
 										</v-btn>
 									</template>
@@ -216,7 +216,7 @@
 											style="margin-left: 6px;"
 											v-on="on"
 											color="green"
-											:disabled="!value || !operator"
+											:disabled="!value || !operator || step != 2"
 											@click="nextStepTwo">
 											<v-icon>mdi-redo</v-icon>
 										</v-btn>
@@ -261,7 +261,7 @@
 								</v-card>
 								<v-tooltip top color="red">
 									<template v-slot:activator="{ on }">
-										<v-btn color="red" v-on="on" @click="undoInStepThree">
+										<v-btn color="red" v-on="on" @click="undoInStepThree" :disabled="step != 3">
 											<v-icon>mdi-undo</v-icon>
 										</v-btn>
 									</template>
@@ -273,7 +273,7 @@
 										v-on="on"
 										style="margin-left: 6px;"
 										color="green"
-										:disabled="!logicalOperator || (level >= maxLevel)"
+										:disabled="!logicalOperator || (level >= maxLevel) || step != 3"
 										@click="nextStepThree">
 											<v-icon>mdi-shape-square-plus</v-icon>
 										</v-btn>
@@ -322,7 +322,7 @@
 											<v-btn
 												color="blue darken-1"
 												text
-												@click="addToMenu">
+												@click="addToMenu" :disabled="step != 3">
 												Save in Query Storage
 											</v-btn>
 										</v-card-actions>
@@ -427,7 +427,7 @@
 					{text:"No Logical Operator", value:""},
 					{text:"And", value:"&&"},
 					{text:"OR", value:"||"},
-					{text:"XOR", value:"XOR"}
+					{text:"Xor", value:"Xor"}
 				],
 				queryInCreation: [],
 				menuItems: [],
@@ -453,6 +453,7 @@
 		methods: {
 			onAddQuery() {
 				if(this.createdQuery){
+					this.step = 1;
 					this.queryInCreation.push(this.logicalOperator);
 					this.queryInCreation.push(this.logicalNOT);
 					this.updateCreatedQuery();
@@ -467,7 +468,6 @@
 					this.expanded = !this.expanded;
 					this.createdQuery = "";
 					this.queryInCreation = [];
-					this.step = 1;
 					this.level = 0;
 					if(this.dialog) {
 						this.dialog = false;
@@ -568,8 +568,8 @@
 				this.updateCreatedQuery();					
 			},
 			nextStepThree(){
-				this.level = this.level+1;
 				this.step = 1;
+				this.level = this.level+1;
 				this.queryInCreation.push(this.logicalOperator);
 				this.queryInCreation.push(this.logicalNOT);
 				document.getElementById("filter").value = '';
@@ -585,8 +585,8 @@
 				this.updateCreatedQuery();
 			},
 			undoInStepOne() {
-				this.level = this.level-1;
 				this.step = 3;
+				this.level = this.level-1;
 				document.getElementById("filter").value = '';
 				this.filter1();
 				this.metric = this.queryInCreation[(this.level * 5)];
@@ -610,6 +610,7 @@
 				this.updateCreatedQuery();
 			},
 			addToMenu(){
+				this.step = 1;
 				this.queryInCreation.push(this.logicalOperator);
 				this.queryInCreation.push(this.logicalNOT);
 				this.updateCreatedQuery();
@@ -636,7 +637,6 @@
 				this.expanded = !this.expanded;
 				this.createdQuery = "";
 				this.queryInCreation = [];
-				this.step = 1;
 				this.level = 0;
 				if(this.dialog) {
 					this.dialog = false;
