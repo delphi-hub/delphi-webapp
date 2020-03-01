@@ -11,6 +11,8 @@ import { ImagePlugin } from "bootstrap-vue";
 import Vuelidate from "vuelidate";
 import JsonExcel from "vue-json-excel";
 import { VueSpinners } from "@saeris/vue-spinners";
+import "@mdi/font/css/materialdesignicons.css";
+
 
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(Vuelidate);

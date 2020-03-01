@@ -2,33 +2,25 @@
   <div>
     <app-header></app-header>
     <grid-loader v-if="this.flag" color="#c20202" class="loaderIcon"></grid-loader>
-    <v-container style="max-width:1400px; height: 100px">
+    <v-container fluid>
+      <v-row style="width:1365px; height: 20px; position: relative; left: -112px; ">
       <h6 style="font-variant:small-caps">Enter the ID to retrieve corresponding metric values</h6>
-      <v-row style="max-width:1400px; height: 100px">
+      </v-row>
+      <v-row style="width:1365px; height: 50px; position: relative; left: -112px; ">
       <v-textarea
-					outlined
-          append-outer-icon
+          outlined
+          append-icon="mdi-magnify" 
           @keydown.enter.prevent
 					id="retrieveInput"
           :value ="this.idToRetrieve"
           :v-model="this.receivedId"
 					rows="1"
 					clearable
-					auto-grow
-          style="width:1000px; margin-left:20px; position:relative; float: center"
-          @input="startRetrieve()"
+          auto-grow
+          @input="startRetrieve($event)"
           >
 				</v-textarea>
-				<v-btn
-					height="50"
-					id="startRetrieveButton"
-					color="green"
-          style="width:100px; margin-left:20px; position:relative; float:center"
-					class="mr-4 ml-1 mt-1 white--text"
-          >
-					<v-icon large>mdi-magnify</v-icon>
-				</v-btn>
-        </v-row>
+      </v-row>
         </v-container>
         <v-container fluid style="max-width:1400px">
       <v-row style="max-width:1400px;">
@@ -108,13 +100,10 @@
   </div>
 </template>
 <script>
-import Vue from "vue";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import { eventBus } from "../../main";
 import { GridLoader } from "@saeris/vue-spinners";
-import { BootstrapVue } from "bootstrap-vue";
-Vue.use(BootstrapVue);
 
 export default {
   name: "moreInformation",
@@ -142,7 +131,7 @@ export default {
       temp3: [],
       temp4: [],
       table: [],
-      parentFlag: false,
+      parentFlag: true,
       childFlag: false,
       idToRetrieve: "",
       receivedId: String,
@@ -169,7 +158,7 @@ export default {
   },
   watch: function() {
     setTimeout(() => {
-      this.startRetrieve();
+      this.startRetrieve(this.receivedId);
     }, 100);
   },
 
@@ -178,7 +167,7 @@ export default {
       this.receivedId = data;
     }),
       setTimeout(() => {
-        this.startRetrieve();
+        this.startRetrieve(this.receivedId);
       }, 100);
   },
   components: {
@@ -187,14 +176,14 @@ export default {
     "grid-loader": GridLoader
   },
   methods: {
-    startRetrieve() {
+    startRetrieve(receivedIdParam) {
       var vm = this;
       if(vm.receivedId !="function String() { [native code] }"){
         vm.idToRetrieve = receivedIdParam;
       }
       
       this.$http
-        .get("retrieve/" + vm.receivedId)
+        .get("retrieve/" + receivedIdParam)
         .then(response => {
           return response.json();
         })
