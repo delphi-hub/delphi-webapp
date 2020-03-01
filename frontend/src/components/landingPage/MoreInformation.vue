@@ -1,100 +1,121 @@
 <template id="moreInfoPage">
   <div>
     <app-header></app-header>
-    <grid-loader v-if="this.flag && this.flag2" color="#c20202" class="loaderIcon" style="z-index:1"></grid-loader>
+    <grid-loader
+      v-if="this.flag && this.flag2"
+      color="#c20202"
+      class="loaderIcon"
+      style="z-index:1"
+    ></grid-loader>
     <v-container fluid>
       <v-row style="width:1365px; height: 20px; position: relative; left: -112px; ">
-      <h6 style="font-variant:small-caps">Enter the ID to retrieve corresponding metric values</h6>
+        <h6 style="font-variant:small-caps">Enter the ID to retrieve corresponding metric values</h6>
       </v-row>
       <v-row style="width:1365px; height: 50px; position: relative; left: -112px; ">
-      <v-textarea
+        <v-textarea
           outlined
-          append-icon="mdi-magnify" 
+          append-icon="mdi-magnify"
           @keydown.enter.prevent
-					id="retrieveInput"
-          :value ="this.idToRetrieve"
+          id="retrieveInput"
+          :value="this.idToRetrieve"
           :v-model="this.receivedId"
-					rows="1"
-					clearable
+          rows="1"
+          clearable
           auto-grow
           @input="startDirectRetrieve($event)"
-          >
-				</v-textarea>
+        ></v-textarea>
       </v-row>
-        </v-container>
-        <v-container fluid style="max-width:1400px">
+    </v-container>
+    <v-container fluid style="max-width:1400px">
       <v-row style="max-width:1400px;">
-      <v-card
-        class="mx-auto"
-        id="basicInfo"
-        width="400"
-        height="500"
-        outlined
-        elevation="20px"
-        style="overflow: auto;"
-      >
-      <v-card-title style="font-variant: small-caps; top: 0; position: sticky; background-color: rgb(190, 33, 33); color: white">Information</v-card-title>
+        <v-card
+          class="mx-auto"
+          id="basicInfo"
+          width="400"
+          height="500"
+          outlined
+          elevation="20px"
+          style="overflow: auto;"
+        >
+          <v-card-title
+            style="font-variant: small-caps; top: 0; position: sticky; background-color: #db2909; color: white"
+          >Information</v-card-title>
           <div id="moreInfoTextDiv">
-            
-            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.groupID != this.errorStr">Group ID :</v-card-text>
+            <v-card-text
+              style="font-size:1em; font-weight:bold"
+              v-if="this.groupID != this.errorStr"
+            >Group ID :</v-card-text>
             <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ groupID }}</v-card-text>
-            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.artifactID != this.errorStr">Artifact ID :</v-card-text>
+            <v-card-text
+              style="font-size:1em; font-weight:bold"
+              v-if="this.artifactID != this.errorStr"
+            >Artifact ID :</v-card-text>
             <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ artifactID }}</v-card-text>
-            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.version != this.errorStr">Version :</v-card-text>
+            <v-card-text
+              style="font-size:1em; font-weight:bold"
+              v-if="this.version != this.errorStr"
+            >Version :</v-card-text>
             <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ version }}</v-card-text>
-            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.discovered != this.errorStr">Discovered :</v-card-text>
-            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-text>
-            
+            <v-card-text
+              style="font-size:1em; font-weight:bold"
+              v-if="this.discovered != this.errorStr"
+            >Discovered :</v-card-text>
+            <v-card-text
+              style="font-size:1em"
+              v-if="this.groupID != this.errorStr"
+            >{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-text>
           </div>
-          
-      </v-card>
-      <v-card
-        class="mx-auto"
-        id="tree"
-        width="400"
-        max-height="500"
-        outlined
-        elevation="5"
-      >
-      <v-card-title style=" font-variant: small-caps;  top: 0; position: sticky; background-color: rgb(190, 33, 33); color: white">Metric Categories</v-card-title>
-        <div style="margin-left:20px; top:10%; height:90%; max-height:87%; overflow: auto;">
-        <div>{{ temp4 }}</div>
-        <div
-          @click="displayTreeParent"
-          v-for="iterator1 in this.temp2"
-          :key="iterator1"
-        ><v-chip large style="margin: 10px; width: 310px"><span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span></v-chip></div>
-        <div v-if="this.parentFlag">
-          <div
-            v-for="(iterator2) in this.temp3"
-            :key="(iterator2)"
-            @click="displayChildren(iterator2)"
-          >
-            <span class="childElement"> &#8627; <v-chip large style="margin: 7px; width: 240px"> <span style="margin-left:20px; font-weight:bold">{{ iterator2 }}</span> </v-chip> <br> </span>
-            <v-slot id="child"></v-slot>
+        </v-card>
+        <v-card class="mx-auto" id="tree" width="400" max-height="500" outlined elevation="5">
+          <v-card-title
+            style=" font-variant: small-caps;  top: 0; position: sticky; background-color: #db2909; color: white"
+          >Metric Categories</v-card-title>
+          <div style="margin-left:20px; top:10%; height:90%; max-height:87%; overflow: auto;">
+            <!-- <div>{{ temp4 }}</div> -->
+            <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
+              <v-chip color="green" x-large style="margin: 10px; width: 310px">
+                <span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span>
+              </v-chip>
+            </div>
+            <div v-if="this.parentFlag">
+              <div
+                v-for="(iterator2) in this.temp3"
+                :key="(iterator2)"
+                @click="displayChildren(iterator2)"
+              >
+                <span class="childElement">
+                  &#8627;
+                  <v-chip id="childChips" large style="margin: 7px; width: 240px">
+                    <span style="margin-left:20px; font-weight:bold">{{ iterator2 }}</span>
+                  </v-chip>
+                  <br />
+                </span>
+                <v-slot id="child"></v-slot>
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
-      </v-card>
-      <v-card
-        class="mx-auto"
-        id="results"
-        width="500"
-        height="500"
-        outlined
-        elevation="5"
-        style="overflow: auto;"
-      >
-      <v-card-title style="font-variant: small-caps; top: 0; position: sticky; background-color: rgb(190, 33, 33); color: white">Result</v-card-title>
-        <v-data-table
-          :headers="headers"
-          :items="temp4"
-          :loading="progressBar"
-          loading-text="Searching for the results, please wait...."
-          class="elevation-1"
-        ></v-data-table>
-      </v-card>
-    </v-row>
+        </v-card>
+        <v-card
+          class="mx-auto"
+          id="results"
+          width="500"
+          height="500"
+          outlined
+          elevation="5"
+          style="overflow: auto;"
+        >
+          <v-card-title
+            style="font-variant: small-caps; top: 0; position: sticky; background-color: #db2909; color: white"
+          >Result</v-card-title>
+          <v-data-table
+            :headers="headers"
+            :items="metrics"
+            :loading="progressBar"
+            loading-text="Searching for the results, please wait...."
+            class="elevation-1"
+          ></v-data-table>
+        </v-card>
+      </v-row>
     </v-container>
     <app-footer></app-footer>
   </div>
@@ -134,6 +155,8 @@ export default {
       table: [],
       parentFlag: true,
       childFlag: false,
+      parentChipColor: String,
+      childChipColor: String,
       idToRetrieve: "",
       receivedId: String,
       artifactID: String,
@@ -147,10 +170,10 @@ export default {
       metricValues: [],
       metrics: [],
       headers: [
-        { text: "Metric Name", align: "center", sortable: "true", value: "id" },
+        { text: "Metric Name", align: "left", sortable: "true", value: "id" },
         {
           text: "Metric Value",
-          align: "center",
+          align: "left",
           sortable: "true",
           value: "values"
         }
@@ -179,7 +202,7 @@ export default {
   },
   methods: {
     startDirectRetrieve(value) {
-      if(this.receivedId != this.errorStr){
+      if (this.receivedId != this.errorStr) {
         this.idToRetrieve = value;
       }
       this.flag2 = true;
@@ -187,46 +210,34 @@ export default {
     },
 
     startRetrieve(receivedIdParam) {
-      var vm = this; 
-      if(receivedIdParam != this.errorStr){
-        if(this.receivedId != this.errorStr){
-        this.idToRetrieve = receivedIdParam;
-      }
+      var vm = this;
+      if (receivedIdParam != this.errorStr) {
+        if (this.receivedId != this.errorStr) {
+          this.idToRetrieve = receivedIdParam;
+        }
         this.$http
-        .get("retrieve/" + receivedIdParam)
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          (vm.receivedMetrics = data.messages[0].metricResults),
-            (vm.groupID = data.messages[0].metadata.groupId),
-            (vm.artifactID = data.messages[0].metadata.artifactId),
-            (vm.discovered = data.messages[0].metadata.discovered),
-            (vm.source = data.messages[0].metadata.source),
-            (vm.version = data.messages[0].metadata.version),
-            (vm.metricKeys = Object.keys(data.messages[0].metricResults)),
-            (vm.discovered = vm.discovered.split("T")),
-            vm.discovered.push(vm.discovered[1].split(".", 1));
-          for (var key = 0; key < vm.metricKeys.length; key++) {
-            var metricKey = vm.metricKeys[key];
-            vm.metricValues.push(data.messages[0].metricResults[metricKey]);
-          }
-
-          for (var i = 0; i < vm.metricKeys.length; i++) {
-            vm.metrics.push({
-              id: vm.metricKeys[i],
-              values: vm.metricValues[i]
-            });
-          }
-          vm.flag = false;
-          vm.flag2 = false;
-          this.displayTree();
-        }),
-        error => {
-          alert("Invalid results!", error.messages);
-        };
+          .get("retrieve/" + receivedIdParam)
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            (vm.receivedMetrics = data.messages[0].metricResults),
+              (vm.groupID = data.messages[0].metadata.groupId),
+              (vm.artifactID = data.messages[0].metadata.artifactId),
+              (vm.discovered = data.messages[0].metadata.discovered),
+              (vm.source = data.messages[0].metadata.source),
+              (vm.version = data.messages[0].metadata.version),
+              (vm.metricKeys = Object.keys(data.messages[0].metricResults)),
+              (vm.discovered = vm.discovered.split("T")),
+              vm.discovered.push(vm.discovered[1].split(".", 1));
+            vm.flag = false;
+            vm.flag2 = false;
+            this.displayTree();
+          }),
+          error => {
+            alert("Invalid results!", error.messages);
+          };
       }
-      
     },
     displayTree() {
       var vm = this;
@@ -246,15 +257,27 @@ export default {
       }
       vm.temp3.sort();
     },
-    displayTreeParent() {
+    displayTreeParent(parameter) {
       this.parentFlag = !this.parentFlag;
-    },
-    displayChildren(e) {
-      this.childFlag = !this.childFlag;
-      this.temp4 = [];
+      this.metrics = [];
       for (var element of Object.keys(this.receivedMetrics)) {
-        if (element.includes(e)) {
-          this.temp4.push(this.receivedMetrics[element]);
+        if (element.includes(parameter)) {
+          this.metrics.push({
+            id: element,
+            values: this.receivedMetrics[element]
+          });
+        }
+      }
+    },
+    displayChildren(parameter) {
+      this.childFlag = !this.childFlag;
+      this.metrics = [];
+      for (var element of Object.keys(this.receivedMetrics)) {
+        if (element.includes(parameter)) {
+          this.metrics.push({
+            id: element,
+            values: this.receivedMetrics[element]
+          });
         }
       }
     }
@@ -280,5 +303,4 @@ export default {
   top: 50%;
   left: 50%;
 }
-
 </style>
