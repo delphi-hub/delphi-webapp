@@ -2,51 +2,108 @@
   <div>
     <app-header></app-header>
     <grid-loader v-if="this.flag" color="#c20202" class="loaderIcon"></grid-loader>
-    <div style="height:50px"></div>
-    <b-card-group deck>
-      <b-card class="text-left" style="max-width: 400px; height:500px">
-        <div id="moreInfoDiv">
+    <v-container style="max-width:1400px; height: 100px">
+      <h6 style="font-variant:small-caps">Enter the ID to retrieve corresponding metric values</h6>
+      <v-row style="max-width:1400px; height: 100px">
+      <v-textarea
+					outlined
+          append-outer-icon
+          @keydown.enter.prevent
+					id="retrieveInput"
+          :value ="this.idToRetrieve"
+          :v-model="this.receivedId"
+					rows="1"
+					clearable
+					auto-grow
+          style="width:1000px; margin-left:20px; position:relative; float: center"
+          @input="startRetrieve()"
+          >
+				</v-textarea>
+				<v-btn
+					height="50"
+					id="startRetrieveButton"
+					color="green"
+          style="width:100px; margin-left:20px; position:relative; float:center"
+					class="mr-4 ml-1 mt-1 white--text"
+          >
+					<v-icon large>mdi-magnify</v-icon>
+				</v-btn>
+        </v-row>
+        </v-container>
+        <v-container fluid style="max-width:1400px">
+      <v-row style="max-width:1400px;">
+      <v-card
+        class="mx-auto"
+        id="basicInfo"
+        width="400"
+        height="500"
+        outlined
+        elevation="20px"
+        style="overflow: auto;"
+      >
+      <v-card-title style="font-variant: small-caps; top: 0; position: sticky; background-color: rgb(190, 33, 33); color: white">Information</v-card-title>
           <div id="moreInfoTextDiv">
-            <b v-if="this.groupID != this.errorStr">Group ID :</b>
-            <p v-if="this.groupID != this.errorStr">{{ groupID }}</p>
-            <p v-if="this.artifactID != this.errorStr">Artifact ID : {{ artifactID }}</p>
-            <p v-if="this.version != this.errorStr">Version : {{ version }}</p>
-            <p
-              v-if="this.discovered != this.errorStr"
-            >Discovered on : {{ discovered[0] }} at {{ discovered[2][0] }}</p>
+            
+            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.groupID != this.errorStr">Group ID :</v-card-text>
+            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ groupID }}</v-card-text>
+            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.artifactID != this.errorStr">Artifact ID :</v-card-text>
+            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ artifactID }}</v-card-text>
+            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.version != this.errorStr">Version :</v-card-text>
+            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ version }}</v-card-text>
+            <v-card-text style="font-size:1em; font-weight:bold" v-if="this.discovered != this.errorStr">Discovered :</v-card-text>
+            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-text>
+            
           </div>
-        </div>
-      </b-card>
-      <b-card class="text-left" style="max-width: 400px; height:500px">
+          
+      </v-card>
+      <v-card
+        class="mx-auto"
+        id="tree"
+        width="400"
+        max-height="500"
+        outlined
+        elevation="5"
+      >
+      <v-card-title style=" font-variant: small-caps;  top: 0; position: sticky; background-color: rgb(190, 33, 33); color: white">Metric Categories</v-card-title>
+        <div style="margin-left:20px; top:10%; height:90%; max-height:87%; overflow: auto;">
         <div>{{ temp4 }}</div>
-
         <div
           @click="displayTreeParent"
           v-for="iterator1 in this.temp2"
           :key="iterator1"
-        >{{ iterator1 }}</div>
+        ><v-chip large style="margin: 10px; width: 310px"><span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span></v-chip></div>
         <div v-if="this.parentFlag">
           <div
             v-for="(iterator2) in this.temp3"
             :key="(iterator2)"
             @click="displayChildren(iterator2)"
           >
-            <span class="childElement">{{ iterator2 }}</span>
+            <span class="childElement"> &#8627; <v-chip large style="margin: 7px; width: 240px"> <span style="margin-left:20px; font-weight:bold">{{ iterator2 }}</span> </v-chip> <br> </span>
             <v-slot id="child"></v-slot>
           </div>
         </div>
-      </b-card>
-      <b-card class="text-left" style="max-width: 400px; height:500px">
+        </div>
+      </v-card>
+      <v-card
+        class="mx-auto"
+        id="results"
+        width="500"
+        height="500"
+        outlined
+        elevation="5"
+        style="overflow: auto;"
+      >
+      <v-card-title style="font-variant: small-caps; top: 0; position: sticky; background-color: rgb(190, 33, 33); color: white">Result</v-card-title>
         <v-data-table
-            :headers="headers"
-            :items="temp4"
-            :loading="progressBar"
-            loading-text="Searching for the results, please wait...."
-            class="elevation-1"
-          >
-        </v-data-table>
-      </b-card>
-    </b-card-group>
+          :headers="headers"
+          :items="temp4"
+          :loading="progressBar"
+          loading-text="Searching for the results, please wait...."
+          class="elevation-1"
+        ></v-data-table>
+      </v-card>
+    </v-row>
+    </v-container>
     <app-footer></app-footer>
   </div>
 </template>
@@ -56,7 +113,7 @@ import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import { eventBus } from "../../main";
 import { GridLoader } from "@saeris/vue-spinners";
-import { BootstrapVue } from 'bootstrap-vue';
+import { BootstrapVue } from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
 export default {
@@ -87,6 +144,7 @@ export default {
       table: [],
       parentFlag: false,
       childFlag: false,
+      idToRetrieve: "",
       receivedId: String,
       artifactID: String,
       groupID: String,
@@ -99,22 +157,14 @@ export default {
       metricValues: [],
       metrics: [],
       headers: [
-        { text: "Metric Name", align: "left", sortable: "true", value: "id" },
+        { text: "Metric Name", align: "center", sortable: "true", value: "id" },
         {
           text: "Metric Value",
-          align: "left",
+          align: "center",
           sortable: "true",
           value: "values"
         }
       ]
-      // treeItem: [{
-      //   id: 1,
-      //   name: this.temp2,
-      //   children: [
-      //     {id:2, name: this.temp3}
-      //   ]
-      // }
-      // ]
     };
   },
   watch: function() {
@@ -139,6 +189,10 @@ export default {
   methods: {
     startRetrieve() {
       var vm = this;
+      if(vm.receivedId !="function String() { [native code] }"){
+        vm.idToRetrieve = receivedIdParam;
+      }
+      
       this.$http
         .get("retrieve/" + vm.receivedId)
         .then(response => {
@@ -195,9 +249,6 @@ export default {
     },
     displayChildren(e) {
       this.childFlag = !this.childFlag;
-      // for (var element of this.temp3) {
-      //   this.temp4.push(element);
-      // }
       this.temp4 = [];
       for (var element of Object.keys(this.receivedMetrics)) {
         if (element.includes(e)) {
@@ -214,13 +265,18 @@ export default {
 }
 
 .childElement {
-  margin-left: 30px;
+  margin-left: 50px;
 }
 
+.cardDeck {
+  position: relative;
+  left: 5%;
+}
 
 .loaderIcon {
   position: absolute;
   top: 50%;
   left: 50%;
 }
+
 </style>
