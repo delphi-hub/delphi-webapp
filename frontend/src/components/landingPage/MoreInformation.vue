@@ -2,7 +2,7 @@
   <v-app style="background-color: white;">
     <app-header></app-header>
     <grid-loader
-      v-if="this.flag && this.flag2"
+      v-if="this.flag && this.flag2 && this.idToRetrieve.length != 0 && this.queryErrorMoreInfo.length == 0"
       color="#c20202"
       class="loaderIcon"
       style="z-index:1"
@@ -23,7 +23,14 @@
           clearable
           auto-grow
           @input="startDirectRetrieve($event)"
-        ></v-textarea>
+        ></v-textarea> 
+        <v-alert
+				dense
+				outlined
+				type="error"
+				v-if="this.queryErrorMoreInfo.length != 0">
+						{{this.queryErrorMoreInfo}}
+			</v-alert>
       </v-row>
     </v-container>
     <v-container fluid style="max-width:1400px">
@@ -69,9 +76,9 @@
           <v-card-title
             style="font-size:14pt;  top: 0; position: sticky; background-color: #db2909; color: white"
           >Metric Categories</v-card-title>
-          <div style=" margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
+          <div style="width:95%; margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
              <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
-              <v-chip color="green" x-large style="margin: 10px; width: 310px; background-color: #626466; color: white">
+              <v-chip x-large style="margin: 10px; width: 310px; background-color: #626466; color: white">
                 <span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span>
               </v-chip>
             </div>
@@ -159,6 +166,7 @@ export default {
       temp3: [],
       temp4: [],
       table: [],
+      queryErrorMoreInfo:"",
       parentFlag: true,
       childFlag: false,
       parentChipColor: String,
@@ -241,7 +249,11 @@ export default {
             this.displayTree();
           }),
           error => {
-            alert("Invalid results!", error.messages);
+            if (error.status == 417) {
+									vm.queryErrorMoreInfo = error.body
+								} else {
+									vm.queryErrorMoreInfo ="We received " + error.status + " " + error.statusText;
+								}
           };
       }
     },
