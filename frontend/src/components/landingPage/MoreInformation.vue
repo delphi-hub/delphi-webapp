@@ -23,6 +23,7 @@
           clearable
           auto-grow
           @input="startDirectRetrieve($event)"
+          @click:clear="clearPage"
         ></v-textarea> 
         <v-alert
 				dense
@@ -76,7 +77,7 @@
           <v-card-title
             style="font-size:14pt;  top: 0; position: sticky; background-color: #db2909; color: white"
           >Metric Categories</v-card-title>
-          <div style="width:95%; margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
+          <div v-if="this.childFlag" style="width:95%; margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
              <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
               <v-chip x-large style="margin: 10px; width: 310px; background-color: #626466; color: white">
                 <span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span>
@@ -141,6 +142,7 @@ import { GridLoader } from "@saeris/vue-spinners";
 
 export default {
   name: "moreInformation",
+
   /* Render is used to set the values for page loading spinners */
   render() {
     return (
@@ -168,7 +170,7 @@ export default {
       table: [],
       queryErrorMoreInfo:"",
       parentFlag: true,
-      childFlag: false,
+      childFlag: true,
       parentChipColor: String,
       childChipColor: String,
       idToRetrieve: "",
@@ -288,7 +290,6 @@ export default {
       }
     },
     displayChildren(parameter) {
-      this.childFlag = !this.childFlag;
       this.metrics = [];
       for (var element of Object.keys(this.receivedMetrics)) {
         if (element.includes(parameter)) {
@@ -298,6 +299,16 @@ export default {
           });
         }
       }
+    },
+    clearPage() {
+      this.metrics = [];
+      this.parentFlag = !this.parentFlag;
+      this.childFlag = !this.childFlag;
+      this.groupID = this.errorStr;
+      this.artifactID = this.errorStr;
+      this.version = this.errorStr;
+      this.discovered = this.errorStr;
+
     }
   }
 };
