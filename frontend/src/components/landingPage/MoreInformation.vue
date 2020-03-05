@@ -9,7 +9,7 @@
     ></grid-loader>
     <v-container fluid >
       <v-row style="width:1365px; height: 20px; position: relative; left: -112px;">
-        <h6 style="font-weight: bold; font-size:14pt;">Enter the ID to retrieve corresponding metric values</h6>
+        <h6 style="font-weight: bold; font-size:12pt;">Enter the ID to retrieve corresponding metric values</h6>
       </v-row>
       <v-row style="width:1365px; height: 50px; position: relative; left: -112px;">
         <v-textarea
@@ -75,15 +75,15 @@
         </v-card>
         <v-card class="mx-auto" id="tree" width="400" max-height="500" outlined style="border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;">
           <v-card-title
-            style="font-size:14pt;  top: 0; position: sticky; background-color: #db2909; color: white"
-          >Metric Categories</v-card-title>
+            style="font-size:14pt; border-radius:15px 15px 0px 0px; top: 0; position: sticky; background-color: #db2909; color: white"
+          >Metric Categories <span style="font-size:10pt; margin-left: 10px;">  [Please select]</span></v-card-title>
           <div v-if="this.childFlag" style="width:95%; margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
              <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
               <v-chip x-large style="margin: 10px; width: 310px; background-color: #626466; color: white">
                 <span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span>
               </v-chip>
             </div>
-            <div v-if="this.parentFlag">
+            <div v-if="this.parentFlag && this.childFlag">
               <div
                 v-for="(iterator2) in this.temp3"
                 :key="(iterator2)"
@@ -112,7 +112,7 @@
         >
           <v-card-title
             style="font-size:14pt; top: 0; position: sticky; background-color: #db2909; color: white"
-          >Result</v-card-title>
+          >Result <span v-if="this.result!=this.errorStr" style="font-size:12pt; font-variant:small-caps; margin-left: 10px;"> [{{result}}] </span></v-card-title>
           <div style="display:inline-block; max-height: 85%; overflow: auto !important">
             <v-data-table
             :headers="headers"
@@ -162,6 +162,7 @@ export default {
       loading: true,
       flag: true,
       flag2: false,
+      result: String,
       tree: [],
       temp: [],
       temp2: [],
@@ -227,6 +228,7 @@ export default {
 
     startRetrieve(receivedIdParam) {
       var vm = this;
+      this.flag2 = true;
       if (receivedIdParam != this.errorStr) {
         if (this.receivedId != this.errorStr) {
           this.idToRetrieve = receivedIdParam;
@@ -276,9 +278,11 @@ export default {
         }
       }
       vm.temp3.sort();
+      this.parentFlag = true;
+      this.childFlag = true;
     },
     displayTreeParent(parameter) {
-      this.parentFlag = !this.parentFlag;
+      this.result = "All";
       this.metrics = [];
       for (var element of Object.keys(this.receivedMetrics)) {
         if (element.includes(parameter)) {
@@ -290,7 +294,8 @@ export default {
       }
     },
     displayChildren(parameter) {
-      this.metrics = [];
+       this.metrics = [];
+       this.result = parameter;
       for (var element of Object.keys(this.receivedMetrics)) {
         if (element.includes(parameter)) {
           this.metrics.push({
@@ -308,6 +313,7 @@ export default {
       this.artifactID = this.errorStr;
       this.version = this.errorStr;
       this.discovered = this.errorStr;
+      this.result = this.errorStr;
 
     }
   }
