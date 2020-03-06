@@ -13,7 +13,6 @@ import JsonExcel from "vue-json-excel";
 import { VueSpinners } from "@saeris/vue-spinners";
 import "@mdi/font/css/materialdesignicons.css";
 
-
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(Vuelidate);
 Vue.use(VueResource);
@@ -26,7 +25,6 @@ Vue.http.interceptors.push((request, next) => {
     response.json = () => {
       return { messages: response.body };
     };
-
   });
 });
 export const eventBus = new Vue();

@@ -15,9 +15,10 @@
 // limitations under the License.
 package models
 
-import play.api.libs.json.Json
+import spray.json.DefaultJsonProtocol
 
-case class ResultToJson(result:String)
-object ResultToJson {
-  implicit val writes = Json.writes[ResultToJson]
+case class InternalFeature(name : String, description : String)
+
+object InternalFeatureJson extends DefaultJsonProtocol {
+  implicit val featureFormat = jsonFormat2(InternalFeature)
 }

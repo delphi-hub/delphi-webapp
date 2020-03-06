@@ -35,7 +35,7 @@
 					id="startSearchButton"
 					@click="onStartSearch"
 					:loading="isLoading"
-					:disabled="isLoading || !finalQuery"
+					:disabled="isLoading || !finalQuery || brokeRule"
 					color="#db2909"
 					class="mr-4 ml-1 mt-1 white--text">
 					<v-icon large>mdi-magnify</v-icon>
@@ -104,6 +104,9 @@
 				submitted: false,
 				queryError: "",
 				emptyQuery: "",
+				metric: "",
+				metrics: [],
+				brokeRule: false,
 				currentLimit: 100,
 				rules: {
 					inlimit: value => {
@@ -117,8 +120,6 @@
 						return pattern.test(value) || 'Only Numbers between 1 and 10000'
 					}
 				},
-				metric: "",
-				metrics: [],
 				loader: null,
 			};
 		},
@@ -195,5 +196,4 @@
 </script>
 
 <style>
-
 </style>

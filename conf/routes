@@ -4,12 +4,11 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.FrontController.startPoint
-#GET     /                           controllers.FrontController.frontEndFile(file: String ?= "")
-#GET     /search/                    controllers.HomeController.query(query: String = "")
-GET     /search/:query              controllers.HomeController.query(query)
++nocsrf
+POST    /search/                    controllers.HomeController.search
 GET     /version                    controllers.SettingsController.version
 GET     /features                   controllers.HomeController.features
-GET     /retrieve/:elementId              controllers.HomeController.retrieve(elementId)
+GET     /retrieve/:elementId        controllers.HomeController.retrieve(elementId)
 
 
 # Map static resources from the /public folder to the /assets URL path
