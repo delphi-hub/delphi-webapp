@@ -21,11 +21,13 @@
 						After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->	
 					<query
 						:errMsg="queryError"
+						:errCol="errorColumn"
 						:partQuery="savedQuery"
 						:isLoading="progressBar"
 						@emptyQuery="clearItems = $event"
 						@finalQueryAndLimitSend="finalQAndLimit = $event"
 						@resetSavedQuery="savedQuery = $event"
+						@resetErrorColumn="errorColumn = $event"
 						@sendQueryToStorage="storageSaveQuery = $event"
 					></query>
 					<!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
@@ -37,13 +39,15 @@
 					</queryMenu>
 				</v-card>
 			</v-col>
-			<div class="downloadDiv" v-if="items.totalHits > 0">
-				<button class="download" @click.stop="dialog = true">
-					Export to Excel
-					<v-icon>mdi-file-excel</v-icon>
-				</button>
-			</div>
-			<v-col cols="12"> 
+			<v-col cols="12" class="py-0 pr-5">
+				<div class="downloadDiv" v-if="items.totalHits > 0">
+					<v-btn @click.stop="dialog = true" outlined color="rgb(63, 53, 53)">
+						Export to Excel
+						<v-icon>mdi-file-excel</v-icon>
+					</v-btn>
+				</div>
+			</v-col>
+			<v-col cols="12" class="pt-0"> 
 				<v-card elevation=24 style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);">
 					<div
 						class="inputQueryInResult"
@@ -103,8 +107,8 @@
 	import Query from "./Query.vue";
 	import QueryMenu from "./QueryMenu.vue";
 	import { eventBus } from "../../main";
-  	import XLSX from "xlsx";
- 	import flatten from "flat";
+	import XLSX from "xlsx";
+	import flatten from "flat";
 
 	export default {
 		components: {
@@ -117,7 +121,7 @@
 				savedQuery: "", //query from queryMenu will be saved here
 				readyToSearchQuery: "", //finalQuery from the query component will be saved here
 				headers: [
-		  			{
+					{
 						text: "GroupId",
 						align: "center",
 						value: "metadata.groupId",
@@ -150,6 +154,7 @@
 				],
 				items: [],
 				queryError: "",
+				errorColumn: 0,
 				progressBar: false,
 				resultLimit: 100,
 				flattenItems: [],
@@ -238,7 +243,8 @@
 										this.errorText= error.status + "  " + error.statusText+"!!! "+ " Something Went Wrong......Please Try Again";
 										this.dialog2=true;
 									} else if (error.status == 422) {
-										vm.queryError = error.body.problem + error.body.suggestion
+										vm.errorColumn = error.body.column;
+										vm.queryError = "Syntax Error: " + error.body.problem;
 									} else {
 										vm.queryError = error.body;
 									}
@@ -284,12 +290,7 @@
 	#searchedQueryInResult {
 		font-weight: bold;
 	}
-	.download {
-		background-color: white;
-		color: black;
-	}
 	.downloadDiv {
 		text-align: right;
-		padding-right: 25px;
 	}
 </style>

@@ -20,6 +20,7 @@
 				</v-tooltip>
 				<v-textarea
 					outlined
+					ref="textareaQuery"
 					id="queryInput"
 					rows="1"
 					@keydown.enter.prevent
@@ -94,6 +95,9 @@
 			errMsg: {
 				type: String
 			},
+			errCol: {
+				type: Number
+			},
 			isLoading: {
 				type: Boolean
 			}
@@ -103,6 +107,7 @@
 				finalQuery: "",
 				submitted: false,
 				queryError: "",
+				queryErrorCol: 0,
 				emptyQuery: "",
 				metric: "",
 				metrics: [],
@@ -143,6 +148,12 @@
 			errMsg: function(newVal) {
 				if (newVal) {
 					this.queryError = newVal;
+				}
+			},
+			errCol: function(newVal) {
+				if (newVal > 0) {
+					this.queryErrorCol = newVal;
+					this.selectText();
 				}
 			},
 			loader () {
@@ -190,7 +201,13 @@
 				this.queryError = "";
 				this.$v.finalQuery.$touch();
 				this.finalQuery = value;
-			}
+			},
+			selectText() {
+				let textArea = this.$refs.textareaQuery.$el.querySelector('textarea');
+				textArea.focus();
+				textArea.setSelectionRange(this.queryErrorCol-1, this.queryErrorCol);
+				this.$emit("resetErrorColumn", 0);
+			},
 		}
 	};
 </script>
