@@ -47,7 +47,7 @@
 					</v-btn>
 				</div>
 			</v-col>
-			<v-col cols="12" class="pt-0"> 
+			<v-col cols="12" class="pt-2"> 
 				<v-card elevation=24 style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);">
 					<div
 						class="inputQueryInResult"

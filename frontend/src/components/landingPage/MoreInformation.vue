@@ -1,342 +1,347 @@
 <template id="moreInfoPage">
-  <v-app style="background-color: white;">
-    <app-header></app-header>
-    <grid-loader
-      v-if="this.flag && this.flag2 && this.idToRetrieve.length != 0 && this.queryErrorMoreInfo.length == 0"
-      color="#c20202"
-      class="loaderIcon"
-      style="z-index:1"
-    ></grid-loader>
-    <v-container fluid >
-      <v-row style="width:1365px; height: 20px; position: relative; left: -112px;">
-        <h6 style="font-weight: bold; font-size:12pt;">Enter the ID to retrieve corresponding metric values</h6>
-      </v-row>
-      <v-row style="width:1365px; height: 50px; position: relative; left: -112px;">
-        <v-textarea
-          outlined
-          append-icon="mdi-magnify"
-          @keydown.enter.prevent
-          id="retrieveInput"
-          :value="this.idToRetrieve"
-          :v-model="this.receivedId"
-          rows="1"
-          clearable
-          auto-grow
-          @input="startDirectRetrieve($event)"
-          @click:clear="clearPage"
-        ></v-textarea> 
-        <v-alert
-				dense
-				outlined
-				type="error"
-				v-if="this.queryErrorMoreInfo.length != 0">
-						{{this.queryErrorMoreInfo}}
-			</v-alert>
-      </v-row>
-    </v-container>
-    <v-container fluid style="max-width:1400px">
-      <v-row style="max-width:1400px;">
-        <v-card
-          class="mx-auto"
-          id="basicInfo"
-          width="400"
-          height="500"
-          outlined
-          style="overflow: auto; border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;"
-        >
-          <v-card-title
-            style="top: 0; position: sticky; background-color: #db2909; color: white; font-size:14pt;"
-          >Information</v-card-title>
-          <div id="moreInfoTextDiv">
-            <v-card-text
-              style="font-size:1em; font-weight:bold"
-              v-if="this.groupID != this.errorStr"
-            >Group ID :</v-card-text>
-            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ groupID }}</v-card-text>
-            <v-card-text
-              style="font-size:1em; font-weight:bold"
-              v-if="this.artifactID != this.errorStr"
-            >Artifact ID :</v-card-text>
-            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ artifactID }}</v-card-text>
-            <v-card-text
-              style="font-size:1em; font-weight:bold"
-              v-if="this.version != this.errorStr"
-            >Version :</v-card-text>
-            <v-card-text style="font-size:1em" v-if="this.groupID != this.errorStr">{{ version }}</v-card-text>
-            <v-card-text
-              style="font-size:1em; font-weight:bold"
-              v-if="this.discovered != this.errorStr"
-            >Discovered :</v-card-text>
-            <v-card-text
-              style="font-size:1em"
-              v-if="this.groupID != this.errorStr"
-            >{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-text>
-          </div>
-        </v-card>
-        <v-card class="mx-auto" id="tree" width="400" max-height="500" outlined style="border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;">
-          <v-card-title
-            style="font-size:14pt; border-radius:15px 15px 0px 0px; top: 0; position: sticky; background-color: #db2909; color: white"
-          >Metric Categories <span style="font-size:10pt; margin-left: 10px;">  [Please select]</span></v-card-title>
-          <div v-if="this.childFlag" style="width:95%; margin-left:20px; top:10%; height:87%; max-height:85%; overflow: auto;">
-             <div v-for="iterator1 in this.temp2" :key="iterator1" @click="displayTreeParent(iterator1)" >
-              <v-chip x-large style="margin: 10px; width: 310px; background-color: #626466; color: white">
-                <span style="margin-left:20px; font-weight:bold">{{ iterator1 }}</span>
-              </v-chip>
-            </div>
-            <div v-if="this.parentFlag && this.childFlag">
-              <div
-                v-for="(iterator2) in this.temp3"
-                :key="(iterator2)"
-                @click="displayChildren(iterator2)"
-              >
-                <span class="childElement">
-                  &#8627;
-                  <v-chip id="childChips" large style="margin: 7px; width: 240px">
-                    <span style="margin-left:20px; font-weight:bold">{{ iterator2 }}</span>
-                  </v-chip>
-                  <br />
-                </span>
-                <v-slot id="child"></v-slot>
-              </div>
-            </div>
-          </div>
-        </v-card>
-        <v-card
-          class="mx-auto"
-          id="results"
-          width="500"
-          height="500"
-          outlined
-          elevation="5"
-          style="border-radius: 15px 15px 15px 15px; box-shadow: 5px 10px 15px #888888;"
-        >
-          <v-card-title
-            style="font-size:14pt; top: 0; position: sticky; background-color: #db2909; color: white"
-          >Result <span v-if="this.result!=this.errorStr" style="font-size:12pt; font-variant:small-caps; margin-left: 10px;"> [{{result}}] </span></v-card-title>
-          <div style="display:inline-block; max-height: 85%; overflow: auto !important">
-            <v-data-table
-            :headers="headers"
-            :items="metrics"
-            :items-per-page="10"
-            :loading="progressBar"
-            loading-text="Searching for the results, please wait...."
-            style="display: inline-block; height: 100%; overflow: auto !important"
-          > <v-tooltip left>
-            <template v-slot:activator="{ on }">
-          <span v-on="on">Test tootltip</span>
-        </template>
-        <span>Test tootltip</span></v-tooltip> </v-data-table>
-          </div>
-          
-        </v-card>
-      </v-row>
-    </v-container>
-    <app-footer></app-footer>
-  </v-app>
+	<v-app style="background-color: rgb(255, 255, 255);">
+		<app-header></app-header>
+		<div style="background-color: rgb(255, 255, 255); margin-bottom: 10px; padding:0 30px 30px 30px;">
+			<v-row>
+				<v-col cols="12" class="py-1">
+					<v-card elevation=24 style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);">
+						<v-card-title class="justify-center mb-1 pa-1" style="background-color: #0959db; color:white">
+							<div  class="headline text-center">More Information</div> 
+						</v-card-title>
+						<v-card-text class="pb-1">
+							This page gives you more information about a chosen artifact. Use the Category Metric Tree below to decide which metric with its corresponding value will be shown
+							in the Metric Table.
+						</v-card-text>
+					</v-card>
+				</v-col>
+				<v-col cols="12" class="py-1">
+					<v-card elevation=24 style="background-color: rgb(255, 255, 255);">
+						<v-card-subtitle class="pt-2 pb-0"> 
+							<div>Enter the ID to retrieve corresponding metric values</div> 
+						</v-card-subtitle>
+						<v-card-text class="pb-1">
+							<v-textarea
+								outlined
+								append-icon="mdi-magnify"
+								@keydown.enter.prevent
+								id="retrieveInput"
+								:value="this.idToRetrieve"
+								:v-model="this.receivedId"
+								rows="1"
+								clearable
+								auto-grow
+								@input="startDirectRetrieve($event)"
+								@click:clear="clearPage"
+							></v-textarea> 
+						</v-card-text>	
+						<v-alert
+							dense
+							outlined
+							type="error"
+							v-if="this.queryErrorMoreInfo.length != 0">
+								{{this.queryErrorMoreInfo}}
+						</v-alert>
+					</v-card>
+				</v-col>
+				
+			</v-row>
+			<grid-loader
+				v-if="this.flag && this.flag2 && this.idToRetrieve.length != 0 && this.queryErrorMoreInfo.length == 0"
+				color="#c20202"
+				class="loaderIcon"
+				style="z-index:1"
+			></grid-loader>
+			<v-card elevation="24" class="pa-0 mt-1"> 
+				
+				<v-row no-gutters>
+					<v-col cols="12" md="3" lg="3">
+						<v-card tile :elevation="0" class="ma-1" style="border-style: solid; border-color: #5579b3; border-width: 0.08em;">
+							<v-card-title class="title pt-0">Group ID</v-card-title>
+							<v-card-subtitle v-if="this.groupID != this.errorStr" class="pb-0">{{ groupID }}</v-card-subtitle>
+						</v-card>
+					</v-col>
+					<v-col cols="12" md="3" lg="3">
+						<v-card tile :elevation="0" class="ma-1" style="border-style: solid; border-color: #5579b3; border-width: 0.08em;">
+							<v-card-title class="title pt-0">Artifact ID</v-card-title>
+							<v-card-subtitle v-if="this.groupID != this.errorStr" class="pb-0">{{ artifactID }}</v-card-subtitle>
+						</v-card>
+					</v-col>
+					<v-col cols="12" md="3" lg="3">
+						<v-card tile :elevation="0" class="ma-1" style="border-style: solid; border-color: #5579b3; border-width: 0.08em;">
+							<v-card-title class="title pt-0">Version</v-card-title>
+							<v-card-subtitle v-if="this.groupID != this.errorStr" class="pb-0">{{ version }}</v-card-subtitle>
+						</v-card>
+					</v-col>
+					<v-col cols="12" md="3" lg="3">
+						<v-card tile :elevation="0" class="ma-1" style="border-style: solid; border-color: #5579b3; border-width: 0.08em;">
+							<v-card-title class="title pt-0">Discovered</v-card-title>
+							<v-card-subtitle v-if="this.groupID != this.errorStr" class="pb-0">{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-subtitle>
+						</v-card>
+					</v-col>
+					<v-col cols="12" md="7" lg="7" class="py-0">
+						<v-card :elevation="0" class="ma-1" style="border-style: solid; border-color: rgb(85, 121, 179); border-width: 0.08em;">
+							<v-card-title class="justify-center mb-1 pa-1" style="background-color: #e9e9e9">
+								Metric Category Tree
+							</v-card-title>
+							<v-card-subtitle>
+								<v-text-field
+									v-model="search2"
+									append-icon="mdi-magnify"
+									placeholder="Search for Metric in Tree"
+									hide-details
+									clearable
+									clear-icon="mdi-close-circle-outline"
+								></v-text-field>
+							</v-card-subtitle>
+							<v-card-text style="overflow: auto; max-height: 500px;">
+								<v-treeview
+									v-model="tree"
+									:search="search2"
+									:items="items"
+									selected-color="indigo"
+									open-on-click
+									selectable
+									return-object
+									expand-icon="mdi-chevron-down"
+									on-icon="mdi-checkbox-marked-outline"
+									off-icon="mdi-checkbox-blank-outline"
+									indeterminate-icon="mdi-checkbox-intermediate"
+								>
+								</v-treeview>
+							</v-card-text>		  
+						</v-card>
+					</v-col>
+					<v-col cols="12" md="5" lg="5">
+						<v-card :elevation="0" class="ma-1" style="border-style: solid; border-color: #5579b3; border-width: 0.08em;">
+							<v-card-title class="justify-center mb-0 pa-1" style="background-color: #e9e9e9">
+								Metric Table
+							</v-card-title>
+							<v-card-subtitle>
+								<v-text-field
+									v-model="search" 
+									v-show="tree.length !== 0"
+									append-icon="mdi-magnify"
+									placeholder="Search for Metric or Value in Table"
+									hide-details
+									clearable
+									clear-icon="mdi-close-circle-outline"
+								></v-text-field>
+							</v-card-subtitle>
+							<div
+								v-if="tree.length === 0"
+								key="title"
+								class="title font-weight-light grey--text pa-4 text-center"
+							>
+								Select Metrics in the Tree
+							</div>
+							<v-card-text style="overflow: auto; max-height: 500px;">
+								<v-data-table
+									v-show="tree.length !== 0"
+									:headers="headers"
+									:items="tree"
+									:search="search"
+									disable-pagination
+									:hide-default-footer="true"
+								></v-data-table>
+							</v-card-text>
+						</v-card>
+					</v-col>
+				</v-row>
+			</v-card>
+			<app-footer></app-footer>
+		</div>
+	</v-app>  
 </template>
+
 <script>
-import Header from "../Layout/Header";
-import Footer from "../Layout/Footer";
-import { eventBus } from "../../main";
-import { GridLoader } from "@saeris/vue-spinners";
+	import Header from "../Layout/Header";
+	import Footer from "../Layout/Footer";
+	import { eventBus } from "../../main";
+	import { GridLoader } from "@saeris/vue-spinners";
 
-export default {
-  name: "moreInformation",
+	export default {
+		name: "moreInformation",
 
-  /* Render is used to set the values for page loading spinners */
-  render() {
-    return (
-      <div class="loader">
-        <ClipLoader
-          class="custom-class"
-          loading={this.loading}
-          color={"#c20202"}
-          size={600}
-          sizeUnit={"px"}
-        />
-      </div>
-    );
-  },
-  data() {
-    return {
-      loading: true,
-      flag: true,
-      flag2: false,
-      result: String,
-      tree: [],
-      temp: [],
-      temp2: [],
-      temp3: [],
-      temp4: [],
-      table: [],
-      queryErrorMoreInfo:"",
-      parentFlag: true,
-      childFlag: true,
-      parentChipColor: String,
-      childChipColor: String,
-      idToRetrieve: "",
-      receivedId: String,
-      artifactID: String,
-      groupID: String,
-      discovered: String,
-      source: String,
-      version: String,
-      errorStr: "function String() { [native code] }",
-      receivedMetrics: [],
-      metricKeys: [],
-      metricValues: [],
-      metrics: [],
-      headers: [
-        { text: "Metric Name", align: "left", sortable: "true", value: "id" },
-        {
-          text: "Metric Value",
-          align: "left",
-          sortable: "true",
-          value: "values"
-        }
-      ]
-    };
-  },
-  watch: function() {
-    setTimeout(() => {
-      this.startRetrieve(this.receivedId);
-    }, 100);
-  },
+		/* Render is used to set the values for page loading spinners */
+		render() {
+			return (
+				<div class="loader">
+					<ClipLoader
+					class="custom-class"
+					loading={this.loading}
+					color={"#c20202"}
+					size={600}
+					sizeUnit={"px"}
+					/>
+				</div>
+			);
+		},
+		data() {
+			return {
+				receivedMetrics: [],
+				metricObjects: [],
+				metricCategories: [],
+				tree: [],
+				search: '',
+				search2: null,
+				loading: true,
+				flag: true,
+				flag2: false,
+				result: String,
+				queryErrorMoreInfo:"",
+				idToRetrieve: "",
+				receivedId: String,
+				artifactID: String,
+				groupID: String,
+				discovered: String,
+				source: String,
+				version: String,
+				errorStr: "function String() { [native code] }",
+				metricKeys: [],
+				metricValues: [],
+				headers: [
+					{	text: "Metric Name", 
+						align: "left",
+						sortable: "true", 
+						value: "id" 
+					},
+					{
+					text: "Metric Value",
+					align: "left",
+					sortable: "true",
+					value: "value"
+					}
+				]
+			};
+		},
+		/*   watch: function() {
+			setTimeout(() => {
+			this.startRetrieve(this.receivedId);
+			}, 100);
+		}, */
 
-  created: function() {
-    eventBus.$on("moreInfoEvent", data => {
-      this.receivedId = data;
-      this.flag2 = true;
-    }),
-      setTimeout(() => {
-        this.startRetrieve(this.receivedId);
-      }, 100);
-  },
-  components: {
-    "app-header": Header,
-    "app-footer": Footer,
-    "grid-loader": GridLoader
-  },
-  methods: {
-    startDirectRetrieve(value) {
-      if (this.receivedId != this.errorStr) {
-        this.idToRetrieve = value;
-      }
-      this.flag2 = true;
-      this.startRetrieve(value);
-    },
+		created: function() {
+			eventBus.$on("moreInfoEvent", data => {
+				this.receivedId = data;
+				this.flag2 = true;
+			}),
+			setTimeout(() => {
+				this.startRetrieve(this.receivedId);
+			}, 100);
+		},
+		components: {
+			"app-header": Header,
+			"app-footer": Footer,
+			"grid-loader": GridLoader
+		},
+		methods: {
+			startDirectRetrieve(value) {
+				if (this.receivedId != this.errorStr) {
+					this.idToRetrieve = value;
+				}
+				this.flag2 = true;
+				this.startRetrieve(value);
+			},
+			startRetrieve(receivedIdParam) {
+				var vm = this;
+				this.flag2 = true;
+				if (receivedIdParam != this.errorStr) {
+					if (this.receivedId != this.errorStr) {
+						this.idToRetrieve = receivedIdParam;
+					}
+					this.$http
+					.get("retrieve/" + receivedIdParam)
+					.then(response => {
+						return response.json();
+					})
+					.then(data => {
+						(vm.receivedMetrics = data.messages[0].metricResults),
+						(vm.groupID = data.messages[0].metadata.groupId),
+						(vm.artifactID = data.messages[0].metadata.artifactId),
+						(vm.discovered = data.messages[0].metadata.discovered),
+						(vm.source = data.messages[0].metadata.source),
+						(vm.version = data.messages[0].metadata.version),
+						(vm.metricKeys = Object.keys(data.messages[0].metricResults)),
+						(vm.discovered = vm.discovered.split("T")),
+						vm.discovered.push(vm.discovered[1].split(".", 1));
+						vm.flag = false;
+						vm.flag2 = false;
+						this.getAllMetricObjects();
+					}),
+					error => {
+						if (error.status == 417) {
+												vm.queryErrorMoreInfo = error.body
+											} else {
+												vm.queryErrorMoreInfo ="We received " + error.status + " " + error.statusText;
+											}
+					};
+				}
+			},
+			getChildren (cat) {
+				const allMetrics = []
+				for (const metric of this.metricObjects) {
+					if (metric.category !== cat) continue
 
-    startRetrieve(receivedIdParam) {
-      var vm = this;
-      this.flag2 = true;
-      if (receivedIdParam != this.errorStr) {
-        if (this.receivedId != this.errorStr) {
-          this.idToRetrieve = receivedIdParam;
-        }
-        this.$http
-          .get("retrieve/" + receivedIdParam)
-          .then(response => {
-            return response.json();
-          })
-          .then(data => {
-            (vm.receivedMetrics = data.messages[0].metricResults),
-              (vm.groupID = data.messages[0].metadata.groupId),
-              (vm.artifactID = data.messages[0].metadata.artifactId),
-              (vm.discovered = data.messages[0].metadata.discovered),
-              (vm.source = data.messages[0].metadata.source),
-              (vm.version = data.messages[0].metadata.version),
-              (vm.metricKeys = Object.keys(data.messages[0].metricResults)),
-              (vm.discovered = vm.discovered.split("T")),
-              vm.discovered.push(vm.discovered[1].split(".", 1));
-            vm.flag = false;
-            vm.flag2 = false;
-            this.displayTree();
-          }),
-          error => {
-            if (error.status == 417) {
-									vm.queryErrorMoreInfo = error.body
-								} else {
-									vm.queryErrorMoreInfo ="We received " + error.status + " " + error.statusText;
-								}
-          };
-      }
-    },
-    displayTree() {
-      var vm = this;
-      vm.temp = Object.keys(vm.receivedMetrics);
-      for (var element of vm.temp) {
-        var metricParent = element.split(".", 1);
-        if (!vm.temp2.includes(metricParent)) {
-          vm.temp2 = metricParent;
-        }
-        var metricChild = element.split(".", 2);
-        if (metricChild.includes(metricParent[0])) {
-          metricChild = metricChild.pop();
-          if (!vm.temp3.includes(metricChild)) {
-            vm.temp3.push(metricChild);
-          }
-        }
-      }
-      vm.temp3.sort();
-      this.parentFlag = true;
-      this.childFlag = true;
-    },
-    displayTreeParent(parameter) {
-      this.result = "All";
-      this.metrics = [];
-      for (var element of Object.keys(this.receivedMetrics)) {
-        if (element.includes(parameter)) {
-          this.metrics.push({
-            id: element,
-            values: this.receivedMetrics[element]
-          });
-        }
-      }
-    },
-    displayChildren(parameter) {
-       this.metrics = [];
-       this.result = parameter;
-      for (var element of Object.keys(this.receivedMetrics)) {
-        if (element.includes(parameter)) {
-          this.metrics.push({
-            id: element,
-            values: this.receivedMetrics[element]
-          });
-        }
-      }
-    },
-    clearPage() {
-      this.metrics = [];
-      this.parentFlag = !this.parentFlag;
-      this.childFlag = !this.childFlag;
-      this.groupID = this.errorStr;
-      this.artifactID = this.errorStr;
-      this.version = this.errorStr;
-      this.discovered = this.errorStr;
-      this.result = this.errorStr;
+				allMetrics.push({...metric, name: metric.name})
+				}
+				return allMetrics.sort((a, b) => {
+					return a.name > b.name ? 1 : -1
+				})
+			},
+			getCategory(metric) {
+				var t = metric.split(".", 2);
+				t = t.pop();
+				return t; 
+			},
+			getAllMetricObjects(){
+				const temp = Object.keys(this.receivedMetrics);
+				for (var element of temp) {
+					this.metricObjects.push({id: element, name: element, value: this.receivedMetrics[element], category: this.getCategory(element)});
+				}
+				this.getAllCategories();
+			},
+			getAllCategories(){
+				for (const m of this.metricObjects) {
+					if(!this.metricCategories.includes(m.category)){
+						this.metricCategories.push(m.category);
+					}
+				}
+				this.metricCategories.sort();
+			},
+			clearPage() {
+				this.metricObjects = [];
+				this.metricCategories = [];
+				this.tree = [];
+				this.search = '';
+				this.search2 = null;
+				this.groupID = this.errorStr;
+				this.artifactID = this.errorStr;
+				this.version = this.errorStr;
+				this.discovered = this.errorStr;
+				this.result = this.errorStr;
+			}
+		},
+		computed: {
+			items () {
+				const children = this.metricCategories.map(category => ({
+					id: category,
+					name: category,
+					children: this.getChildren(category),
+				}))
 
-    }
-  }
-};
+				return [{
+				id: 1,
+				name: 'All Metrics',
+				children,
+				}]
+			}
+		}
+	};
 </script>
 <style>
-#moreInfoPage {
-  background-color: rgb(250, 250, 250);
-}
-
-.childElement {
-  margin-left: 50px;
-}
-
-.cardDeck {
-  position: relative;
-  left: 5%;
-}
-
-.loaderIcon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-}
-
+	.loaderIcon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+	}
 </style>
