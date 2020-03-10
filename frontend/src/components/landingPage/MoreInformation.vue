@@ -14,7 +14,7 @@
 						</v-card-text>
 					</v-card>
 				</v-col>
-				<v-col cols="12" class="py-1">
+				<!-- <v-col cols="12" class="py-1">
 					<v-card elevation=24 style="background-color: rgb(255, 255, 255);">
 						<v-card-subtitle class="pt-2 pb-0"> 
 							<div>Enter the ID to retrieve corresponding metric values</div> 
@@ -25,12 +25,12 @@
 								append-icon="mdi-magnify"
 								@keydown.enter.prevent
 								id="retrieveInput"
-								:value="this.idToRetrieve"
+								:value="this.$route.params.id"
 								:v-model="this.receivedId"
 								rows="1"
 								clearable
 								auto-grow
-								@input="startDirectRetrieve($event)"
+								@input="startDirectRetrieve(this.$route.params.id)"
 								@click:clear="clearPage"
 							></v-textarea> 
 						</v-card-text>	
@@ -42,7 +42,7 @@
 								{{this.queryErrorMoreInfo}}
 						</v-alert>
 					</v-card>
-				</v-col>
+				</v-col> -->
 				
 			</v-row>
 			<grid-loader
@@ -156,12 +156,10 @@
 <script>
 	import Header from "../Layout/Header";
 	import Footer from "../Layout/Footer";
-	import { eventBus } from "../../main";
 	import { GridLoader } from "@saeris/vue-spinners";
 
 	export default {
 		name: "moreInformation",
-
 		/* Render is used to set the values for page loading spinners */
 		render() {
 			return (
@@ -190,7 +188,7 @@
 				result: String,
 				queryErrorMoreInfo:"",
 				idToRetrieve: "",
-				receivedId: String,
+				receivedId: this.$route.query.id,
 				artifactID: String,
 				groupID: String,
 				discovered: String,
@@ -214,17 +212,16 @@
 				]
 			};
 		},
-		/*   watch: function() {
-			setTimeout(() => {
-			this.startRetrieve(this.receivedId);
-			}, 100);
-		}, */
+
+		watch: {
+			'$route'(to){
+				this.receivedId = to.query.id;
+			}
+		},
 
 		created: function() {
-			eventBus.$on("moreInfoEvent", data => {
-				this.receivedId = data;
+				this.receivedId = this.$route.query.id;
 				this.flag2 = true;
-			}),
 			setTimeout(() => {
 				this.startRetrieve(this.receivedId);
 			}, 100);
@@ -235,13 +232,13 @@
 			"grid-loader": GridLoader
 		},
 		methods: {
-			startDirectRetrieve(value) {
-				if (this.receivedId != this.errorStr) {
-					this.idToRetrieve = value;
-				}
-				this.flag2 = true;
-				this.startRetrieve(value);
-			},
+			// startDirectRetrieve(value) {
+			// 	if (this.receivedId != this.errorStr) {
+			// 		this.idToRetrieve = value;
+			// 	}
+			// 	this.flag2 = true;
+			// 	this.startRetrieve(value);
+			// },
 			startRetrieve(receivedIdParam) {
 				var vm = this;
 				this.flag2 = true;

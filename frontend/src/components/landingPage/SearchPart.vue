@@ -72,7 +72,7 @@
 						<template v-slot:item.moreInfo="{ item }">
 							<router-link
 								v-on:click.native="moreInfoNavigation(item.metadata.artifactId, item.metadata.groupId, item.metadata.version)"
-								:to="{ path: '/MoreInformation' }"
+								:to="'/MoreInformation'"
 							>More Information</router-link>
 						</template>
 					</v-data-table>
@@ -106,7 +106,6 @@
 <script>
 	import Query from "./Query.vue";
 	import QueryMenu from "./QueryMenu.vue";
-	import { eventBus } from "../../main";
 	import XLSX from "xlsx";
 	import flatten from "flat";
 
@@ -117,7 +116,7 @@
 		},
 		data() {
 			return {
-				id: "",
+				id: '/',
 				savedQuery: "", //query from queryMenu will be saved here
 				readyToSearchQuery: "", //finalQuery from the query component will be saved here
 				headers: [
@@ -261,7 +260,8 @@
 					},
 					moreInfoNavigation(artifactIdParam,groupIdParam,versionParam) {
 						this.id = groupIdParam+":"+artifactIdParam+":"+versionParam;
-						eventBus.$emit("moreInfoEvent", this.id);
+						this.$router.replace({ name: 'moreInformation', query: { id: this.id } });
+						
 					},
 					download() {
 						this.dialog = false;

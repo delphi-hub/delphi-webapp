@@ -8,6 +8,7 @@ export const routes = [
     {   name: "moreInformation",
         path: "/MoreInformation",
         component: MoreInformation,
+        props: true,
     },
     { path: "*", component: PageNotFound }
 ];
