@@ -11,11 +11,11 @@
     ></textarea>
     <div id="errorDiv">
       <div
-        class="errorr"
+        class="errorMsg"
         v-if="!$v.finalQuery.required && submitted"
       >Please enter a valid query or use the query builder to add a query.</div>
       <div
-        class="errorr"
+        class="errorMsg"
         v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted"
       >{{this.queryError}}</div>
     </div>
@@ -214,7 +214,7 @@ export default {
   font-variant: small-caps;
   font-size: 1.5em;
 }
-.errorr {
+.errorMsg {
   text-align: left;
   padding-left: 5px;
   color: red;
