@@ -258,7 +258,7 @@ export default {
             },
             error => {
               vm.items = [];
-              vm.headers.splice(4, vm.headers.length - 4);
+              vm.headers.splice(4, vm.headers.length - 5);
               vm.progressBar = false;
               vm.readyToSearchQuery = "";
               //vm.queryError = error.body;
