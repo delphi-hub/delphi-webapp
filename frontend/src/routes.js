@@ -9,6 +9,15 @@ export const routes = [
         path: "/MoreInformation",
         component: MoreInformation,
         props: true,
+        beforeEnter: (to, from, next) => {
+            if(to.query.id != "") {
+                next();
+            } else {
+                next({name: 'LandingPage'});
+            }
+        }
     },
-    { path: "*", component: PageNotFound }
+    { path: "*", component: PageNotFound },
 ];
+
+
