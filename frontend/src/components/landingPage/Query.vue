@@ -60,7 +60,7 @@
 					:loading="isLoading"
 					:disabled="isLoading || !finalQuery || brokeRule"
 					color="#db2909"
-					class="mr-4 ml-1 mt-1 white--text">
+					class="mr-4 ml-1 mt-2 white--text">
 					<v-icon large>mdi-magnify</v-icon>
 				</v-btn>		
 			</v-row>	
