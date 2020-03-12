@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12" class="pb-1">
-			<v-row>
+			<v-row dense>
 				<v-tooltip top color="#299e3c">
 					<template v-slot:activator="{ on }">
 						<v-btn
@@ -18,41 +18,42 @@
 					</template>
 					<span>Save Query in Query Storage</span>
 				</v-tooltip>
-				<!-- <v-textarea
-					outlined
-					ref="textareaQuery"
-					id="queryInput"
-					rows="1"
-					@keydown.enter.prevent
-					clearable
-					hide-details
-					v-model="finalQuery"
-					label="Your Query"
-					@input="addToFinalQuery($event), setQuery($event)"
-					auto-grow>
-				</v-textarea> -->
-				<div class="autocomplete">
-					<v-textarea  :id="id" 
-						ref="textareaQuery"
-						class="autocomplete-input" 
-						@input="addToFinalQuery($event), setQuery($event)"
-						@focusout="focusout"
-						@focus="focus" 
-						@keydown.13="chooseMetric"
-						@keydown.tab="chooseMetric"
-						@keydown.40="cursorDownAction" 
+				<v-col>
+					<div class="autocomplete">
+						<v-textarea 
+							:id="id" 
+							outlined
+							rows="1"
+							hide-details
+							auto-grow
+							ref="textareaQuery"
+							class="autocomplete-input" 
+							@input="addToFinalQuery($event), setQuery($event)"
+							@keydown.enter.prevent
+							@focusout="focusout"
+							@focus="focus" 
+							@keydown.13="chooseMetric"
+							@keydown.tab="chooseMetric"
+							@keydown.40="cursorDownAction" 
 							@keydown.38="cursorUpAction" 
-							v-model="finalQuery" ></v-textarea> 
-      <ul :class="{
-        'autocomplete-list': true,
-        [id+'-list']: true
-      }" v-if="metricSorted.length > 0">
-        <li :class="{active: metricPosition === index}" v-for="(result, index) in metricSorted" @click="selectMetric(index), chooseMetric()" v-html="applyHighlight(result)" v-bind:key="index">
-
-        </li>
-      </ul>
-            </div>
-				<v-btn
+							v-model="finalQuery" >
+						</v-textarea> 
+						<ul 
+							:class="{
+								'autocomplete-list': true,
+								[id+'-list']: true
+							}" v-if="metricSorted.length > 0">
+							<li 
+								:class="{active: metricPosition === index}"
+								v-for="(result, index) in metricSorted" 
+								@click="selectMetric(index), chooseMetric()" 
+								v-html="applyHighlight(result)" 
+								v-bind:key="index">
+							</li>
+						</ul>
+					</div>
+				</v-col>
+					<v-btn
 					height="50"
 					id="startSearchButton"
 					@click="onStartSearch"
@@ -61,7 +62,7 @@
 					color="#db2909"
 					class="mr-4 ml-1 mt-1 white--text">
 					<v-icon large>mdi-magnify</v-icon>
-				</v-btn>
+				</v-btn>		
 			</v-row>	
 		</v-col>
 		<v-col cols="12" class="py-1">
@@ -97,10 +98,10 @@
 </template>
 
 <script>
-/*(function(){function e(b,e,f){if(!h)throw Error("textarea-caret-position#getCaretCoordinates should only be called in a browser");if(f=f&&f.debug||!1){var a=document.querySelector("#input-textarea-caret-position-mirror-div");a&&a.parentNode.removeChild(a)}a=document.createElement("div");a.id="input-textarea-caret-position-mirror-div";document.body.appendChild(a);var c=a.style,d=window.getComputedStyle?window.getComputedStyle(b):b.currentStyle,k="INPUT"===b.nodeName;c.whiteSpace="pre-wrap";k||(c.wordWrap=
+/* (function(){function e(b,e,f){if(!h)throw Error("textarea-caret-position#getCaretCoordinates should only be called in a browser");if(f==f&&f.debug||!1){var a=document.querySelector("#input-textarea-caret-position-mirror-div");a&&a.parentNode.removeChild(a)}a=document.createElement("div");a.id="input-textarea-caret-position-mirror-div";document.body.appendChild(a);var c=a.style,d=window.getComputedStyle?window.getComputedStyle(b):b.currentStyle,k="INPUT"===b.nodeName;c.whiteSpace="pre-wrap";k||(c.wordWrap=
 "break-word");c.position="absolute";f||(c.visibility="hidden");l.forEach(function(a){k&&"lineHeight"===a?c.lineHeight=d.height:c[a]=d[a]});m?b.scrollHeight>parseInt(d.height)&&(c.overflowY="scroll"):c.overflow="hidden";a.textContent=b.value.substring(0,e);k&&(a.textContent=a.textContent.replace(/\s/g,"\u00a0"));var g=document.createElement("span");g.textContent=b.value.substring(e)||".";a.appendChild(g);b={top:g.offsetTop+parseInt(d.borderTopWidth),left:g.offsetLeft+parseInt(d.borderLeftWidth),height:parseInt(d.lineHeight)};
 f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="direction boxSizing width height overflowX overflowY borderTopWidth borderRightWidth borderBottomWidth borderLeftWidth borderStyle paddingTop paddingRight paddingBottom paddingLeft fontStyle fontVariant fontWeight fontStretch fontSize fontSizeAdjust lineHeight fontFamily textAlign textTransform textIndent textDecoration letterSpacing wordSpacing tabSize MozTabSize".split(" "),h="undefined"!==typeof window,m=h&&null!=window.mozInnerScreenX;
-"undefined"!=typeof module&&"undefined"!=typeof module.exports?module.exports=e:h&&(window.getCaretCoordinates=e)})();*/
+"undefined"!=typeof module&&"undefined"!=typeof module.exports?module.exports=e:h&&(window.getCaretCoordinates=e)})(); */
 	import { required } from "vuelidate/lib/validators";
 	import { eventBus } from "../../main";
 
@@ -134,11 +135,10 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
                 info: null,
                 finalQuery: '',
                 id: 'input-' + parseInt(Math.random() * 1000),
-			metricSorted: [],
-			metricPosition: 0,
-			selectedSuggestMetric: false,
-			inputPosition: 0,
-
+				metricSorted: [],
+				metricPosition: 0,
+				selectedSuggestMetric: false,
+				inputPosition: 0,
 				submitted: false,
 				queryError: "",
 				queryErrorCol: 0,
@@ -323,13 +323,13 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
 			) {
 				this.metricSorted = [];
 			}
-        }
+		},
 		},
 		mounted() {
-            /*const _self = this;
+            /* const _self = this;
             document.querySelector('#' + this.id)
             .addEventListener('input', function() {
-            const caret = getCaretCoordinates(this, this.selectionEnd);
+            	const caret = getCaretCoordinates(this, this.selectionEnd);
             //console.log(caret.top);
             //console.log(caret.left);
 
@@ -360,24 +360,9 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
 
 <style>
 .autocomplete {
-  position: relative;
+  width: 100%;
 }
-.autocomplete label {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-weight: 100;
-}
-.autocomplete-input {
-  padding: 7px 10px;
-  width: 93%;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  outline: none;
-}
-.autocomplete-input:focus {
-  border-color: #000;
-}
+
 .autocomplete-list {
   position: absolute;
   z-index: 2;
