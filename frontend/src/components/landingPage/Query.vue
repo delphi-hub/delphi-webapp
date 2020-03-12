@@ -18,7 +18,7 @@
 					</template>
 					<span>Save Query in Query Storage</span>
 				</v-tooltip>
-				<v-textarea
+				<!-- <v-textarea
 					outlined
 					ref="textareaQuery"
 					id="queryInput"
@@ -30,7 +30,28 @@
 					label="Your Query"
 					@input="addToFinalQuery($event), setQuery($event)"
 					auto-grow>
-				</v-textarea>
+				</v-textarea> -->
+				<div class="autocomplete">
+					<v-textarea  :id="id" 
+						ref="textareaQuery"
+						class="autocomplete-input" 
+						@input="addToFinalQuery($event), setQuery($event)"
+						@focusout="focusout"
+						@focus="focus" 
+						@keydown.13="chooseMetric"
+						@keydown.tab="chooseMetric"
+						@keydown.40="cursorDownAction" 
+							@keydown.38="cursorUpAction" 
+							v-model="finalQuery" ></v-textarea> 
+      <ul :class="{
+        'autocomplete-list': true,
+        [id+'-list']: true
+      }" v-if="metricSorted.length > 0">
+        <li :class="{active: metricPosition === index}" v-for="(result, index) in metricSorted" @click="selectMetric(index), chooseMetric()" v-html="applyHighlight(result)" v-bind:key="index">
+
+        </li>
+      </ul>
+            </div>
 				<v-btn
 					height="50"
 					id="startSearchButton"
@@ -76,6 +97,10 @@
 </template>
 
 <script>
+/*(function(){function e(b,e,f){if(!h)throw Error("textarea-caret-position#getCaretCoordinates should only be called in a browser");if(f=f&&f.debug||!1){var a=document.querySelector("#input-textarea-caret-position-mirror-div");a&&a.parentNode.removeChild(a)}a=document.createElement("div");a.id="input-textarea-caret-position-mirror-div";document.body.appendChild(a);var c=a.style,d=window.getComputedStyle?window.getComputedStyle(b):b.currentStyle,k="INPUT"===b.nodeName;c.whiteSpace="pre-wrap";k||(c.wordWrap=
+"break-word");c.position="absolute";f||(c.visibility="hidden");l.forEach(function(a){k&&"lineHeight"===a?c.lineHeight=d.height:c[a]=d[a]});m?b.scrollHeight>parseInt(d.height)&&(c.overflowY="scroll"):c.overflow="hidden";a.textContent=b.value.substring(0,e);k&&(a.textContent=a.textContent.replace(/\s/g,"\u00a0"));var g=document.createElement("span");g.textContent=b.value.substring(e)||".";a.appendChild(g);b={top:g.offsetTop+parseInt(d.borderTopWidth),left:g.offsetLeft+parseInt(d.borderLeftWidth),height:parseInt(d.lineHeight)};
+f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="direction boxSizing width height overflowX overflowY borderTopWidth borderRightWidth borderBottomWidth borderLeftWidth borderStyle paddingTop paddingRight paddingBottom paddingLeft fontStyle fontVariant fontWeight fontStretch fontSize fontSizeAdjust lineHeight fontFamily textAlign textTransform textIndent textDecoration letterSpacing wordSpacing tabSize MozTabSize".split(" "),h="undefined"!==typeof window,m=h&&null!=window.mozInnerScreenX;
+"undefined"!=typeof module&&"undefined"!=typeof module.exports?module.exports=e:h&&(window.getCaretCoordinates=e)})();*/
 	import { required } from "vuelidate/lib/validators";
 	import { eventBus } from "../../main";
 
@@ -104,7 +129,16 @@
 		},
 		data() {
 			return {
-				finalQuery: "",
+				corpusList: [],
+                autocompleteModel: null,
+                info: null,
+                finalQuery: '',
+                id: 'input-' + parseInt(Math.random() * 1000),
+			metricSorted: [],
+			metricPosition: 0,
+			selectedSuggestMetric: false,
+			inputPosition: 0,
+
 				submitted: false,
 				queryError: "",
 				queryErrorCol: 0,
@@ -134,6 +168,22 @@
 				queryErrorValidator
 			}
 		},
+		computed: {
+		corpus() {
+			if (typeof this.items !== "undefined" && this.items.length > 0) {
+				return this.items;
+			} else {
+
+                return this.corpusList;
+			}
+		},
+		currentInput() {
+			return this.finalQuery.replace(/(\r\n|\n|\r)/gm, ' ').split(' ')[this.inputPosition];
+		},
+		inputSplitted() {
+			return this.finalQuery.replace(/(\r\n|\n|\r)/gm, ' ').split(" ");
+        }
+	},
 		watch: {
 			//whenever a new query is comming from the queryMenu, it will be added to the finalQuery
 			partQuery: function(newVal) {
@@ -163,6 +213,11 @@
 					this.loader = null
 				}       
 			},
+			finalQuery() {
+			this.focus();
+			this.metricPosition = 0;
+			this.inputPosition = this.inputSplitted.length - 1;
+		}
 		},
 		created() {
 			eventBus.$on("metricList", data => {
@@ -207,10 +262,147 @@
 				textArea.focus();
 				textArea.setSelectionRange(this.queryErrorCol-1, this.queryErrorCol);
 				this.$emit("resetErrorColumn", 0);
-			},
-		}
+			},			
+		applyHighlight(word) {
+               let currentNewWord=this.currentInput.replace(/[-[\]{}()*+?.,\\^$|#\\s]/g, '\\$&');
+            const regex = new RegExp("(" + currentNewWord + ")", "g");
+
+            //word=escapeRegExp(word);
+			return word.replace(regex, '<mark>$1</mark>');
+		},
+		setMetric(word) {
+			let currentInputs = this.finalQuery.replace(/(\r\n|\n|\r)/gm, '__br__ ').split(' ');
+			currentInputs[this.inputPosition] = currentInputs[this.inputPosition].replace(this.currentInput, word + ' ');
+			this.inputPosition += 1;
+			this.finalQuery = currentInputs.join(' ').replace(/__br__\s/g, '\n');
+		},
+		cursorDownAction() {
+			if (this.metricPosition < this.metricSorted.length - 1) {
+				this.metricPosition++;
+			}
+		},
+		cursorUpAction() {
+			if (this.metricPosition !== -1) {
+				this.metricPosition--;
+			}
+		},
+		selectMetric(index) {
+			this.metricPosition = index;
+			this.chooseMetric();
+		},
+		chooseMetric(e) {
+			this.selectedSuggestMetric = true;
+
+			if (this.metricPosition !== -1 && this.metricSorted.length > 0) {
+				if (e) {
+					e.preventDefault();
+				}
+				this.setMetric(this.metricSorted[this.metricPosition]);
+				this.metricPosition = -1;
+			}
+		},
+		focusout() {
+			setTimeout(() => {
+				if (!this.selectedSuggestMetric) {
+					this.metricSorted = [];
+					this.metricPosition = -1;
+				}
+				this.selectedSuggestMetric = false;
+			}, 100);
+		},
+		focus() {
+			this.metricSorted = [];
+			if (this.currentInput !== "") {
+                this.metricSorted = this.corpus.filter(
+					el => el.indexOf(this.currentInput) >= 0
+				);
+			}
+			if (
+				this.metricSorted.length === 1 &&
+				this.currentInput === this.metricSorted[0]
+			) {
+				this.metricSorted = [];
+			}
+        }
+		},
+		mounted() {
+            /*const _self = this;
+            document.querySelector('#' + this.id)
+            .addEventListener('input', function() {
+            const caret = getCaretCoordinates(this, this.selectionEnd);
+            //console.log(caret.top);
+            //console.log(caret.left);
+
+            if (_self.metricSorted.length > 0) {
+                const element = document.querySelectorAll('.' + _self.id + '-list');
+
+            if (element[0]) {
+                element[0].style.top = caret.top + 40 + 'px';
+                element[0].style.left = caret.left + 'px';
+            }
+            }
+      }); */
+            this.$http.get("features").then(response => {
+            this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
+            for (let index = 0; index < this.info.length; index++) {
+                if(!(this.info[index].name.includes(" ")))
+                 this.corpusList = this.corpusList.concat("["+this.info[index].name+"]");    
+            }
+            return response.json();
+            });
+            error => {
+            alert("Invalid results!", error.messages);
+        };
+        }
+
 	};
 </script>
 
 <style>
+.autocomplete {
+  position: relative;
+}
+.autocomplete label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 100;
+}
+.autocomplete-input {
+  padding: 7px 10px;
+  width: 93%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+.autocomplete-input:focus {
+  border-color: #000;
+}
+.autocomplete-list {
+  position: absolute;
+  z-index: 2;
+  overflow: auto;
+  min-width: 250px;
+  max-height: 150px;
+  margin: 0;
+  margin-top: 5px;
+  padding: 0;
+  border: 1px solid #eee;
+  list-style: none;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+}
+.autocomplete-list li {
+  margin: 0;
+  padding: 8px 15px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.autocomplete-list li:last-child {
+  border-bottom: 0;
+}
+.autocomplete-list li:hover, .autocomplete-list li.active {
+  background-color: #f5f5f5;
+}
+
 </style>
