@@ -264,11 +264,18 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
 				this.$emit("resetErrorColumn", 0);
 			},			
 		applyHighlight(word) {
-               let currentNewWord=this.currentInput.replace(/[-[\]{}()*+?.,\\^$|#\\s]/g, '\\$&');
+			if(this.currentInput !== "")
+                {
+            let currentNewWord=this.currentInput.replace(/[-[\]{}()*+?.,\\^$|#\\s]/g, '\\$&');
             const regex = new RegExp("(" + currentNewWord + ")", "g");
 
             //word=escapeRegExp(word);
 			return word.replace(regex, '<mark>$1</mark>');
+				}
+				else
+				{
+					this.metricSorted =[];
+				}
 		},
 		setMetric(word) {
 			let currentInputs = this.finalQuery.replace(/(\r\n|\n|\r)/gm, '__br__ ').split(' ');
