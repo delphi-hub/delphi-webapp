@@ -39,11 +39,13 @@
 							v-model="finalQuery" >
 						</v-textarea> 
 						<ul 
+							ref="scrollContainer"
 							:class="{
 								'autocomplete-list': true,
 								[id+'-list']: true
 							}" v-if="metricSorted.length > 0">
 							<li 
+								ref="options"
 								:class="{active: metricPosition === index}"
 								v-for="(result, index) in metricSorted" 
 								@click="selectMetric(index), chooseMetric()" 
@@ -286,13 +288,19 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
 		cursorDownAction() {
 			if (this.metricPosition < this.metricSorted.length - 1) {
 				this.metricPosition++;
+				this.fixScrolling();
 			}
 		},
 		cursorUpAction() {
-			if (this.metricPosition !== -1) {
+			if (this.metricPosition > 0) {
 				this.metricPosition--;
+				this.fixScrolling();
 			}
 		},
+		fixScrolling(){
+      const listHeight = this.$refs.options[this.metricPosition].clientHeight;
+      this.$refs.scrollContainer.scrollTop = listHeight * this.metricPosition;
+    },
 		selectMetric(index) {
 			this.metricPosition = index;
 			this.chooseMetric();
