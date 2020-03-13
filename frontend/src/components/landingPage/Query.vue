@@ -267,7 +267,7 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
 			if(this.currentInput !== "")
                 {
             let currentNewWord=this.currentInput.replace(/[-[\]{}()*+?.,\\^$|#\\s]/g, '\\$&');
-            const regex = new RegExp("(" + currentNewWord + ")", "g");
+            const regex = new RegExp("(" + currentNewWord + ")", "gi");
 
             //word=escapeRegExp(word);
 			return word.replace(regex, '<mark>$1</mark>');
@@ -319,10 +319,20 @@ f?g.style.backgroundColor="#aaa":document.body.removeChild(a);return b}var l="di
 		},
 		focus() {
 			this.metricSorted = [];
-			if (this.currentInput !== "") {
-                this.metricSorted = this.corpus.filter(
-					el => el.indexOf(this.currentInput) >= 0
-				);
+			//if (this.currentInput !== "") {
+			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" ) {
+				let metricDummy1=this.corpus;
+				//metricDummy1=metricDummy1.map(a => a.toUpperCase());
+				let i=0;
+				for (let index = 0; index < metricDummy1.length; index++) {
+					if(metricDummy1[index].toUpperCase().includes(this.currentInput.toUpperCase()))
+					{
+						this.metricSorted[i]=metricDummy1[index];
+						i++;
+					}
+
+				}
+                
 			}
 			if (
 				this.metricSorted.length === 1 &&
