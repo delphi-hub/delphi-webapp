@@ -10,10 +10,10 @@ export const routes = [
         component: MoreInformation,
         props: true,
         beforeEnter: (to, from, next) => {
-            if(to.query.id != "") {
+            if(to.query.id !== "") {
                 next();
             } else {
-                next({name: 'LandingPage'});
+                next({name: "LandingPage"});
             }
         }
     },
