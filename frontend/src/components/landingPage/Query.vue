@@ -54,6 +54,7 @@
 							</li>
 						</ul>
 					</div>
+					<span id="suggest" class="suggest"></span>
 				</v-col>
 					<v-btn
 					height="50"
@@ -104,6 +105,7 @@
 	import { required } from "vuelidate/lib/validators";
 	import { eventBus } from "../../main";
 	import getCaretCoordinates from 'textarea-caret'
+
 
 	const queryErrorValidator = (value, vm) => {
 		if (vm.queryError != "") {
@@ -174,7 +176,7 @@
 				return this.items;
 			} else {
 
-                return this.corpusList;
+				return this.corpusList;
 			}
 		},
 		currentInput() {
@@ -256,6 +258,8 @@
 				this.queryError = "";
 				this.$v.finalQuery.$touch();
 				this.finalQuery = value;
+				this.suggestOperator();
+				this.suggestValue();
 			},
 			selectText() {
 				let textArea = this.$refs.textareaQuery.$el.querySelector('textarea');
@@ -312,7 +316,62 @@
 				}
 				this.setMetric(this.metricSorted[this.metricPosition]);
 				this.metricPosition = -1;
+				this.suggestOperator();
 			}
+		},
+		suggestOperator(){	
+			let trimQuery=(this.finalQuery).trim();
+            for (let index = 0; index < this.corpusList.length; index++) {
+                if(trimQuery == this.corpusList[index])
+                {
+                    document.getElementById("suggest").innerHTML= "*Relational operator is expected next.";
+                    break;
+                    
+                }
+                else{
+                    document.getElementById("suggest").innerHTML=  " ";
+                }
+
+            }
+
+		},
+		suggestValue(){
+			var operatorList=[">", ">=", "<", "<=", "="];
+			var dummyQuery1=this.finalQuery.trim();
+			var index= dummyQuery1.length -1;
+			var text = dummyQuery1.substr(index);
+			text=text.trim();
+			for (let index1 = 0; index1 < operatorList.length; index1++) 
+			{
+				if(text == operatorList[index1])
+				{
+					//document.getElementById("myText").placeholder = "Value Expected";
+					var metricDummy = dummyQuery1.substring(0, index);
+					metricDummy = metricDummy.trim();
+					for (let index2 = 0; index2 < this.corpusList.length; index2++) 
+					{
+						if(metricDummy == this.corpusList[index2])
+						{
+							document.getElementById("suggest").innerHTML="*Metric value is expected next.";
+							break;
+						}
+						else
+						{
+							document.getElementById("suggest").innerHTML=" ";
+						}
+									
+					}
+					
+					break;
+				}
+				else
+				{
+					document.getElementById("suggest").innerHTML= " ";
+					this.suggestOperator();
+				}
+				
+			}
+
 		},
 		focusout() {
 			setTimeout(() => {
@@ -326,7 +385,7 @@
 		focus() {
 			this.metricSorted = [];
 			//if (this.currentInput !== "") {
-			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" ) {
+			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && this.currentInput !==">" ) {
 				let metricDummy1=this.corpus;
 				//metricDummy1=metricDummy1.map(a => a.toUpperCase());
 				let i=0;
@@ -353,9 +412,6 @@
             document.querySelector('#' + this.id)
             .addEventListener('input', function() {
             const caret = getCaretCoordinates(this, this.selectionEnd);
-            //console.log(caret.top);
-            //console.log(caret.left);
-
             if (_self.metricSorted.length > 0) {
                 const element = document.querySelectorAll('.' + _self.id + '-list');
 
@@ -412,5 +468,9 @@
 .autocomplete-list li:hover, .autocomplete-list li.active {
   background-color: #f5f5f5;
 }
-
+.suggest {
+	color: #0066FF;
+  font-family:arial;
+  font-size: 12px;
+}
 </style>
