@@ -12,9 +12,9 @@
           >
             <v-card-title
               class="justify-center mb-1 pa-1"
-              style="background-color: #0959db; color:white"
+              style="background-color: #db2909; color:white"
             >
-              <div class="headline text-center">More Information</div>
+              <div class="headline text-center">Artifact Metadata</div>
             </v-card-title>
             <v-card-text class="pb-1">
               This page gives you more information about a chosen artifact. Use the Category Metric Tree below to decide which metric with its corresponding value will be shown
