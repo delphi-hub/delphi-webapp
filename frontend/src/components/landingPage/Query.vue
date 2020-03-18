@@ -11,24 +11,54 @@
     ></textarea>
     <div id="errorDiv">
       <div
-        class="error"
+        class="errorMsg"
         v-if="!$v.finalQuery.required && submitted"
       >Please enter a valid query or use the query builder to add a query.</div>
       <div
-        class="error"
+        class="errorMsg"
         v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted"
       >{{this.queryError}}</div>
     </div>
+    <v-row>
+      <v-col cols="3" class="py-0">
+        <button
+          id="startSearchButton"
+          class="btn btn-dark"
+          @click="onStartSearch"
+          :disabled="(!finalQuery) || (brokeRule)"
+        >
+          <!-- TODO: The condition has to be changed -->
+          <h5 id="searchButtonText">Search</h5>
+        </button>
+      </v-col>
+      <v-col cols="4" class="py-0">
+        <v-text-field
+          style="max-width:170px"
+          dense
+          label="Limit"
+          outlined
+          hint="Set limit for result entries"
+          v-model="currentLimit"
+          :rules="[rules.inlimit]"
+          persistent-hint
+      ></v-text-field>
+      <!--
+        <v-combobox
+          v-model="currentLimit"
+          :items="limits"
+          dense
+          label="Limit"
+          outlined
+          hint="Set limit for result entries"
+          persistent-hint
+          hide-no-data
+          :rules="[rules.inlimit]"
+        ></v-combobox>
+        -->
+      </v-col>
+    </v-row>
     <!--This button is grey when the input is not a valid query and otherwise red -->
-    <button
-      id="startSearchButton"
-      class="btn btn-dark"
-      @click="onStartSearch"
-      :disabled="!(finalQuery)"
-    >
-      <!-- TODO: The condition has to be changed -->
-      <h5 id="searchButtonText">Search</h5>
-    </button>
+    
   </div>
 </template>
 
@@ -61,8 +91,23 @@ export default {
       queryError: "",
       emptyQuery: "",
       metric: "",
-      metrics: []
-    };
+      metrics: [],
+      brokeRule: false,
+      currentLimit: 100,
+      limits: [100, 200, 500, 1000, 2000],
+      rules: {
+        inlimit: value => {
+          const pattern = /^([1-9][0-9]{0,3}|10000)$/;
+          if(pattern.test(value)){
+            this.brokeRule = false;
+          }
+          else {
+            this.brokeRule = true;
+          }
+          return pattern.test(value) || 'Only Numbers between 1 and 10000'
+        }
+      }
+    }
   },
   validations: {
     finalQuery: {
@@ -104,7 +149,8 @@ export default {
         this.submitted = true;
         this.emptyQuery = false;
         this.$emit("emptyQuery", this.emptyQuery);
-        this.$emit("finalQuerySend", this.finalQuery);
+        var qAndL = {query: this.finalQuery, limit: this.currentLimit};
+        this.$emit("finalQueryAndLimitSend", qAndL);
       } else {
         this.emptyQuery = true;
         this.$emit("emptyQuery", this.emptyQuery);
@@ -120,7 +166,11 @@ export default {
       this.queryError = "";
       this.$v.finalQuery.$touch();
       this.finalQuery = value;
-    }
+    },
+    //needed to check if the value is a number
+		isNumeric: function (n) {
+			return !isNaN(parseInt(n)) && isFinite(n);
+		}
   }
 };
 </script>
@@ -146,9 +196,10 @@ export default {
   resize: none;
 }
 #startSearchButton {
-  width: 30%;
+  width: 100%;
   margin-top: 10px;
   text-align: center;
+  margin-top: 0 !important;
   padding: 0 !important;
   background-color: #c20202;
 }
@@ -163,7 +214,7 @@ export default {
   font-variant: small-caps;
   font-size: 1.5em;
 }
-.error {
+.errorMsg {
   text-align: left;
   padding-left: 5px;
   color: red;
