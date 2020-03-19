@@ -19,5 +19,3 @@ export const routes = [
     },
     { path: "*", component: PageNotFound },
 ];
-
-

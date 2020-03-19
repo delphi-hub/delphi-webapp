@@ -20,36 +20,36 @@
 				</v-tooltip>
 				<v-col>
 					<div class="autocomplete">
-						<v-textarea 
-							:id="id" 
+						<v-textarea
+							:id="id"
 							outlined
 							rows="1"
 							hide-details
 							auto-grow
 							ref="textareaQuery"
-							class="autocomplete-input" 
+							class="autocomplete-input"
 							@input="addToFinalQuery($event), setQuery($event)"
 							@keydown.enter.prevent
 							@focusout="focusout"
-							@focus="focus" 
+							@focus="focus"
 							@keydown.13="chooseMetric"
 							@keydown.tab="chooseMetric"
-							@keydown.40="cursorDownAction" 
-							@keydown.38="cursorUpAction" 
+							@keydown.40="cursorDownAction"
+							@keydown.38="cursorUpAction"
 							v-model="finalQuery" >
-						</v-textarea> 
-						<ul 
+						</v-textarea>
+						<ul
 							ref="scrollContainer"
 							:class="{
 								'autocomplete-list': true,
 								[id+'-list']: true
 							}" v-if="metricSorted.length > 0">
-							<li 
+							<li
 								ref="options"
 								:class="{active: metricPosition === index}"
-								v-for="(result, index) in metricSorted" 
-								@click="selectMetric(index), chooseMetric()" 
-								v-html="applyHighlight(result)" 
+								v-for="(result, index) in metricSorted"
+								@click="selectMetric(index), chooseMetric()"
+								v-html="applyHighlight(result)"
 								v-bind:key="index">
 							</li>
 						</ul>
@@ -65,8 +65,8 @@
 					color="#db2909"
 					class="mr-4 ml-1 mt-2 white--text">
 					<v-icon large>mdi-magnify</v-icon>
-				</v-btn>		
-			</v-row>	
+				</v-btn>
+			</v-row>
 		</v-col>
 		<v-col cols="12" class="py-1">
 			<v-alert
@@ -96,12 +96,12 @@
 				:rules="[rules.inlimit]"
 				persistent-hint>
 			</v-text-field>
-		</v-col>	
-	</v-row>	
+		</v-col>
+	</v-row>
 </template>
 
 <script>
- 
+
 	import { required } from "vuelidate/lib/validators";
 	import { eventBus } from "../../main";
 	import getCaretCoordinates from 'textarea-caret'
@@ -213,7 +213,7 @@
 				this[l] = !this[l]
 				if(!this.isLoading){
 					this.loader = null
-				}       
+				}
 			},
 			finalQuery() {
 			this.focus();
@@ -266,7 +266,7 @@
 				textArea.focus();
 				textArea.setSelectionRange(this.queryErrorCol-1, this.queryErrorCol);
 				this.$emit("resetErrorColumn", 0);
-			},			
+			},
 		applyHighlight(word) {
 			if(this.currentInput !== "")
                 {
@@ -319,14 +319,14 @@
 				this.suggestOperator();
 			}
 		},
-		suggestOperator(){	
+		suggestOperator(){
 			let trimQuery=(this.finalQuery).trim();
             for (let index = 0; index < this.corpusList.length; index++) {
                 if(trimQuery == this.corpusList[index])
                 {
                     document.getElementById("suggest").innerHTML= "*Relational operator is expected next.";
                     break;
-                    
+
                 }
                 else{
                     document.getElementById("suggest").innerHTML=  " ";
@@ -341,14 +341,14 @@
 			var index= dummyQuery1.length -1;
 			var text = dummyQuery1.substr(index);
 			text=text.trim();
-			for (let index1 = 0; index1 < operatorList.length; index1++) 
+			for (let index1 = 0; index1 < operatorList.length; index1++)
 			{
 				if(text == operatorList[index1])
 				{
 					//document.getElementById("myText").placeholder = "Value Expected";
 					var metricDummy = dummyQuery1.substring(0, index);
 					metricDummy = metricDummy.trim();
-					for (let index2 = 0; index2 < this.corpusList.length; index2++) 
+					for (let index2 = 0; index2 < this.corpusList.length; index2++)
 					{
 						if(metricDummy == this.corpusList[index2])
 						{
@@ -359,9 +359,9 @@
 						{
 							document.getElementById("suggest").innerHTML=" ";
 						}
-									
+
 					}
-					
+
 					break;
 				}
 				else
@@ -369,7 +369,7 @@
 					document.getElementById("suggest").innerHTML= " ";
 					this.suggestOperator();
 				}
-				
+
 			}
 
 		},
@@ -397,7 +397,7 @@
 					}
 
 				}
-                
+
 			}
 			if (
 				this.metricSorted.length === 1 &&
@@ -420,12 +420,12 @@
                 element[0].style.left = caret.left + 'px';
             }
             }
-      }); 
+      });
             this.$http.get("features").then(response => {
             this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
             for (let index = 0; index < this.info.length; index++) {
                 if(!(this.info[index].name.includes(" ")))
-                 this.corpusList = this.corpusList.concat("["+this.info[index].name+"]");    
+                 this.corpusList = this.corpusList.concat("["+this.info[index].name+"]");
             }
             return response.json();
             });
