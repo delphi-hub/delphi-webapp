@@ -15,7 +15,7 @@
 // limitations under the License.
 package controllers
 
-
+import scala.language.postfixOps
 import java.io.IOException
 
 import akka.actor.ActorSystem
@@ -241,6 +241,3 @@ class HomeController @Inject()(assets: Assets,configuration: Configuration, cc: 
 
   case class Query(query: String, limit: Option[Int] = Some(CommonHelper.defaultFetchSize))
 }
-
-
-

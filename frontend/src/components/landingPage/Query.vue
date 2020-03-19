@@ -1,225 +1,216 @@
 <template>
-  <div class="col-5" id="queryCol">
-    <!--This input is equals to the finalQuery variable. 
-    After an input, the finalQuery variable will be set to the new input inside this textarea-->
-    <textarea
-      class="form-control form-control-lg"
-      id="queryInput"
-      type="text"
-      :value="finalQuery"
-      @input="addToFinalQuery, setQuery($event.target.value)"
-    ></textarea>
-    <div id="errorDiv">
-      <div
-        class="errorMsg"
-        v-if="!$v.finalQuery.required && submitted"
-      >Please enter a valid query or use the query builder to add a query.</div>
-      <div
-        class="errorMsg"
-        v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted"
-      >{{this.queryError}}</div>
-    </div>
-    <v-row>
-      <v-col cols="3" class="py-0">
-        <button
-          id="startSearchButton"
-          class="btn btn-dark"
-          @click="onStartSearch"
-          :disabled="(!finalQuery) || (brokeRule)"
-        >
-          <!-- TODO: The condition has to be changed -->
-          <h5 id="searchButtonText">Search</h5>
-        </button>
-      </v-col>
-      <v-col cols="4" class="py-0">
-        <v-text-field
-          style="max-width:170px"
-          dense
-          label="Limit"
-          outlined
-          hint="Set limit for result entries"
-          v-model="currentLimit"
-          :rules="[rules.inlimit]"
-          persistent-hint
-      ></v-text-field>
-      <!--
-        <v-combobox
-          v-model="currentLimit"
-          :items="limits"
-          dense
-          label="Limit"
-          outlined
-          hint="Set limit for result entries"
-          persistent-hint
-          hide-no-data
-          :rules="[rules.inlimit]"
-        ></v-combobox>
-        -->
-      </v-col>
-    </v-row>
-    <!--This button is grey when the input is not a valid query and otherwise red -->
-    
-  </div>
+	<v-row>
+		<v-col cols="12" class="pb-1">
+			<v-row>
+				<v-tooltip top color="#299e3c">
+					<template v-slot:activator="{ on }">
+						<v-btn
+							height="25"
+							width="25"
+							fab
+							outlined
+							v-on="on"
+							@click="sendToStorage"
+							color="#299e3c"
+							class="ml-4">
+							<v-icon small>mdi-content-save</v-icon>
+						</v-btn>
+					</template>
+					<span>Save Query in Query Storage</span>
+				</v-tooltip>
+				<v-textarea
+					outlined
+					ref="textareaQuery"
+					id="queryInput"
+					rows="1"
+					@keydown.enter.prevent
+					clearable
+					hide-details
+					v-model="finalQuery"
+					label="Your Query"
+					@input="addToFinalQuery($event), setQuery($event)"
+					auto-grow>
+				</v-textarea>
+				<v-btn
+					height="50"
+					id="startSearchButton"
+					@click="onStartSearch"
+					:loading="isLoading"
+					:disabled="isLoading || !finalQuery || brokeRule"
+					color="#db2909"
+					class="mr-4 ml-1 mt-1 white--text">
+					<v-icon large>mdi-magnify</v-icon>
+				</v-btn>
+			</v-row>	
+		</v-col>
+		<v-col cols="12" class="py-1">
+			<v-alert
+				class="my-0 mx-6 py-1"
+				dense
+				outlined
+				type="error"
+				v-if="!$v.finalQuery.required && submitted">
+				Please enter a valid query or use the query creation menu to add a query.
+			</v-alert>
+			<v-alert
+				class="my-0 mx-6 py-1"
+				dense
+				outlined
+				type="error"
+				v-if="$v.finalQuery.required && !$v.finalQuery.metricValidator && !$v.finalQuery.queryErrorValidator && submitted">
+						{{this.queryError}}
+			</v-alert>
+		</v-col>
+		<v-col cols="6" class="py-0 ml-7">
+			<v-text-field
+				style="max-width:160px"
+				dense
+				filled
+				hint="Amount of Result Entries"
+				v-model="currentLimit"
+				:rules="[rules.inlimit]"
+				persistent-hint>
+			</v-text-field>
+		</v-col>	
+	</v-row>	
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
-import { eventBus } from "../../main";
+	import { required } from "vuelidate/lib/validators";
+	import { eventBus } from "../../main";
 
-const queryErrorValidator = (value, vm) => {
-  if (vm.queryError != "") {
-    return false;
-  } else {
-    return true;
-  }
-};
-
-export default {
-  props: {
-    partQuery: {
-      //query from SearchPart component
-      type: String
-    },
-    errMsg: {
-      type: String
-    }
-  },
-  data() {
-    return {
-      finalQuery: "",
-      submitted: false,
-      queryError: "",
-      emptyQuery: "",
-      metric: "",
-      metrics: [],
-      brokeRule: false,
-      currentLimit: 100,
-      limits: [100, 200, 500, 1000, 2000],
-      rules: {
-        inlimit: value => {
-          const pattern = /^([1-9][0-9]{0,3}|10000)$/;
-          if(pattern.test(value)){
-            this.brokeRule = false;
-          }
-          else {
-            this.brokeRule = true;
-          }
-          return pattern.test(value) || 'Only Numbers between 1 and 10000'
-        }
-      }
-    }
-  },
-  validations: {
-    finalQuery: {
-      required,
-      queryErrorValidator
-    }
-  },
-  watch: {
-    //whenever a new query is comming from the queryMenu, it will be added to the finalQuery
-    partQuery: function(newVal) {
-      if (newVal) {
-        this.finalQuery += newVal;
-        this.$emit("resetSavedQuery", ""); //without this line, if the user would choose twice the same query, nothing would happen
-      }
-    },
-    errMsg: function(newVal) {
-      if (newVal) {
-        this.queryError = newVal;
-      }
-    }
-  },
-  created() {
-    eventBus.$on("metricList", data => {
-      // this.metrics = data;
-      for (let i = 0; i < data.length; i++) {
-        this.metrics.push(data[i].name);
-      }
-    });
-  },
-  methods: {
-    //the value of the current final query becomes the events value.
-    //This function i needed if the user types in the textfield.
-    addToFinalQuery(event) {
-      this.finalQuery = event.target.value;
-    },
-    //if a valid query is given, then this function sends the final query to the searchPart component to initiate a search
-    onStartSearch() {
-      if (this.finalQuery) {
-        this.submitted = true;
-        this.emptyQuery = false;
-        this.$emit("emptyQuery", this.emptyQuery);
-        var qAndL = {query: this.finalQuery, limit: this.currentLimit};
-        this.$emit("finalQueryAndLimitSend", qAndL);
-      } else {
-        this.emptyQuery = true;
-        this.$emit("emptyQuery", this.emptyQuery);
-        this.submitted = true;
-      }
-    },
-    //after a reset this sends a confirmation to searchPart
-    finalMetricIsReseted() {
-      this.$emit("confirmFinalQueryReset", false);
-    },
-    setQuery(value) {
-      this.submitted = false;
-      this.queryError = "";
-      this.$v.finalQuery.$touch();
-      this.finalQuery = value;
-    },
-    //needed to check if the value is a number
-		isNumeric: function (n) {
-			return !isNaN(parseInt(n)) && isFinite(n);
+	const queryErrorValidator = (value, vm) => {
+		if (vm.queryError != "") {
+			return false;
+		} else {
+			return true;
 		}
-  }
-};
+	};
+	export default {
+		props: {
+			partQuery: {
+			//query from SearchPart component
+				type: String
+			},
+			errMsg: {
+				type: String
+			},
+			errCol: {
+				type: Number
+			},
+			isLoading: {
+				type: Boolean
+			}
+		},
+		data() {
+			return {
+				finalQuery: "",
+				submitted: false,
+				queryError: "",
+				queryErrorCol: 0,
+				emptyQuery: "",
+				metric: "",
+				metrics: [],
+				brokeRule: false,
+				currentLimit: 100,
+				rules: {
+					inlimit: value => {
+						const pattern = /^([1-9][0-9]{0,3}|10000)$/;
+						if(pattern.test(value)){
+							this.brokeRule = false;
+						}
+						else {
+							this.brokeRule = true;
+						}
+						return pattern.test(value) || 'Only Numbers between 1 and 10000'
+					}
+				},
+				loader: null,
+			};
+		},
+		validations: {
+			finalQuery: {
+				required,
+				queryErrorValidator
+			}
+		},
+		watch: {
+			//whenever a new query is comming from the queryMenu, it will be added to the finalQuery
+			partQuery: function(newVal) {
+				if (newVal) {
+					if(this.finalQuery == null){
+						this.finalQuery = "";
+					}
+					this.finalQuery = newVal;
+					this.$emit("resetSavedQuery", ""); //without this line, if the user would choose twice the same query, nothing would happen
+				}
+			},
+			errMsg: function(newVal) {
+				if (newVal) {
+					this.queryError = newVal;
+				}
+			},
+			errCol: function(newVal) {
+				if (newVal > 0) {
+					this.queryErrorCol = newVal;
+					this.selectText();
+				}
+			},
+			loader () {
+				const l = this.loader
+				this[l] = !this[l]
+				if(!this.isLoading){
+					this.loader = null
+				}       
+			},
+		},
+		created() {
+			eventBus.$on("metricList", data => {
+				// this.metrics = data;
+				for (let i = 0; i < data.length; i++) {
+					this.metrics.push(data[i].name);
+				}
+			});
+		},
+		methods: {
+			//the value of the current final query becomes the events value.
+			//This function i needed if the user types in the textfield.
+			addToFinalQuery(event) {
+				this.finalQuery = event;
+			},
+			//if a valid query is given, then this function sends the final query to the searchPart component to initiate a search
+			onStartSearch() {
+				this.loader = this.isLoading;
+				if (this.finalQuery) {
+					this.submitted = true;
+					this.emptyQuery = false;
+					this.$emit("emptyQuery", this.emptyQuery);
+					var qAndL = {query: this.finalQuery, limit: this.currentLimit};
+					this.$emit("finalQueryAndLimitSend", qAndL);
+				} else {
+					this.emptyQuery = true;
+					this.$emit("emptyQuery", this.emptyQuery);
+					this.submitted = true;
+				}
+			},
+			sendToStorage() {
+				this.$emit("sendQueryToStorage", this.finalQuery);
+			},
+			setQuery(value) {
+				this.submitted = false;
+				this.queryError = "";
+				this.$v.finalQuery.$touch();
+				this.finalQuery = value;
+			},
+			selectText() {
+				let textArea = this.$refs.textareaQuery.$el.querySelector('textarea');
+				textArea.focus();
+				textArea.setSelectionRange(this.queryErrorCol-1, this.queryErrorCol);
+				this.$emit("resetErrorColumn", 0);
+			},
+		}
+	};
 </script>
 
-
 <style>
-.queryHeading {
-  text-align: center;
-  color: white;
-  background-color: grey;
-  margin-bottom: 3px;
-  border-radius: 3px;
-}
-#queryCol {
-  background-color: rgb(235, 235, 235);
-  border-radius: 10px 0 0 10px;
-  padding: 12px 0 12px 12px;
-}
-#queryInput {
-  height: 110px;
-  width: 100%;
-  background-color: white;
-  resize: none;
-}
-#startSearchButton {
-  width: 100%;
-  margin-top: 10px;
-  text-align: center;
-  margin-top: 0 !important;
-  padding: 0 !important;
-  background-color: #c20202;
-}
-#startSearchButton:disabled {
-  background-color: grey;
-}
-#startSearchButton:hover:not([disabled]) {
-  box-shadow: 1px 1px 5px 3px grey;
-  border-radius: 3px;
-}
-#searchButtonText {
-  font-variant: small-caps;
-  font-size: 1.5em;
-}
-.errorMsg {
-  text-align: left;
-  padding-left: 5px;
-  color: red;
-}
-#errorDiv {
-  min-height: 65px;
-}
 </style>
