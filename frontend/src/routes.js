@@ -13,12 +13,9 @@ export const routes = [
             if(to.query.id !== "") {
                 next();
             } else {
-                next();
                 next({name: "LandingPage"});
             }
         }
     },
     { path: "*", component: PageNotFound },
 ];
-
-

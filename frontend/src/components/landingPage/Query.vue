@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12" class="pb-1">
-			<v-row>
+			<v-row dense>
 				<v-tooltip top color="#299e3c">
 					<template v-slot:activator="{ on }">
 						<v-btn
@@ -18,30 +18,55 @@
 					</template>
 					<span>Save Query in Query Storage</span>
 				</v-tooltip>
-				<v-textarea
-					outlined
-					ref="textareaQuery"
-					id="queryInput"
-					rows="1"
-					@keydown.enter.prevent
-					clearable
-					hide-details
-					v-model="finalQuery"
-					label="Your Query"
-					@input="addToFinalQuery($event), setQuery($event)"
-					auto-grow>
-				</v-textarea>
-				<v-btn
+				<v-col>
+					<div class="autocomplete">
+						<v-textarea
+							:id="id"
+							outlined
+							rows="1"
+							hide-details
+							auto-grow
+							ref="textareaQuery"
+							class="autocomplete-input"
+							@input="addToFinalQuery($event), setQuery($event)"
+							@keydown.enter.prevent
+							@focusout="focusout"
+							@focus="focus"
+							@keydown.13="chooseMetric"
+							@keydown.tab="chooseMetric"
+							@keydown.40="cursorDownAction"
+							@keydown.38="cursorUpAction"
+							v-model="finalQuery" >
+						</v-textarea>
+						<ul
+							ref="scrollContainer"
+							:class="{
+								'autocomplete-list': true,
+								[id+'-list']: true
+							}" v-if="metricSorted.length > 0">
+							<li
+								ref="options"
+								:class="{active: metricPosition === index}"
+								v-for="(result, index) in metricSorted"
+								@click="selectMetric(index), chooseMetric()"
+								v-html="applyHighlight(result)"
+								v-bind:key="index">
+							</li>
+						</ul>
+					</div>
+					<span id="suggest" class="suggest"></span>
+				</v-col>
+					<v-btn
 					height="50"
 					id="startSearchButton"
 					@click="onStartSearch"
 					:loading="isLoading"
 					:disabled="isLoading || !finalQuery || brokeRule"
 					color="#db2909"
-					class="mr-4 ml-1 mt-1 white--text">
+					class="mr-4 ml-1 mt-2 white--text">
 					<v-icon large>mdi-magnify</v-icon>
 				</v-btn>
-			</v-row>	
+			</v-row>
 		</v-col>
 		<v-col cols="12" class="py-1">
 			<v-alert
@@ -71,13 +96,16 @@
 				:rules="[rules.inlimit]"
 				persistent-hint>
 			</v-text-field>
-		</v-col>	
-	</v-row>	
+		</v-col>
+	</v-row>
 </template>
 
 <script>
+
 	import { required } from "vuelidate/lib/validators";
 	import { eventBus } from "../../main";
+	import getCaretCoordinates from 'textarea-caret'
+
 
 	const queryErrorValidator = (value, vm) => {
 		if (vm.queryError != "") {
@@ -104,7 +132,15 @@
 		},
 		data() {
 			return {
-				finalQuery: "",
+				corpusList: [],
+                autocompleteModel: null,
+                info: null,
+                finalQuery: '',
+                id: 'input-' + parseInt(Math.random() * 1000),
+				metricSorted: [],
+				metricPosition: 0,
+				selectedSuggestMetric: false,
+				inputPosition: 0,
 				submitted: false,
 				queryError: "",
 				queryErrorCol: 0,
@@ -134,6 +170,22 @@
 				queryErrorValidator
 			}
 		},
+		computed: {
+		corpus() {
+			if (typeof this.items !== "undefined" && this.items.length > 0) {
+				return this.items;
+			} else {
+
+				return this.corpusList;
+			}
+		},
+		currentInput() {
+			return this.finalQuery.replace(/(\r\n|\n|\r)/gm, ' ').split(' ')[this.inputPosition];
+		},
+		inputSplitted() {
+			return this.finalQuery.replace(/(\r\n|\n|\r)/gm, ' ').split(" ");
+        }
+	},
 		watch: {
 			//whenever a new query is comming from the queryMenu, it will be added to the finalQuery
 			partQuery: function(newVal) {
@@ -161,8 +213,13 @@
 				this[l] = !this[l]
 				if(!this.isLoading){
 					this.loader = null
-				}       
+				}
 			},
+			finalQuery() {
+			this.focus();
+			this.metricPosition = 0;
+			this.inputPosition = this.inputSplitted.length - 1;
+		}
 		},
 		created() {
 			eventBus.$on("metricList", data => {
@@ -201,6 +258,8 @@
 				this.queryError = "";
 				this.$v.finalQuery.$touch();
 				this.finalQuery = value;
+				this.suggestOperator();
+				this.suggestValue();
 			},
 			selectText() {
 				let textArea = this.$refs.textareaQuery.$el.querySelector('textarea');
@@ -208,9 +267,210 @@
 				textArea.setSelectionRange(this.queryErrorCol-1, this.queryErrorCol);
 				this.$emit("resetErrorColumn", 0);
 			},
-		}
+		applyHighlight(word) {
+			if(this.currentInput !== "")
+                {
+            let currentNewWord=this.currentInput.replace(/[-[\]{}()*+?.,\\^$|#\\s]/g, '\\$&');
+            const regex = new RegExp("(" + currentNewWord + ")", "gi");
+
+            //word=escapeRegExp(word);
+			return word.replace(regex, '<mark>$1</mark>');
+				}
+				else
+				{
+					this.metricSorted =[];
+				}
+		},
+		setMetric(word) {
+			let currentInputs = this.finalQuery.replace(/(\r\n|\n|\r)/gm, '__br__ ').split(' ');
+			currentInputs[this.inputPosition] = currentInputs[this.inputPosition].replace(this.currentInput, word + ' ');
+			this.inputPosition += 1;
+			this.finalQuery = currentInputs.join(' ').replace(/__br__\s/g, '\n');
+		},
+		cursorDownAction() {
+			if (this.metricPosition < this.metricSorted.length - 1) {
+				this.metricPosition++;
+				this.fixScrolling();
+			}
+		},
+		cursorUpAction() {
+			if (this.metricPosition > 0) {
+				this.metricPosition--;
+				this.fixScrolling();
+			}
+		},
+		fixScrolling(){
+      const listHeight = this.$refs.options[this.metricPosition].clientHeight;
+      this.$refs.scrollContainer.scrollTop = listHeight * this.metricPosition;
+    },
+		selectMetric(index) {
+			this.metricPosition = index;
+			this.chooseMetric();
+		},
+		chooseMetric(e) {
+			this.selectedSuggestMetric = true;
+
+			if (this.metricPosition !== -1 && this.metricSorted.length > 0) {
+				if (e) {
+					e.preventDefault();
+				}
+				this.setMetric(this.metricSorted[this.metricPosition]);
+				this.metricPosition = -1;
+				this.suggestOperator();
+			}
+		},
+		suggestOperator(){
+			let trimQuery=(this.finalQuery).trim();
+            for (let index = 0; index < this.corpusList.length; index++) {
+                if(trimQuery == this.corpusList[index])
+                {
+                    document.getElementById("suggest").innerHTML= "*Relational operator is expected next.";
+                    break;
+
+                }
+                else{
+                    document.getElementById("suggest").innerHTML=  " ";
+                }
+
+            }
+
+		},
+		suggestValue(){
+			var operatorList=[">", ">=", "<", "<=", "="];
+			var dummyQuery1=this.finalQuery.trim();
+			var index= dummyQuery1.length -1;
+			var text = dummyQuery1.substr(index);
+			text=text.trim();
+			for (let index1 = 0; index1 < operatorList.length; index1++)
+			{
+				if(text == operatorList[index1])
+				{
+					//document.getElementById("myText").placeholder = "Value Expected";
+					var metricDummy = dummyQuery1.substring(0, index);
+					metricDummy = metricDummy.trim();
+					for (let index2 = 0; index2 < this.corpusList.length; index2++)
+					{
+						if(metricDummy == this.corpusList[index2])
+						{
+							document.getElementById("suggest").innerHTML="*Metric value is expected next.";
+							break;
+						}
+						else
+						{
+							document.getElementById("suggest").innerHTML=" ";
+						}
+
+					}
+
+					break;
+				}
+				else
+				{
+					document.getElementById("suggest").innerHTML= " ";
+					this.suggestOperator();
+				}
+
+			}
+
+		},
+		focusout() {
+			setTimeout(() => {
+				if (!this.selectedSuggestMetric) {
+					this.metricSorted = [];
+					this.metricPosition = -1;
+				}
+				this.selectedSuggestMetric = false;
+			}, 100);
+		},
+		focus() {
+			this.metricSorted = [];
+			//if (this.currentInput !== "") {
+			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && this.currentInput !==">" ) {
+				let metricDummy1=this.corpus;
+				//metricDummy1=metricDummy1.map(a => a.toUpperCase());
+				let i=0;
+				for (let index = 0; index < metricDummy1.length; index++) {
+					if(metricDummy1[index].toUpperCase().includes(this.currentInput.toUpperCase()))
+					{
+						this.metricSorted[i]=metricDummy1[index];
+						i++;
+					}
+
+				}
+
+			}
+			if (
+				this.metricSorted.length === 1 &&
+				this.currentInput === this.metricSorted[0]
+			) {
+				this.metricSorted = [];
+			}
+		},
+		},
+		mounted() {
+             const _self = this;
+            document.querySelector('#' + this.id)
+            .addEventListener('input', function() {
+            const caret = getCaretCoordinates(this, this.selectionEnd);
+            if (_self.metricSorted.length > 0) {
+                const element = document.querySelectorAll('.' + _self.id + '-list');
+
+            if (element[0]) {
+                element[0].style.top = caret.top + 40 + 'px';
+                element[0].style.left = caret.left + 'px';
+            }
+            }
+      });
+            this.$http.get("features").then(response => {
+            this.info = response.data.sort((a, b) => (a.name > b.name) ? 1 : -1);
+            for (let index = 0; index < this.info.length; index++) {
+                if(!(this.info[index].name.includes(" ")))
+                 this.corpusList = this.corpusList.concat("["+this.info[index].name+"]");
+            }
+            return response.json();
+            });
+            error => {
+            alert("Invalid results!", error.messages);
+        };
+        }
+
 	};
 </script>
 
 <style>
+.autocomplete {
+  width: 100%;
+}
+
+.autocomplete-list {
+  position: absolute;
+  z-index: 2;
+  overflow: auto;
+  min-width: 250px;
+  max-height: 150px;
+  margin: 0;
+  margin-top: 5px;
+  padding: 0;
+  border: 1px solid #eee;
+  list-style: none;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+}
+.autocomplete-list li {
+  margin: 0;
+  padding: 8px 15px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.autocomplete-list li:last-child {
+  border-bottom: 0;
+}
+.autocomplete-list li:hover, .autocomplete-list li.active {
+  background-color: #f5f5f5;
+}
+.suggest {
+	color: #0066FF;
+  font-family:arial;
+  font-size: 12px;
+}
 </style>
