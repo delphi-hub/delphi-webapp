@@ -215,6 +215,7 @@ export default {
     },
     startSearch() {
       var vm = this;
+      vm.queryError = "";
       if (this.readyToSearchQuery) {
         this.progressBar = true;
         this.$http
