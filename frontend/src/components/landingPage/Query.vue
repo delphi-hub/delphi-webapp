@@ -316,6 +316,10 @@
 				}
 				this.setMetric(this.metricSorted[this.metricPosition]);
 				this.metricPosition = -1;
+				var txtarea=document.getElementById(this.id);
+				var end= txtarea.selectionEnd;
+				txtarea.selectionEnd=end+this.finalQuery.length;
+				txtarea.focus();
 				this.suggestOperator();
 			}
 		},
@@ -385,7 +389,7 @@
 		focus() {
 			this.metricSorted = [];
 			//if (this.currentInput !== "") {
-			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && this.currentInput !==">" ) {
+			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && this.currentInput !==">" && isNaN(this.currentInput) ) {
 				let metricDummy1=this.corpus;
 				//metricDummy1=metricDummy1.map(a => a.toUpperCase());
 				let i=0;
