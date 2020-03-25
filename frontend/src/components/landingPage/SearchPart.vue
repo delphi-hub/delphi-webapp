@@ -66,13 +66,25 @@
             <br />You searched for the query :
             <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p>
           </div>
-          <hr />
+          <v-card-subtitle>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              placeholder="Filter Results"
+              hide-details
+              clearable
+              outlined
+              class="pt-0"
+              clear-icon="mdi-close-circle-outline"
+            ></v-text-field>
+          </v-card-subtitle>
           <v-container fluid fill-height>
             <v-layout>
               <v-data-table
                 :headers="headers"
                 :items="items.hits"
                 :loading="progressBar"
+                :search="search"
                 loading-text="Searching for the results, please wait...."
                 class="elevation-1"
               >
@@ -138,7 +150,7 @@ export default {
       headers: [
         {
           text: "GroupId",
-          align: "center",
+          align: "left",
           value: "metadata.groupId",
           width: "10%",
           fixed: true
@@ -179,6 +191,7 @@ export default {
       flattenItems: [],
       dialog: false,
       dialog2: false,
+      search: "",
       errorText: "",
       finalQAndLimit: { query: "", limit: 100 },
       reqBody: {
@@ -318,6 +331,7 @@ export default {
 }
 #searchedQueryInResult {
   font-weight: bold;
+  margin-bottom: 0;
 }
 .downloadDiv {
   text-align: right;

@@ -206,10 +206,13 @@ export default {
       metricKeys: [],
       metricValues: [],
       headers: [
-        { text: "Metric Name", align: "left", sortable: "true", value: "id" },
+        { text: "Metric Name", 
+          align: "left", 
+          sortable: "true", 
+          value: "id" },
         {
           text: "Metric Value",
-          align: "left",
+          align: "center",
           sortable: "true",
           value: "value"
         }
