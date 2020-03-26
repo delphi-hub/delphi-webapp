@@ -132,7 +132,7 @@
 													name="metric_suggest"
 													v-on:keyup="filter1"
 													size="15"
-													placeholder="Filter Metrics"/>
+													placeholder="Serach Metrics"/>
 												<div v-if="info">
 													<select id="select" size="10" v-model="metric">
 														<option 
