@@ -107,6 +107,7 @@
                   open-on-click
                   selectable
                   return-object
+                  :open="items"
                   expand-icon="mdi-chevron-down"
                   on-icon="mdi-checkbox-marked-outline"
                   off-icon="mdi-checkbox-blank-outline"
