@@ -260,7 +260,7 @@ export default {
                     }
                     vm.headers.splice(4, 0, {
                       text: modifiedKey,
-                      align: "center",
+                      align: "left",
                       value: "metricResults." + modifiedKey,
                       width: "10%"
                     });

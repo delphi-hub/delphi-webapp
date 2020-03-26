@@ -304,10 +304,12 @@ export default {
     },
     getAllCategories() {
       for (const m of this.metricObjects) {
+        this.tree.push(m);
         if (!this.metricCategories.includes(m.category)) {
           this.metricCategories.push(m.category);
         }
       }
+      this.tree.sort((a, b) => (a.name > b.name) ? 1 : -1);
       this.metricCategories.sort();
     },
     onUpdate(selection) {
