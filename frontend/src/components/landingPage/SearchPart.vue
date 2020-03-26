@@ -51,7 +51,7 @@
       </v-col>
       <v-col cols="12" class="py-0 pr-5">
         <div class="downloadDiv" v-if="items.totalHits > 0">
-          <v-btn @click.stop="dialog = true" outlined color="rgb(63, 53, 53)">
+          <v-btn @click.stop="dialog = true" outlined color="#0959db">
             Export to Excel
             <v-icon>mdi-file-excel</v-icon>
           </v-btn>
@@ -157,28 +157,28 @@ export default {
         },
         {
           text: "ArtifactId",
-          align: "center",
+          align: "left",
           value: "metadata.artifactId",
           width: "10%",
           fixed: true
         },
         {
           text: "Source",
-          align: "center",
+          align: "left",
           value: "metadata.source",
           width: "10%",
           fixed: true
         },
         {
           text: "Version",
-          align: "center",
+          align: "left",
           value: "metadata.version",
           width: "10%",
           fixed: true
         },
         {
           text: "More Information",
-          align: "center",
+          align: "left",
           value: "moreInfo",
           width: "10%"
         }

@@ -473,7 +473,7 @@
   background-color: #f5f5f5;
 }
 .suggest {
-	color: #0066FF;
+	color: red;
   font-family:arial;
   font-size: 12px;
 }
