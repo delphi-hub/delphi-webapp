@@ -1,6 +1,6 @@
 <template>
 	<v-row>
-		<v-col cols="12" class="py-0 pl-8">
+		<v-col cols="12" class="py-0 pl-6">
 			<v-btn
 			class="mb-1"
 			outlined
@@ -81,7 +81,7 @@
 					</v-list>
 			</v-menu>
 		</v-col>
-		<v-col cols="12" class="py-0"> 
+		<v-col cols="12" class="py-0 px-6"> 
 			<v-expand-transition>
 				<div v-show="expanded" style="border-radius: 5px; padding: 0 2px 2px 2px; background-color: #0959db">
 					<v-row class="pa-0">
@@ -108,15 +108,15 @@
 									<v-card-title class="pa-1">
 										Step 1 (Expression {{level+1}}): Metric
 										<span>
-											<v-tooltip bottom color="#ffae00">
+											<v-tooltip bottom color="#CFD8DC" max-width="500">
 												<template v-slot:activator="{ on }">
 													<v-icon height="25"
 														width="25"
 														v-on="on"
 														class="ml-1 mb-1"
-														color="#ffae00"
+														color="#db2909"
 														medium 
-														>mdi-information	
+														>mdi-information-outline	
 													</v-icon>
 												</template>
 												<span style="color:black">A Delphi query consists of one or more expressions which are connected with logical operators. 
@@ -142,7 +142,7 @@
 													name="metric_suggest"
 													v-on:keyup="filter1"
 													size="15"
-													placeholder="Serach Metrics"/>
+													placeholder="Search Metrics"/>
 												<div v-if="info">
 													<select id="select" size="10" v-model="metric">
 														<option 
@@ -159,46 +159,34 @@
 										</v-col>
 									</v-row>	
 								</v-card>
-								<v-tooltip top color="red">
-									<template v-slot:activator="{ on }">
-										<v-btn 
-											color="red" 
-											v-on="on" 
-											@click="undoInStepOne"
-											:disabled="!queryInCreation[1] || step != 1">
-											<v-icon>mdi-undo</v-icon>
-										</v-btn>
-									</template>
-									<span>Undo Last Step</span>
-								</v-tooltip>
-								<v-tooltip top color="green">
-									<template v-slot:activator="{ on }">
-										<v-btn
-											v-on="on"
-											style="margin-left: 6px;"
-											:disabled="!metric || step != 1"
-											color="green"
-											@click="nextStepOne">
-											<v-icon>mdi-redo</v-icon>
-										</v-btn>
-									</template>
-									<span>Next Step</span>
-								</v-tooltip>
+								<v-btn 
+									color="red" 
+									@click="undoInStepOne"
+									:disabled="!queryInCreation[1] || step != 1">
+									Previous Step
+								</v-btn>
+								<v-btn
+									style="margin-left: 6px;"
+									:disabled="!metric || step != 1"
+									color="green"
+									@click="nextStepOne">
+									Next Step
+								</v-btn>
 							</v-stepper-content>
 							<v-stepper-content class="pa-2" step="2">
 								<v-card :elevation="0" style="min-height:220px">
 									<v-card-title class="pa-1">
 										Step 2 (Expression {{level+1}}): Operator & Value
 										<span>
-											<v-tooltip bottom color="#ffae00">
+											<v-tooltip bottom color="#CFD8DC">
 												<template v-slot:activator="{ on }">
 													<v-icon height="25"
 														width="25"
 														v-on="on"
 														class="ml-1 mb-1"
-														color="#ffae00"
+														color="#db2909"
 														medium 
-														>mdi-information	
+														>mdi-information-outline	
 													</v-icon>
 												</template>
 												<span style="color:black">Next you have to pick an operator and give a value.
@@ -225,42 +213,33 @@
 										</v-col>
 									</v-row>	
 								</v-card>
-								<v-tooltip top color="red">
-									<template v-slot:activator="{ on }">
-										<v-btn color="red" v-on="on" @click="undoInStepTwo" :disabled="step != 2">
-											<v-icon>mdi-undo</v-icon>
-										</v-btn>
-									</template>
-									<span>Undo Last Step</span>
-								</v-tooltip>
-								<v-tooltip top color="green">
-									<template v-slot:activator="{ on }">
-										<v-btn
-											style="margin-left: 6px;"
-											v-on="on"
-											color="green"
-											:disabled="!value || !operator || step != 2"
-											@click="nextStepTwo">
-											<v-icon>mdi-redo</v-icon>
-										</v-btn>
-									</template>
-									<span>Next Step</span>
-								</v-tooltip>						
+								<v-btn 
+									color="red" 
+									@click="undoInStepTwo" :disabled="step != 2">
+									Previous Step
+								</v-btn>
+								<v-btn
+									style="margin-left: 6px;"
+									color="green"
+									:disabled="!value || !operator || step != 2"
+									@click="nextStepTwo">
+									Next Step
+								</v-btn>				
 							</v-stepper-content>
 							<v-stepper-content class="pa-2" step="3">
 								<v-card :elevation="0" style="min-height:220px">
 									<v-card-title class="pa-1">
 										Step 3 (Expression {{level+1}}): Logical Operator
 										<span>
-											<v-tooltip bottom color="#ffae00">
+											<v-tooltip bottom color="#CFD8DC">
 												<template v-slot:activator="{ on }">
 													<v-icon height="25"
 														width="25"
 														v-on="on"
 														class="ml-1 mb-1"
-														color="#ffae00"
+														color="#db2909"
 														medium 
-														>mdi-information	
+														>mdi-information-outline	
 													</v-icon>
 												</template>
 												<span style="color:black">
@@ -296,40 +275,26 @@
 										</v-col>
 									</v-row>	
 								</v-card>
-								<v-tooltip top color="red">
-									<template v-slot:activator="{ on }">
-										<v-btn color="red" v-on="on" @click="undoInStepThree" :disabled="step != 3">
-											<v-icon>mdi-undo</v-icon>
-										</v-btn>
-									</template>
-									<span>Undo Last Step</span>
-								</v-tooltip>
-								<v-tooltip top color="green">
-									<template v-slot:activator="{ on }">
-										<v-btn
-										v-on="on"
-										style="margin-left: 6px;"
-										color="green"
-										:disabled="!logicalOperator || (level >= maxLevel) || step != 3"
-										@click="nextStepThree">
-											<v-icon>mdi-shape-square-plus</v-icon>
-										</v-btn>
-									</template>
-									<span>Add new expression</span>
-								</v-tooltip>
-								<v-tooltip top color="blue">
-									<template v-slot:activator="{ on }">
-										<v-btn
-											v-on="on"
-											style="margin-left: 6px;"
-											color="blue"
-											:disabled="(logicalOperator != '') && !(level >= maxLevel)"
-											@click.stop="dialog = true">
-											<v-icon>mdi-file-send-outline</v-icon>
-										</v-btn>
-									</template>
-									<span>Send Query</span>
-								</v-tooltip>
+								<v-btn 
+									color="red" 
+									@click="undoInStepThree" :disabled="step != 3">
+									Previous Step
+								</v-btn>
+								<v-btn
+									style="margin-left: 6px;"
+									color="green"
+									v-show="logicalOperator != '' && !(level >= maxLevel) && step == 3"
+									:disabled="step != 3"
+									@click="nextStepThree">
+									Add New Expression
+								</v-btn>
+								<v-btn
+									style="margin-left: 6px;"
+									color="green"
+									v-show="(logicalOperator == '') || (level >= maxLevel)"
+									@click.stop="dialog = true">
+									Finish Query
+								</v-btn>
 								<v-dialog
 									v-model="dialog"
 									max-width="400">
@@ -359,7 +324,8 @@
 											<v-btn
 												color="blue darken-1"
 												text
-												@click="addToMenu" :disabled="step != 3">
+												@click="addToMenu" 
+												:disabled="step != 3">
 												Save in Query Storage
 											</v-btn>
 										</v-card-actions>

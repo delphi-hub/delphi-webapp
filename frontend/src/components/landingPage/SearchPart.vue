@@ -63,7 +63,7 @@
             <br />You searched for the query :
             <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p>
           </div>
-          <v-card-subtitle>
+          <v-card-subtitle class="pb-0">
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"

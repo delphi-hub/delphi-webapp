@@ -2,22 +2,6 @@
 	<v-row>
 		<v-col cols="12" class="pb-1">
 			<v-row dense>
-				<v-tooltip top color="#299e3c">
-					<template v-slot:activator="{ on }">
-						<v-btn
-							height="25"
-							width="25"
-							fab
-							outlined
-							v-on="on"
-							@click="sendToStorage"
-							color="#299e3c"
-							class="ml-4">
-							<v-icon small>mdi-content-save</v-icon>
-						</v-btn>
-					</template>
-					<span>Save Query in Query Storage</span>
-				</v-tooltip>
 				<v-col>
 					<div class="autocomplete">
 						<v-textarea
@@ -26,8 +10,9 @@
 							rows="1"
 							hide-details
 							auto-grow
+							dense
 							ref="textareaQuery"
-							class="autocomplete-input"
+							class="autocomplete-input ml-5"
 							@input="addToFinalQuery($event), setQuery($event)"
 							@keydown.enter.prevent
 							@focusout="focusout"
@@ -58,16 +43,32 @@
 					</div>
 					<span id="suggest" class="suggest"></span>
 				</v-col>
-					<v-btn
-					height="50"
+				<v-btn
+					height="45"
 					id="startSearchButton"
 					@click="onStartSearch"
 					:loading="isLoading"
 					:disabled="isLoading || !finalQuery || brokeRule"
 					color="#db2909"
-					class="mr-4 ml-1 mt-2 white--text">
+					class="ml-1 mt-1 white--text pa-0">
 					<v-icon large>mdi-magnify</v-icon>
 				</v-btn>
+				<v-tooltip top color="#299e3c">
+					<template v-slot:activator="{ on }">
+						<v-btn
+							height="45"
+							outlined
+							class="ml-1 mr-5 mt-1"
+							v-on="on"
+							@click="sendToStorage"
+							color="#299e3c"
+							:disabled="!finalQuery"
+							>
+							<v-icon medium>mdi-content-save</v-icon>
+						</v-btn>
+					</template>
+					<span>Save Query in Query Storage</span>
+				</v-tooltip>
 			</v-row>
 		</v-col>
 		<v-col cols="12" class="py-1">
@@ -88,7 +89,7 @@
 						{{this.queryError}}
 			</v-alert>
 		</v-col>
-		<v-col cols="6" class="py-0 ml-7">
+		<v-col cols="6" class="py-0 ml-2">
 			<v-text-field
 				style="max-width:160px"
 				dense
