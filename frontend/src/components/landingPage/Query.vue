@@ -36,6 +36,7 @@
 							@keydown.tab="chooseMetric"
 							@keydown.40="cursorDownAction"
 							@keydown.38="cursorUpAction"
+							placeholder="Type in your query..."
 							v-model="finalQuery" >
 						</v-textarea>
 						<ul
