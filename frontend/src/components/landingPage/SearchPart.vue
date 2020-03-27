@@ -24,11 +24,6 @@
           elevation="24"
           style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);"
         >
-          <!--savedQuery updates the prop called partQuery
-						finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
-						After adding a new partQuery to the query component, it asks for resetting the savedquery.
-						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
-          After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
           <query
             :errMsg="queryError"
             :errCol="errorColumn"
@@ -40,9 +35,11 @@
             @resetErrorColumn="errorColumn = $event"
             @sendQueryToStorage="storageSaveQuery = $event"
           ></query>
-          <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
+          <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQuery Method.-->
           <queryMenu
-            :queryForStorage="storageSaveQuery"
+            :queryForStorage="storageSaveQuery"           
+            :shrinkMenu="shrinkQueryCreationMenu"
+            @shrinkingMenu="shrinkQueryCreationMenu = $event"
             @resetStorageQuery="storageSaveQuery = $event"
             @addQuerySent="saveQuery"
             @addFromStorage="saveQuery"
@@ -70,9 +67,10 @@
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              placeholder="Filter Results"
+              placeholder="Search Results"
               hide-details
               clearable
+              dense
               outlined
               class="pt-0"
               clear-icon="mdi-close-circle-outline"
@@ -199,7 +197,8 @@ export default {
         limit: this.resultLimit
       },
       clearItems: false,
-      storageSaveQuery: ""
+      storageSaveQuery: "",
+      shrinkQueryCreationMenu: false
     };
   },
   watch: {
@@ -229,6 +228,7 @@ export default {
     startSearch() {
       var vm = this;
       vm.queryError = "";
+      this.shrinkQueryCreationMenu = true;
       if (this.readyToSearchQuery) {
         this.progressBar = true;
         this.$http

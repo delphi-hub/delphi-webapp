@@ -26,7 +26,7 @@
 						color="#299e3c"
 						v-on="on">
 						<v-icon left>mdi-database</v-icon>
-						Storage		
+						Query Storage		
 					</v-btn>
 				</template>	
 					<v-list v-if="menuItems.length != 0" color="#299e3c" class="py-1">
@@ -86,13 +86,10 @@
 				<div v-show="expanded" style="border-radius: 5px; padding: 0 2px 2px 2px; background-color: #0959db">
 					<v-row class="pa-0">
 						<v-col cols="12" style="padding: 2px 15px 2px 15px;">
-							<v-card style="min-height:60px">
-								<v-card-subtitle class="py-0 pl-1">
-									Query Creation Progress:
-								</v-card-subtitle>
+							<v-card>
 								<v-card-title
 									class="px-2 py-0">
-									{{createdQuery}}
+									<span style="margin-right:5px">Query Creation Progress:</span><span style="color:rgb(122, 122, 122)">{{createdQuery}}</span>
 								</v-card-title>
 							</v-card>
 						</v-col>
@@ -103,19 +100,32 @@
 							<v-divider class="mx-2"></v-divider>
 							<v-stepper-step :complete="step > 2" step="2" class="pa-2">Operator & Value</v-stepper-step>
 							<v-divider class="mx-2"></v-divider>
-							<v-stepper-step step="3" class="pa-2">Wrap Up</v-stepper-step>						
+							<v-stepper-step step="3" class="pa-2">Logical Operator</v-stepper-step>						
 						</v-stepper-header> 
 						<v-stepper-items>
 							<v-stepper-content class="pa-2" step="1">
-								<v-card elevation="0" style="min-height:270px">
+								<v-card elevation="0" style="min-height:220px">
 									<v-card-title class="pa-1">
 										Step 1 (Expression {{level+1}}): Metric
+										<span>
+											<v-tooltip bottom color="#ffae00">
+												<template v-slot:activator="{ on }">
+													<v-icon height="25"
+														width="25"
+														v-on="on"
+														class="ml-1 mb-1"
+														color="#ffae00"
+														medium 
+														>mdi-information	
+													</v-icon>
+												</template>
+												<span style="color:black">A Delphi query consists of one or more expressions which are connected with logical operators. 
+													An expression has the syntax: '[metric] operator value'. The following steps guide you through the query creation process.
+													First pick a metric, depending on your desired result of artifacts.
+												</span>
+											</v-tooltip>
+										</span>
 									</v-card-title>
-									<v-card-text class="pa-1">
-										A Delphi query consists of one or more expressions which are connected with logical operators. 
-										An expression has the syntax: 'metric operator value'. The following steps guide you through the query creation process.
-										First pick a metric, depending on your desired result of artifacts.
-									</v-card-text>
 									<v-row>
 										<v-col cols="12">
 											<v-card v-show="metric" :elevation="0">
@@ -176,14 +186,27 @@
 								</v-tooltip>
 							</v-stepper-content>
 							<v-stepper-content class="pa-2" step="2">
-								<v-card :elevation="0" style="min-height:270px">
+								<v-card :elevation="0" style="min-height:220px">
 									<v-card-title class="pa-1">
 										Step 2 (Expression {{level+1}}): Operator & Value
+										<span>
+											<v-tooltip bottom color="#ffae00">
+												<template v-slot:activator="{ on }">
+													<v-icon height="25"
+														width="25"
+														v-on="on"
+														class="ml-1 mb-1"
+														color="#ffae00"
+														medium 
+														>mdi-information	
+													</v-icon>
+												</template>
+												<span style="color:black">Next you have to pick an operator and give a value.
+													That will bound the metric and only artifacts within that bound will be part of the result.
+												</span>
+											</v-tooltip>
+										</span>
 									</v-card-title>
-									<v-card-text class="pa-1 mb-2">
-										Now, after you have chosen a metric, you have to pick an operator and give a value.
-										That will bound the metric and only artifacts within that bound will be part of the result.
-									</v-card-text>
 									<v-row>
 										<v-col cols="12" class="py-0">
 											<v-select
@@ -225,17 +248,32 @@
 								</v-tooltip>						
 							</v-stepper-content>
 							<v-stepper-content class="pa-2" step="3">
-								<v-card :elevation="0" style="min-height:270px">
+								<v-card :elevation="0" style="min-height:220px">
 									<v-card-title class="pa-1">
-										Step 3 (Expression {{level+1}}): Wrap Up
+										Step 3 (Expression {{level+1}}): Logical Operator
+										<span>
+											<v-tooltip bottom color="#ffae00">
+												<template v-slot:activator="{ on }">
+													<v-icon height="25"
+														width="25"
+														v-on="on"
+														class="ml-1 mb-1"
+														color="#ffae00"
+														medium 
+														>mdi-information	
+													</v-icon>
+												</template>
+												<span style="color:black">
+													This step will wrap up your expression and possibly your query. 
+													First decide if you would like to negate your expression.
+													Afterwards you have two options. Either pick a logical operator, that will initiate the creation 
+													of a new expression (Maximum of 10 expression).
+													Or pick 'No Logical Operator' to finish this query and either 
+													send it to 'Your Query' or save it in the query storage.
+												</span>
+											</v-tooltip>
+										</span>
 									</v-card-title>
-									<v-card-text class="pa-1">
-										This step will wrap up your expression and possibly your query. First decide if you would like to negate your expression.
-										Afterwards you have two options. Either pick a logical operator, that will initiate the creation 
-										of a new expression (Maximum of 10 expression).
-										Or pick 'No Logical Operator' to finish this query and either 
-										send it to 'Your Query' or save it in the query storage.
-									</v-card-text>
 									<v-row>
 										<v-col cols="12" class="py-0">
 											<v-checkbox color="blue" class="pl-2" v-model="logicalNOT" label="Add Logical NOT"></v-checkbox>
@@ -245,8 +283,7 @@
 												v-model="logicalOperator"
 												:items="logicalOperators"
 												outlined
-												v-show="!(level >= maxLevel)"
-												label="Logical Operator">
+												v-show="!(level >= maxLevel)">
 											</v-select>
 											<v-alert
 												outlined
@@ -396,6 +433,9 @@
 		props: {
 			queryForStorage: {
 				type: String
+			},
+			shrinkMenu: {
+				type: Boolean
 			}
 		},
 		watch: {
@@ -415,6 +455,12 @@
 						this.snackbar2 = true;
 					}
 					this.$emit("resetStorageQuery", "");
+				}
+			},
+			shrinkMenu: function(newVal) {
+				if(newVal) {
+					this.expanded = false;
+					this.$emit("shrinkingMenu", false);
 				}
 			}
 		},
@@ -446,7 +492,7 @@
 				operator: null,
 				value: null,
 				logicalNOT: null,
-				logicalOperator: null,
+				logicalOperator: "",
 				metric: null,
 			}
 		},
@@ -462,7 +508,7 @@
 					this.operator = null;
 					this.value = null;
 					this.logicalNOT = null;
-					this.logicalOperator = null;
+					this.logicalOperator = "";
 					document.getElementById("filter").value = ''; 
 					this.filter1();	
 					this.expanded = !this.expanded;
@@ -577,7 +623,7 @@
 				this.metric = null;
 				this.value = null;
 				this.operator = null;	
-				this.logicalOperator = null;
+				this.logicalOperator = "";
 				this.logicalNOT = null;
 				if(this.level >= this.maxLevel){
 					this.logicalOperator = "";
@@ -631,7 +677,7 @@
 				this.operator = null;
 				this.value = null;
 				this.logicalNOT = null;
-				this.logicalOperator = null;
+				this.logicalOperator = "";
 				document.getElementById("filter").value = ''; 
 				this.filter1();	
 				this.expanded = !this.expanded;

@@ -37,6 +37,7 @@
 							@keydown.40="cursorDownAction"
 							@keydown.38="cursorUpAction"
 							placeholder="Type in your query..."
+							label="Your Query"
 							v-model="finalQuery" >
 						</v-textarea>
 						<ul
@@ -92,7 +93,7 @@
 				style="max-width:160px"
 				dense
 				filled
-				hint="Amount of Result Entries"
+				hint="Number of Results"
 				v-model="currentLimit"
 				:rules="[rules.inlimit]"
 				persistent-hint>
