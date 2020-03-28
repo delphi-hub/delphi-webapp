@@ -286,7 +286,7 @@ export default {
                 this.dialog2 = true;
               } else if (error.status == 422) {
                 vm.errorColumn = error.body.column;
-                vm.queryError = "Syntax Error: " + error.body.problem;
+                vm.queryError = "Syntax Error: " + error.body.problem +" "+error.body.suggestion;
               } else {
                 vm.queryError = error.body;
               }
