@@ -498,5 +498,7 @@
 	color: red;
   font-family:arial;
   font-size: 12px;
+  padding-left:15px
+
 }
 </style>
