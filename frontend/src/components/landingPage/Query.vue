@@ -136,6 +136,7 @@
 		data() {
 			return {
 				corpusList: [],
+				operatorList: [">", ">=", "<", "<=", "="],
                 autocompleteModel: null,
                 info: null,
                 finalQuery: '',
@@ -343,14 +344,13 @@
 
 		},
 		suggestValue(){
-			var operatorList=[">", ">=", "<", "<=", "="];
 			var dummyQuery1=this.finalQuery.trim();
 			var index= dummyQuery1.length -1;
 			var text = dummyQuery1.substr(index);
 			text=text.trim();
-			for (let index1 = 0; index1 < operatorList.length; index1++)
+			for (let index1 = 0; index1 < this.operatorList.length; index1++)
 			{
-				if(text == operatorList[index1])
+				if(text == this.operatorList[index1])
 				{
 					//document.getElementById("myText").placeholder = "Value Expected";
 					var metricDummy = dummyQuery1.substring(0, index);
@@ -391,8 +391,24 @@
 		},
 		focus() {
 			this.metricSorted = [];
-			//if (this.currentInput !== "") {
-			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && this.currentInput !==">" && isNaN(this.currentInput) ) {
+			var tempQuerySplit = this.finalQuery.trim().split(' ');
+			var tempQuery;
+			if(tempQuerySplit.length > 1)
+			{
+				tempQuery = tempQuerySplit[tempQuerySplit.length-2].trim();
+
+			}
+			else
+			{
+				tempQuery = tempQuerySplit[tempQuerySplit.length-1].trim();
+			}
+			
+			if(this.corpus.includes(tempQuery) || this.operatorList.includes(tempQuery) )
+			{
+				this.metricSorted = [];	
+			}
+			else {
+				if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && !(this.operatorList.includes(this.currentInput))) {
 				let metricDummy1=this.corpus;
 				//metricDummy1=metricDummy1.map(a => a.toUpperCase());
 				let i=0;
@@ -406,6 +422,9 @@
 				}
 
 			}
+			}
+			//if (this.currentInput !== "") {
+			
 			if (
 				this.metricSorted.length === 1 &&
 				this.currentInput === this.metricSorted[0]
