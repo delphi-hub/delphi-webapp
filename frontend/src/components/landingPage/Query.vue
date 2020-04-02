@@ -1,6 +1,6 @@
 <template>
 	<v-row>
-		<v-col cols="12" class="pb-1">
+		<v-col cols="12" class="pb-0">
 			<v-row dense>
 				<v-col>
 					<div class="autocomplete">
@@ -41,7 +41,7 @@
 							</li>
 						</ul>
 					</div>
-					<span id="suggest" class="suggest"></span>
+					<span v-show="showSuggestion" id="suggest" class="suggest"></span>
 				</v-col>
 				<v-btn
 					height="45"
@@ -71,9 +71,9 @@
 				</v-tooltip>
 			</v-row>
 		</v-col>
-		<v-col cols="12" class="py-1">
+		<v-col cols="12" class="pb-1 pt-0">
 			<v-alert
-				class="my-0 mx-6 py-1"
+				class="my-0 mx-3 py-0"
 				dense
 				outlined
 				type="error"
@@ -81,7 +81,7 @@
 				Please enter a valid query or use the query creation menu to add a query.
 			</v-alert>
 			<v-alert
-				class="my-0 mx-6 py-1"
+				class="my-0 mx-3 py-0"
 				dense
 				outlined
 				type="error"
@@ -136,6 +136,7 @@
 		data() {
 			return {
 				corpusList: [],
+				showSuggestion: false,
 				operatorList: [">", ">=", "<", "<=", "="],
                 autocompleteModel: null,
                 info: null,
@@ -333,11 +334,13 @@
                 if(trimQuery == this.corpusList[index])
                 {
                     document.getElementById("suggest").innerHTML= "*Relational operator is expected next.";
+					this.showSuggestion = true;
                     break;
 
                 }
                 else{
                     document.getElementById("suggest").innerHTML=  " ";
+					this.showSuggestion = false;
                 }
 
             }
@@ -360,11 +363,13 @@
 						if(metricDummy == this.corpusList[index2])
 						{
 							document.getElementById("suggest").innerHTML="*Metric value is expected next.";
+							this.showSuggestion = true;
 							break;
 						}
 						else
 						{
 							document.getElementById("suggest").innerHTML=" ";
+							this.showSuggestion = false;
 						}
 
 					}
@@ -374,6 +379,7 @@
 				else
 				{
 					document.getElementById("suggest").innerHTML= " ";
+					this.showSuggestion = false;
 					this.suggestOperator();
 				}
 
@@ -498,7 +504,7 @@
 	color: red;
   font-family:arial;
   font-size: 12px;
-  padding-left:15px
+  padding-left:23px
 
 }
 </style>
