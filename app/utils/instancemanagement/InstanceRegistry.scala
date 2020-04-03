@@ -15,6 +15,8 @@
 // limitations under the License.
 package utils.instancemanagement
 
+import scala.language.postfixOps
+
 import java.net.InetAddress
 
 import akka.actor.ActorSystem

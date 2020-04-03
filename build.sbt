@@ -7,7 +7,7 @@ name := "delphi-webapp"
 
 version := "1.1.0"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.13.1"
 
 lazy val webapp = (project in file(".")).enablePlugins(PlayScala).
   enablePlugins(BuildInfoPlugin).
@@ -23,14 +23,14 @@ scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
 
-libraryDependencies += "com.pauldijou" %% "jwt-core" % "1.0.0"
+libraryDependencies += "com.pauldijou" %% "jwt-core" % "4.3.0"
 
 // Akka dependencies
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-http-core" % "10.0.14",
-  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.6"
+  "com.typesafe.akka" %% "akka-http-core" % "10.1.11",
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.11"
 )
 libraryDependencies += "de.upb.cs.swt.delphi" %% "delphi-core" % "0.9.2"
 // Pinning secure versions of insecure transitive libraryDependencies

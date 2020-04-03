@@ -26,7 +26,7 @@ object FrontEndBuilder {
     object FrontEndBuilderScript extends PlayRunHook {
       var process: Option[Process] = None
       val isWin: Boolean = System.getProperty("os.name").toUpperCase().indexOf("WIN") >= 0
-      override def afterStarted(add: InetSocketAddress): Unit = {
+      override def afterStarted(): Unit = {
         process = if (isWin){
           Option(Process(s"cmd /c npm run build", base).run)}
         else{
