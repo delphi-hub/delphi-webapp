@@ -351,20 +351,17 @@
 			var index= dummyQuery1.length -1;
 			var text = dummyQuery1.substr(index);
 			text=text.trim();
-			for (let index1 = 0; index1 < this.operatorList.length; index1++)
-			{
-				if(text == this.operatorList[index1])
+			//for (let index1 = 0; index1 < this.operatorList.length; index1++)
+			//{
+				if(this.operatorList.includes(text))
 				{
 					//document.getElementById("myText").placeholder = "Value Expected";
 					var metricDummy = dummyQuery1.substring(0, index);
 					metricDummy = metricDummy.trim();
-					for (let index2 = 0; index2 < this.corpusList.length; index2++)
-					{
-						if(metricDummy == this.corpusList[index2])
+					if(this.corpusList.includes(metricDummy))
 						{
 							document.getElementById("suggest").innerHTML="*Metric value is expected next.";
 							this.showSuggestion = true;
-							break;
 						}
 						else
 						{
@@ -372,9 +369,6 @@
 							this.showSuggestion = false;
 						}
 
-					}
-
-					break;
 				}
 				else
 				{
@@ -383,7 +377,7 @@
 					this.suggestOperator();
 				}
 
-			}
+			//}
 
 		},
 		focusout() {
