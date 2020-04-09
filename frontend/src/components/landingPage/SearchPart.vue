@@ -60,8 +60,7 @@
           style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);"
         >
           <div class="inputQueryInResult" v-if="items.totalHits > 0">
-            <br />You searched for the query :
-            <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p>
+            <p><span id="searchedQueryInResult">You searched for the query : </span> {{ readyToSearchQuery }}</p>
           </div>
           <v-card-subtitle class="pb-0">
             <v-text-field

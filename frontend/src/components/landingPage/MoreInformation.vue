@@ -78,7 +78,7 @@
               >{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-subtitle>
             </v-card>
           </v-col>
-          <v-col cols="12" md="7" lg="7" class="py-0">
+          <v-col cols="12" md="6" lg="6" class="py-0">
             <v-card
               :elevation="0"
               class="ma-1"
@@ -117,7 +117,7 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" md="5" lg="5">
+          <v-col cols="12" md="6" lg="6">
             <v-card
               :elevation="0"
               class="ma-1"
