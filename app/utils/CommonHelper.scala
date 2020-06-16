@@ -15,8 +15,8 @@
 // limitations under the License.
 package utils
 
-import akka.http.scaladsl.model.headers.{Host, RawHeader}
-import akka.http.scaladsl.model.{HttpMethod, HttpRequest, HttpEntity, MediaTypes}
+import akka.http.scaladsl.model.headers.{Host}
+import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
 
 import scala.collection.immutable.Seq
 
@@ -24,9 +24,9 @@ object CommonHelper {
 
   val configuration: Configuration = new Configuration()
   val server = sys.env.getOrElse("DELPHI_SERVER","https://delphi.cs.uni-paderborn.de/api")
-  val limit : Option[Int] = None
   val  urls = configuration.webApiUri
-
+  val maxFetchSize = 10000
+  val defaultFetchSize = 50
   def getDelphiServer(): String = {
     if(!configuration.webApiUri.equals(configuration.defaultWebApiHost)) {
       configuration.webApiUri
