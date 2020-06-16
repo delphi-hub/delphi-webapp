@@ -24,11 +24,6 @@
           elevation="24"
           style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);"
         >
-          <!--savedQuery updates the prop called partQuery
-						finalQueryToReset updates the prop called finalQueryShouldBeReseted. It is false on default. If it becomes true, the finalQuery will be reseted.
-						After adding a new partQuery to the query component, it asks for resetting the savedquery.
-						After the reset of the finalQuery, the finalQueryToReset variable will be set to false.
-          After the click on the search button in the query component it sends the final query here, because the startSearch function lies here.-->
           <query
             :errMsg="queryError"
             :errCol="errorColumn"
@@ -40,9 +35,11 @@
             @resetErrorColumn="errorColumn = $event"
             @sendQueryToStorage="storageSaveQuery = $event"
           ></query>
-          <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQueryMethod.-->
+          <!--The created query is comming from queryMenu component and is saved in the saveQuery variable by the saveQuery Method.-->
           <queryMenu
-            :queryForStorage="storageSaveQuery"
+            :queryForStorage="storageSaveQuery"           
+            :shrinkMenu="shrinkQueryCreationMenu"
+            @shrinkingMenu="shrinkQueryCreationMenu = $event"
             @resetStorageQuery="storageSaveQuery = $event"
             @addQuerySent="saveQuery"
             @addFromStorage="saveQuery"
@@ -51,7 +48,7 @@
       </v-col>
       <v-col cols="12" class="py-0 pr-5">
         <div class="downloadDiv" v-if="items.totalHits > 0">
-          <v-btn @click.stop="dialog = true" outlined color="rgb(63, 53, 53)">
+          <v-btn @click.stop="dialog = true" outlined color="#0959db">
             Export to Excel
             <v-icon>mdi-file-excel</v-icon>
           </v-btn>
@@ -63,16 +60,29 @@
           style="border-radius: 10px 10px 10px 10px; background-color: rgb(255, 255, 255);"
         >
           <div class="inputQueryInResult" v-if="items.totalHits > 0">
-            <br />You searched for the query :
-            <p id="searchedQueryInResult">{{ readyToSearchQuery }}</p>
+            <br>
+            <p>You searched for the query : <span id="searchedQueryInResult">{{ readyToSearchQuery }}</span> </p>
           </div>
-          <hr />
+          <v-card-subtitle class="pb-0">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              placeholder="Search Results"
+              hide-details
+              clearable
+              dense
+              outlined
+              class="pt-0"
+              clear-icon="mdi-close-circle-outline"
+            ></v-text-field>
+          </v-card-subtitle>
           <v-container fluid fill-height>
             <v-layout>
               <v-data-table
                 :headers="headers"
                 :items="items.hits"
                 :loading="progressBar"
+                :search="search"
                 loading-text="Searching for the results, please wait...."
                 class="elevation-1"
               >
@@ -138,35 +148,35 @@ export default {
       headers: [
         {
           text: "GroupId",
-          align: "center",
+          align: "left",
           value: "metadata.groupId",
           width: "10%",
           fixed: true
         },
         {
           text: "ArtifactId",
-          align: "center",
+          align: "left",
           value: "metadata.artifactId",
           width: "10%",
           fixed: true
         },
         {
           text: "Source",
-          align: "center",
+          align: "left",
           value: "metadata.source",
           width: "10%",
           fixed: true
         },
         {
           text: "Version",
-          align: "center",
+          align: "left",
           value: "metadata.version",
           width: "10%",
           fixed: true
         },
         {
           text: "More Information",
-          align: "center",
+          align: "left",
           value: "moreInfo",
           width: "10%"
         }
@@ -179,6 +189,7 @@ export default {
       flattenItems: [],
       dialog: false,
       dialog2: false,
+      search: "",
       errorText: "",
       finalQAndLimit: { query: "", limit: 100 },
       reqBody: {
@@ -186,7 +197,8 @@ export default {
         limit: this.resultLimit
       },
       clearItems: false,
-      storageSaveQuery: ""
+      storageSaveQuery: "",
+      shrinkQueryCreationMenu: false
     };
   },
   watch: {
@@ -215,6 +227,8 @@ export default {
     },
     startSearch() {
       var vm = this;
+      vm.queryError = "";
+      this.shrinkQueryCreationMenu = true;
       if (this.readyToSearchQuery) {
         this.progressBar = true;
         this.$http
@@ -246,7 +260,7 @@ export default {
                     }
                     vm.headers.splice(4, 0, {
                       text: modifiedKey,
-                      align: "center",
+                      align: "left",
                       value: "metricResults." + modifiedKey,
                       width: "10%"
                     });
@@ -272,7 +286,7 @@ export default {
                 this.dialog2 = true;
               } else if (error.status == 422) {
                 vm.errorColumn = error.body.column;
-                vm.queryError = "Syntax Error: " + error.body.problem;
+                vm.queryError = "Syntax Error: " + error.body.problem +" "+error.body.suggestion;
               } else {
                 vm.queryError = error.body;
               }
@@ -317,6 +331,7 @@ export default {
 }
 #searchedQueryInResult {
   font-weight: bold;
+  margin-bottom: 0;
 }
 .downloadDiv {
   text-align: right;

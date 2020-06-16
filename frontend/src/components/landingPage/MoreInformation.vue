@@ -78,7 +78,7 @@
               >{{ discovered[0] }} at {{ discovered[2][0] }}</v-card-subtitle>
             </v-card>
           </v-col>
-          <v-col cols="12" md="7" lg="7" class="py-0">
+          <v-col cols="12" md="6" lg="6" class="py-0">
             <v-card
               :elevation="0"
               class="ma-1"
@@ -107,6 +107,7 @@
                   open-on-click
                   selectable
                   return-object
+                  :open="items"
                   expand-icon="mdi-chevron-down"
                   on-icon="mdi-checkbox-marked-outline"
                   off-icon="mdi-checkbox-blank-outline"
@@ -116,7 +117,7 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" md="5" lg="5">
+          <v-col cols="12" md="6" lg="6">
             <v-card
               :elevation="0"
               class="ma-1"
@@ -206,10 +207,13 @@ export default {
       metricKeys: [],
       metricValues: [],
       headers: [
-        { text: "Metric Name", align: "left", sortable: "true", value: "id" },
+        { text: "Metric Name", 
+          align: "left", 
+          sortable: "true", 
+          value: "id" },
         {
           text: "Metric Value",
-          align: "left",
+          align: "center",
           sortable: "true",
           value: "value"
         }
@@ -301,10 +305,12 @@ export default {
     },
     getAllCategories() {
       for (const m of this.metricObjects) {
+        this.tree.push(m);
         if (!this.metricCategories.includes(m.category)) {
           this.metricCategories.push(m.category);
         }
       }
+      this.tree.sort((a, b) => (a.name > b.name) ? 1 : -1);
       this.metricCategories.sort();
     },
     onUpdate(selection) {

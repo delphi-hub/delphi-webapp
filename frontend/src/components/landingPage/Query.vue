@@ -1,23 +1,7 @@
 <template>
 	<v-row>
-		<v-col cols="12" class="pb-1">
+		<v-col cols="12" class="pb-0">
 			<v-row dense>
-				<v-tooltip top color="#299e3c">
-					<template v-slot:activator="{ on }">
-						<v-btn
-							height="25"
-							width="25"
-							fab
-							outlined
-							v-on="on"
-							@click="sendToStorage"
-							color="#299e3c"
-							class="ml-4">
-							<v-icon small>mdi-content-save</v-icon>
-						</v-btn>
-					</template>
-					<span>Save Query in Query Storage</span>
-				</v-tooltip>
 				<v-col>
 					<div class="autocomplete">
 						<v-textarea
@@ -26,8 +10,9 @@
 							rows="1"
 							hide-details
 							auto-grow
+							dense
 							ref="textareaQuery"
-							class="autocomplete-input"
+							class="autocomplete-input ml-5"
 							@input="addToFinalQuery($event), setQuery($event)"
 							@keydown.enter.prevent
 							@focusout="focusout"
@@ -36,6 +21,8 @@
 							@keydown.tab="chooseMetric"
 							@keydown.40="cursorDownAction"
 							@keydown.38="cursorUpAction"
+							placeholder="Type in your query..."
+							label="Your Query"
 							v-model="finalQuery" >
 						</v-textarea>
 						<ul
@@ -54,23 +41,39 @@
 							</li>
 						</ul>
 					</div>
-					<span id="suggest" class="suggest"></span>
+					<span v-show="showSuggestion" id="suggest" class="suggest"></span>
 				</v-col>
-					<v-btn
-					height="50"
+				<v-btn
+					height="45"
 					id="startSearchButton"
 					@click="onStartSearch"
 					:loading="isLoading"
 					:disabled="isLoading || !finalQuery || brokeRule"
 					color="#db2909"
-					class="mr-4 ml-1 mt-2 white--text">
+					class="ml-1 mt-1 white--text pa-0">
 					<v-icon large>mdi-magnify</v-icon>
 				</v-btn>
+				<v-tooltip top color="#299e3c">
+					<template v-slot:activator="{ on }">
+						<v-btn
+							height="45"
+							outlined
+							class="ml-1 mr-5 mt-1"
+							v-on="on"
+							@click="sendToStorage"
+							color="#299e3c"
+							:disabled="!finalQuery"
+							>
+							<v-icon medium>mdi-content-save</v-icon>
+						</v-btn>
+					</template>
+					<span>Save Query in Query Storage</span>
+				</v-tooltip>
 			</v-row>
 		</v-col>
-		<v-col cols="12" class="py-1">
+		<v-col cols="12" class="pb-1 pt-0">
 			<v-alert
-				class="my-0 mx-6 py-1"
+				class="my-0 mx-3 py-0"
 				dense
 				outlined
 				type="error"
@@ -78,7 +81,7 @@
 				Please enter a valid query or use the query creation menu to add a query.
 			</v-alert>
 			<v-alert
-				class="my-0 mx-6 py-1"
+				class="my-0 mx-3 py-0"
 				dense
 				outlined
 				type="error"
@@ -86,12 +89,12 @@
 						{{this.queryError}}
 			</v-alert>
 		</v-col>
-		<v-col cols="6" class="py-0 ml-7">
+		<v-col cols="6" class="py-0 ml-2">
 			<v-text-field
 				style="max-width:160px"
 				dense
 				filled
-				hint="Amount of Result Entries"
+				hint="Number of Results"
 				v-model="currentLimit"
 				:rules="[rules.inlimit]"
 				persistent-hint>
@@ -133,6 +136,8 @@
 		data() {
 			return {
 				corpusList: [],
+				showSuggestion: false,
+				operatorList: [">", ">=", "<", "<=", "="],
                 autocompleteModel: null,
                 info: null,
                 finalQuery: '',
@@ -316,6 +321,10 @@
 				}
 				this.setMetric(this.metricSorted[this.metricPosition]);
 				this.metricPosition = -1;
+				var txtarea=document.getElementById(this.id);
+				var end= txtarea.selectionEnd;
+				txtarea.selectionEnd=end+this.finalQuery.length;
+				txtarea.focus();
 				this.suggestOperator();
 			}
 		},
@@ -325,52 +334,50 @@
                 if(trimQuery == this.corpusList[index])
                 {
                     document.getElementById("suggest").innerHTML= "*Relational operator is expected next.";
+					this.showSuggestion = true;
                     break;
 
                 }
                 else{
                     document.getElementById("suggest").innerHTML=  " ";
+					this.showSuggestion = false;
                 }
 
             }
 
 		},
 		suggestValue(){
-			var operatorList=[">", ">=", "<", "<=", "="];
 			var dummyQuery1=this.finalQuery.trim();
 			var index= dummyQuery1.length -1;
 			var text = dummyQuery1.substr(index);
 			text=text.trim();
-			for (let index1 = 0; index1 < operatorList.length; index1++)
-			{
-				if(text == operatorList[index1])
+			//for (let index1 = 0; index1 < this.operatorList.length; index1++)
+			//{
+				if(this.operatorList.includes(text))
 				{
 					//document.getElementById("myText").placeholder = "Value Expected";
 					var metricDummy = dummyQuery1.substring(0, index);
 					metricDummy = metricDummy.trim();
-					for (let index2 = 0; index2 < this.corpusList.length; index2++)
-					{
-						if(metricDummy == this.corpusList[index2])
+					if(this.corpusList.includes(metricDummy))
 						{
 							document.getElementById("suggest").innerHTML="*Metric value is expected next.";
-							break;
+							this.showSuggestion = true;
 						}
 						else
 						{
 							document.getElementById("suggest").innerHTML=" ";
+							this.showSuggestion = false;
 						}
 
-					}
-
-					break;
 				}
 				else
 				{
 					document.getElementById("suggest").innerHTML= " ";
+					this.showSuggestion = false;
 					this.suggestOperator();
 				}
 
-			}
+			//}
 
 		},
 		focusout() {
@@ -384,8 +391,24 @@
 		},
 		focus() {
 			this.metricSorted = [];
-			//if (this.currentInput !== "") {
-			if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && this.currentInput !==">" ) {
+			var tempQuerySplit = this.finalQuery.trim().split(' ');
+			var tempQuery;
+			if(tempQuerySplit.length > 1)
+			{
+				tempQuery = tempQuerySplit[tempQuerySplit.length-2].trim();
+
+			}
+			else
+			{
+				tempQuery = tempQuerySplit[tempQuerySplit.length-1].trim();
+			}
+			
+			if(this.corpus.includes(tempQuery) || this.operatorList.includes(tempQuery) )
+			{
+				this.metricSorted = [];	
+			}
+			else {
+				if (typeof this.currentInput !== "undefined" && this.currentInput !== "" && !(this.operatorList.includes(this.currentInput))) {
 				let metricDummy1=this.corpus;
 				//metricDummy1=metricDummy1.map(a => a.toUpperCase());
 				let i=0;
@@ -399,6 +422,9 @@
 				}
 
 			}
+			}
+			//if (this.currentInput !== "") {
+			
 			if (
 				this.metricSorted.length === 1 &&
 				this.currentInput === this.metricSorted[0]
@@ -469,8 +495,10 @@
   background-color: #f5f5f5;
 }
 .suggest {
-	color: #0066FF;
+	color: red;
   font-family:arial;
   font-size: 12px;
+  padding-left:23px
+
 }
 </style>
