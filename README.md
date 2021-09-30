@@ -20,13 +20,15 @@ TBA.
 
 ## How can I use it?
 Install dependencies by executing following commands
+## Project setup
 ```
-cd frontend/src
-npm install
+yarn install
 ```
-After successful installation of npm packages, you can start your own instance in root directory by executing
+
+### Compiles and hot-reloads for development
 ```
 sbt run
+yarn serve
 ```
 
 ## Community
@@ -56,7 +58,17 @@ The Delphi Web Application is open source and available under Apache 2 License.
 [![GitHub license](https://img.shields.io/github/license/delphi-hub/delphi-webapp.svg)](https://github.com/delphi-hub/delphi-webapp/blob/master/LICENSE)
 
 ## Credits
+### Compiles and minifies for production
+```
+yarn build
+```
 
 [![](public/images/browserstack.jpg)](http://www.browserstack.com "BrowserStack")
+### Lints and fixes files
+```
+yarn lint
+```
 
 Special thanks to BrowserStack for sponsoring this project and giving it more substantial cross-browser capabilities.
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
