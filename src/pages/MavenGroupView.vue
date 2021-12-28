@@ -1,15 +1,15 @@
 <template>
- <div>
+  <div>
     <h2 class="w-full text-delphi-red text-2xl font-semibold font-serif">
       {{ groupId }}
     </h2>
 
     <div v-if="isLoading">Loading...</div>
     <div v-else class="text-xs line-height-xs">
-        <table class="text-left">
-        <caption class="text-left font-bold">
-          Artifacts
-        </caption>
+      <table class="text-left">
+        <tr>
+          <th>Artifacts</th>
+        </tr>
         <tr v-for="(a, index) in group" :key="index">
           <td>
             <router-link
@@ -17,10 +17,11 @@
                 name: 'maven-ga',
                 params: {
                   groupId: groupId,
-                  artifactId: a
+                  artifactId: a,
                 },
               }"
-              >{{ a }}</router-link>
+              >{{ a }}</router-link
+            >
           </td>
         </tr>
       </table>
@@ -60,9 +61,7 @@ export default defineComponent({
     async function loadGroup() {
       if (groupId.value === undefined) return;
       isLoading.value = true;
-      group.value = await new MavenAccess().getGroup(
-        groupId.value
-      );
+      group.value = await new MavenAccess().getGroup(groupId.value);
       isLoading.value = false;
     }
 

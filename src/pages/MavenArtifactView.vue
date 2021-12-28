@@ -9,10 +9,10 @@
 
     <div v-if="isLoading">Loading...</div>
     <div v-else class="text-xs line-height-xs">
-        <table class="text-left">
-        <caption class="text-left font-bold">
-          Versions
-        </caption>
+      <table class="text-left">
+        <tr>
+          <th scope="col">Versions</th>
+        </tr>
         <tr v-for="(v, index) in artifact" :key="index">
           <td>
             <router-link
@@ -24,7 +24,8 @@
                   version: v,
                 },
               }"
-              >{{ v }}</router-link>
+              >{{ v }}</router-link
+            >
           </td>
         </tr>
       </table>
@@ -64,11 +65,13 @@ export default defineComponent({
     }
 
     async function loadArtifact() {
-        if (groupId.value === undefined || 
-          artifactId.value === undefined) return;
-        isLoading.value = true;
-        artifact.value = await new MavenAccess().getArtifact(groupId.value, artifactId.value);
-        isLoading.value = false;
+      if (groupId.value === undefined || artifactId.value === undefined) return;
+      isLoading.value = true;
+      artifact.value = await new MavenAccess().getArtifact(
+        groupId.value,
+        artifactId.value
+      );
+      isLoading.value = false;
     }
 
     return { groupId, artifactId, isLoading, artifact };

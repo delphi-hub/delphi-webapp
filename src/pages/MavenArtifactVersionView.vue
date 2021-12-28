@@ -19,15 +19,15 @@
     <div v-else class="text-xs line-height-xs">
       <table class="text-left">
         <tr v-if="pom.name != null">
-          <th>Name</th>
+          <th scope="row">Name</th>
           <td>{{ pom.name }}</td>
         </tr>
         <tr v-if="pom.description != null">
-          <th>Description</th>
+          <th scope="row">Description</th>
           <td>{{ pom.description }}</td>
         </tr>
         <tr v-if="pom.parent != null">
-          <th>Parent</th>
+          <th scope="row">Parent</th>
           <td>
             <router-link
               :to="{
@@ -44,13 +44,13 @@
           </td>
         </tr>
         <tr v-if="pom.url != null">
-          <th>URL</th>
+          <th scope="row">URL</th>
           <td>
             <a :href="pom.url">{{ pom.url }}</a>
           </td>
         </tr>
         <tr v-if="pom.licenses != null && pom.licenses.license != null">
-          <th>License</th>
+          <th scope="row">License</th>
           <td>
             <a :href="pom.licenses.license.url">{{
               pom.licenses.license.name
@@ -71,8 +71,8 @@
           Dependencies
         </caption>
         <tr>
-          <th>Name</th>
-          <th>Scope</th>
+          <th scope="col">Name</th>
+          <th scope="col">Scope</th>
         </tr>
         <tr v-for="(d, index) in pom.dependencies.dependency" :key="index">
           <td>
@@ -98,8 +98,8 @@
           Properties
         </caption>
         <tr>
-          <th>Key</th>
-          <th>Value</th>
+          <th scope="col">Key</th>
+          <th scope="col">Value</th>
         </tr>
         <tr v-for="(value, key) in pom.properties" :key="key">
           <td>{{ key }}</td>
