@@ -5,7 +5,7 @@ export class MavenAccess {
         const url = `/maven2/${groupId.replaceAll(".", "/")}/${artifactId
             }/${version}/${artifactId}-${version}.pom`;
 
-        return await fetch(url)
+        return fetch(url)
             .then((response) => response.text())
             .then((str) => {
                 const parser = new XMLParser();
@@ -15,7 +15,7 @@ export class MavenAccess {
     }
 
     private async retrieveAndProcessDirectory(url: string): Promise<any> {
-        return await fetch(url)
+        return fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 const parser = new DOMParser();
