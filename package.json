@@ -5,23 +5,31 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "cxsd": "cxsd"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat@^2.0.2",
+    "ansi-regex": "^5.0.1",
     "autoprefixer": "^9",
+    "bl": "^1.2.3",
     "core-js": "^3.6.5",
-    "cxsd": "^0.1.1",
+    "cryptiles": "^4.1.2",
     "fast-xml-parser": "^4.0.0-beta.8",
+    "glob-parent": "^5.1.2",
+    "hoek": "^4.2.1",
+    "lodash": "^4.17.21",
+    "nth-check": "^2.0.1",
     "postcss": "^7",
     "tailwind": "^4.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
+    "tough-cookie": "^2.3.3",
+    "tunnel-agent": "^0.6.0",
     "typescript": "^4.4.3",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.12",
-    "vue-typescript": "^0.7.0"
+    "vue-typescript": "^0.7.0",
+    "ws": "^6.2.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.18.0",
@@ -35,7 +43,6 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
-    "typescript": "~4.1.5",
     "vue-cli-plugin-tailwind": "~2.0.6"
   },
   "eslintConfig": {
