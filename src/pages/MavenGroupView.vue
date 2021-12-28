@@ -8,7 +8,7 @@
     <div v-else class="text-xs line-height-xs">
       <table class="text-left">
         <tr>
-          <th>Artifacts</th>
+          <th scope="col">Artifacts</th>
         </tr>
         <tr v-for="(a, index) in group" :key="index">
           <td>
