@@ -10,7 +10,7 @@
   "dependencies": {
     "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "ansi-regex": "^5.0.1",
-    "autoprefixer": "^9",
+    "autoprefixer": "^10.0.0",
     "bl": "^1.2.3",
     "core-js": "^3.6.5",
     "cryptiles": "^4.1.2",
@@ -19,7 +19,7 @@
     "hoek": "^4.2.1",
     "lodash": "^4.17.21",
     "nth-check": "^2.0.1",
-    "postcss": "^7",
+    "postcss": "^8.4.31",
     "tailwind": "^4.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "tough-cookie": "^2.3.3",
