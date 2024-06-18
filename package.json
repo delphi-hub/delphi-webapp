@@ -29,7 +29,7 @@
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.12",
     "vue-typescript": "^0.7.0",
-    "ws": "^6.2.2"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.18.0",
